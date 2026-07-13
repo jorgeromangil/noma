@@ -1,0 +1,51 @@
+<section class="seccion-inventario">
+  <div class="buscador-wrapper">
+    <div class="buscador-inner">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" class="buscador-input" placeholder="Buscar mis productos..." (input)="buscar($event)">
+    </div>
+  </div>
+
+  <div class="form-scroll-container">
+    <div *ngIf="loading" class="vacio-msg">Cargando mis productos...</div>
+
+    <app-product-inventory-grid
+      [productosVisibles]="productosVisibles"
+      [productosOcultos]="productosOcultos"
+      (editProduct)="abrirEditarProducto($event.product, $event.index)"
+      (deleteProduct)="solicitarEliminarProducto($event)"
+      (toggleVisibility)="toggleProductVisibility($event)"
+    ></app-product-inventory-grid>
+
+    <app-editar-producto 
+      *ngIf="showEditarPopup"
+      [productoId]="productoEditandoId"
+      [productoIndex]="productoEditandoIndex"
+      [misProductos]="misProductos"
+      (cerrar)="cerrarEditarPopup()"
+      (productoActualizado)="onProductoActualizado($event)"
+      (mostrarPopup)="mostrarPopup.emit($event)"
+    ></app-editar-producto>
+
+    <div class="productos-grid">
+      <div *ngIf="!loading && productosVisibles.length === 0 && productosOcultos.length === 0" class="vacio-msg">
+        No se encontraron productos.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="showDeleteConfirm" class="report-popup-overlay" (click)="cancelarEliminacion()">
+  <div class="report-popup" (click)="$event.stopPropagation()">
+    <p class="popup-title">Confirmar eliminación</p>
+    <p class="popup-text">¿Estás seguro de que deseas eliminar este producto?</p>
+    <div class="popup-acciones-flex">
+      <button type="button" class="btn-primary" (click)="confirmarEliminacionDefinitiva()" [disabled]="loading">
+        {{ loading ? 'Eliminando...' : 'Eliminar' }}
+      </button>
+      <button type="button" class="btn-secondary" (click)="cancelarEliminacion()" [disabled]="loading">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

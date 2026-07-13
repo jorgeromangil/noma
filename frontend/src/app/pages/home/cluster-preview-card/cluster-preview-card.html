@@ -1,0 +1,51 @@
+<div
+  class="cluster-preview"
+  [class.cluster-preview--visible]="visible"
+  [style.left.px]="cardX"
+  [style.top.px]="cardY"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+>
+  <!-- Cabecera del cluster -->
+  <div class="cluster-preview__header">
+    <span class="cluster-preview__header-icon material-symbols-outlined">location_on</span>
+    <span class="cluster-preview__title">Agrupación</span>
+    <span class="cluster-preview__count">{{ count }} productos</span>
+  </div>
+
+  <!-- Listado de productos -->
+  <div class="cluster-preview__list">
+    <div
+      class="cluster-preview__item"
+      *ngFor="let product of displayedProducts"
+      (click)="onProductClick($event, product)"
+    >
+      <!-- Imagen -->
+      <img
+        *ngIf="getProductImage(product)"
+        class="cluster-preview__item-img"
+        [src]="getProductImage(product)!"
+        [alt]="getProductName(product)"
+        loading="lazy"
+      />
+      <!-- Fallback letra -->
+      <div *ngIf="!getProductImage(product)" class="cluster-preview__item-fallback">
+        {{ getProductName(product).charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="cluster-preview__item-info">
+        <span class="cluster-preview__item-name">{{ getProductName(product) }}</span>
+        <span class="cluster-preview__item-category" *ngIf="getProductCategory(product)">
+          {{ getProductCategory(product) }}
+        </span>
+      </div>
+
+      <span class="material-symbols-outlined cluster-preview__item-arrow">chevron_right</span>
+    </div>
+
+    <!-- Más productos -->
+    <div class="cluster-preview__extra" *ngIf="extraCount > 0">
+      +{{ extraCount }} más
+    </div>
+  </div>
+</div>

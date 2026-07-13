@@ -1,0 +1,170 @@
+/* ─── TARJETA HOVER DE PIN ─── */
+:host {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pin-preview {
+  position: fixed;
+  z-index: 500;
+  width: 260px;
+  background: rgba(26, 26, 26, 0.72);
+  backdrop-filter: blur(0.75em);
+  -webkit-backdrop-filter: blur(0.75em);
+  border: 0.0625em solid rgba(255, 255, 255, 0.07);
+  border-radius: 1em;
+  overflow: hidden;
+
+  /* Sin interacción mientras es invisible */
+  pointer-events: none;
+  user-select: none;
+  cursor: pointer;
+
+  /* Animación entrada / salida */
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transition:
+    opacity 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.18s ease;
+
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(255, 255, 255, 0.04) inset;
+}
+
+/* Visible: pointer-events activos para que sea hoverable y clickable */
+.pin-preview--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.pin-preview--visible:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.55),
+    0 0 0 0.5px rgba(255, 255, 255, 0.08) inset;
+}
+
+/* ─── CARRUSEL ─── */
+.pin-preview__carousel-wrapper {
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Override del carrusel hero para adaptarlo al tamaño de la tarjeta */
+.pin-preview__carousel-wrapper ::ng-deep .hero {
+  height: 140px;
+  overflow: hidden;
+}
+
+.pin-preview__carousel-wrapper ::ng-deep .hero-glow {
+  display: none;
+}
+
+.pin-preview__carousel-wrapper ::ng-deep .hero-slider {
+  width: 100% !important;
+  height: 140px !important;
+  min-height: 140px !important;
+  border-radius: 0;
+}
+
+.pin-preview__carousel-wrapper ::ng-deep .hero-slide {
+  height: 140px !important;
+  background-size: cover;
+  background-position: center;
+}
+
+.pin-preview__carousel-wrapper ::ng-deep .slide-content {
+  display: none;
+}
+
+.pin-preview__carousel-wrapper ::ng-deep .slider-nav {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.pin-preview--visible:hover .pin-preview__carousel-wrapper ::ng-deep .slider-nav {
+  opacity: 1;
+}
+
+
+
+.pin-preview__carousel-wrapper ::ng-deep .slider-dots {
+  bottom: 0.4em;
+}
+
+/* Los dots usan los estilos nativos del carrusel (círculo → barra animada con fill) */
+
+/* ─── IMAGEN ÚNICA ─── */
+.pin-preview__single-image {
+  width: 100%;
+  height: 140px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+  position: relative;
+}
+
+.pin-preview__single-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ─── IMAGEN FALLBACK (sin fotos) ─── */
+.pin-preview__image-fallback {
+  width: 100%;
+  height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.15);
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+}
+
+/* ─── INFO ─── */
+.pin-preview__info {
+  padding: 0.65em 0.875em 0.875em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.22em;
+}
+
+.pin-preview__product-name {
+  margin: 0 0 0.15em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.015em;
+}
+
+/* Fila de metadato — artesano y localización en líneas separadas */
+.pin-preview__meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.pin-preview__meta-row svg {
+  flex-shrink: 0;
+  opacity: 0.4;
+}

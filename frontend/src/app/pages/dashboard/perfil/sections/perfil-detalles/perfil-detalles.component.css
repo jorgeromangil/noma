@@ -1,0 +1,133 @@
+/* Los estilos CSS se heredan del perfil.css principal del componente padre */
+
+:host {
+  display: contents;
+}
+
+.avatar-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.avatar-wrap {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border-radius: 50%;
+    overflow: visible;
+    flex-shrink: 0;
+}
+
+.avatar-wrap img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.avatar-wrap img[src*="googleusercontent"] {
+    padding: 0;
+    object-fit: cover;
+}
+
+.avatar-btn {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient( 90deg, var(--grad-1) 0%, var(--grad-2) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.avatar-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.perfil-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.125em 1.625em;
+    align-items: start;
+}
+
+.perfil-form-grid.solo-columna {
+    grid-template-columns: 1fr !important;
+    max-width: 1000px;
+}
+
+.form-scroll-container.solo-columna {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-scroll-container.solo-columna .perfil-form-grid.solo-columna {
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .perfil-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .perfil-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.perfil-form-grid .campo.ancho,
+.perfil-form-grid .avatar-box {
+    grid-column: 1 / -1;
+}
+
+.campo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Scroll interno para perfil detalles */
+.form-scroll-container {
+    scrollbar-gutter: stable;
+}
+
+.form-scroll-container::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+.tarjeta:hover .form-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}

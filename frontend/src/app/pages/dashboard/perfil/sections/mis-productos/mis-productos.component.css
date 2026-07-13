@@ -1,0 +1,110 @@
+/* Scroll interno para mis productos */
+.form-scroll-container {
+    scrollbar-gutter: stable;
+}
+
+.form-scroll-container::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+.seccion-inventario:hover .form-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* ...existing code... (no cambios en scroll ni layout general) */
+
+/* --- MODAL POPUP OVERLAY (copiado de product-detail/product-modal) --- */
+.report-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 25000;
+}
+
+.report-popup {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 0.0625em solid rgba(255, 255, 255, 0.06);
+    border-radius: 1em;
+    width: min(92vw, 28em);
+    padding: 1.5em;
+    box-shadow: 0 0.5em 2em rgba(0, 0, 0, 0.4);
+    animation: popup-appear 0.2s ease-out;
+}
+
+@keyframes popup-appear {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.report-popup .popup-title {
+    color: #fff;
+    font-size: 1.35em;
+    font-weight: 800;
+    margin: 0 0 0.6em;
+    text-align: center;
+}
+
+.report-popup .popup-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95em;
+    line-height: 1.45;
+    margin: 0 0 1em;
+    text-align: center;
+}
+
+.popup-acciones-flex {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+    margin-top: 1.2em;
+}
+
+.btn-danger {
+    border: 0;
+    border-radius: 0.9rem;
+    padding: 0.8rem 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    transition: transform 0.22s cubic-bezier(.2, .9, .2, 1), box-shadow 0.22s, background 0.22s;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626, #991b1b);
+    transform: translateY(-0.0625em);
+    box-shadow: 0 0.4em 1em rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:active {
+    transform: scale(0.997);
+}
+
+.btn-danger:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}

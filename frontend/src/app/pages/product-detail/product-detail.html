@@ -1,0 +1,343 @@
+﻿<main class="product-detail-main">
+  <div *ngIf="loading" class="product-loader">
+    <p>Cargando producto...</p>
+  </div>
+  
+  <div *ngIf="error && !loading" class="product-error">
+    <p>{{ error }}</p>
+  </div>
+
+  <div *ngIf="!loading && !error && product" class="product-detail-shell">
+    <button
+      type="button"
+      class="product-detail-back-btn"
+      [routerLink]="['/home']"
+      [customTooltip]="'Volver al mapa'"
+      aria-label="Volver al mapa">
+      <span class="material-icons">arrow_back</span>
+    </button>
+
+    <div class="product-detail-container">
+
+    <div class="product-detail-flex">
+      
+      <div class="product-detail-left">
+        <div class="product-carousel" *ngIf="carouselSlides.length > 0">
+          <app-carrusel [slides]="carouselSlides" [autoPlay]="true" [intervalMs]="5000"></app-carrusel>
+          <button
+            type="button"
+            class="popup-close carousel-expand-btn"
+            aria-label="Ampliar carrusel"
+            (click)="openExpandedCarousel($event)">
+            <span class="material-symbols-outlined">open_in_full</span>
+          </button>
+        </div>
+
+        <div *ngIf="displayAddress" class="product-section location-box">
+          <h4>Ubicación</h4>
+          <p class="product-address">{{ displayAddress }}</p>
+        </div>
+
+        <div class="product-section" *ngIf="ownerProfileSlug">
+          <h4>Contacto del Artesano</h4>
+          <div class="artisan-card">
+            <div class="artisan-header">
+              <div class="artisan-icon" [class.has-image]="displayOwnerImage">
+                <img *ngIf="displayOwnerImage" [src]="displayOwnerImage" [alt]="displayOwnerName" class="artisan-avatar">
+                <span *ngIf="!displayOwnerImage" class="material-symbols-outlined">person</span>
+              </div>
+              <div class="artisan-info">
+                <p class="artisan-name">{{ product.owner?.company_name || displayOwnerName }}</p>
+              </div>
+              <button class="artisan-profile-btn" *ngIf="ownerProfileSlug" (click)="goToOwnerProfile($event)">
+                <span>Ver perfil del artesano</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categoría debajo de contacto y ubicación -->
+        <div class="product-section" *ngIf="displayCategory">
+          <h4>Categoría</h4>
+          <p>{{ displayCategory }}</p>
+        </div>
+        <!-- Certificaciones debajo de categoría -->
+        <div class="product-section" *ngIf="displayCertificaciones">
+          <h4>Certificaciones</h4>
+          <p>{{ displayCertificaciones }}</p>
+        </div>
+      </div>
+
+      <div class="product-details">
+        <div class="product-header">
+          <h1 id="product-title">{{ displayTitle }}</h1>
+          <div class="product-header-actions">
+            <button
+              *ngIf="isAuthenticated()"
+              type="button"
+              class="icon-action-btn"
+              (click)="openReportPopup($event)"
+              [disabled]="reportLoading"
+              [customTooltip]="reportTitle"
+              aria-label="Reportar producto">
+              <span class="material-symbols-outlined">report</span>
+            </button>
+            <div class="download-menu-container">
+              <button
+                type="button"
+                class="icon-action-btn download-trigger-btn"
+                (click)="toggleDownloadMenu($event)"
+                [customTooltip]="'Descargar ficha'"
+                aria-label="Descargar producto">
+                <span class="material-symbols-outlined">download</span>
+              </button>
+              <div class="download-menu-dropdown" *ngIf="showDownloadMenu" (click)="$event.stopPropagation()">
+                <button type="button" class="download-menu-item" (click)="transformToPDF()" [disabled]="isExportingPdf">
+                  <span class="material-icons">picture_as_pdf</span>
+                  <span>{{ isExportingPdf ? 'Generando PDF...' : 'PDF' }}</span>
+                </button>
+                <button type="button" class="download-menu-item" (click)="transformToEpub()">
+                  <span class="material-icons">menu_book</span>
+                  <span>ePub</span>
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="icon-action-btn"
+              (click)="openSharePopup($event)"
+              [customTooltip]="'Compartir producto'"
+              aria-label="Compartir producto">
+              <span class="material-symbols-outlined">share</span>
+            </button>
+            <button *ngIf="isAuthenticated()" type="button" class="favorite-btn"
+                    [class.active]="isFavorite" (click)="toggleFavorite($event)" [customTooltip]="favoriteTitle">
+              <span class="material-icons">{{ isFavorite ? 'favorite' : 'favorite_border' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="displayDescription" class="product-section">
+          <h4>Descripción</h4>
+          <p id="product-description">{{ displayDescription }}</p>
+        </div>
+
+        <!-- Visor 3D (si el producto tiene modelo 3D) -->
+        <div class="model-viewer-panel" *ngIf="show3DViewer && hasModel3d">
+          <!-- Switch de visores -->
+          <div class="viewer-switch-bar">
+            <button type="button" class="viewer-switch-btn" [class.active]="viewerType === 'threejs'" (click)="switchViewer('threejs', $event)" [customTooltip]="'Cambiar a visor Three.js'"><span>Three.js</span></button>
+            <button type="button" class="viewer-switch-btn" [class.active]="viewerType === 'webgl'" (click)="switchViewer('webgl', $event)" [customTooltip]="'Cambiar a visor WebGL'"><span>WebGL</span></button>
+          </div>
+          <!-- Visor Three.js -->
+          <div class="model-viewer-shell" [style.display]="viewerType === 'threejs' ? 'block' : 'none'">
+            <button
+              type="button"
+              class="view-detail-btn model-viewer-recenter-btn model-viewer-recenter-fab"
+              (click)="recenter3DView($event)">
+              Restablecer vista
+            </button>
+            <div #viewerContainer class="model-viewer-canvas"></div>
+            <div class="model-viewer-overlay" *ngIf="viewerLoading || viewerError">
+              <p *ngIf="viewerLoading">Cargando modelo 3D...</p>
+              <p *ngIf="viewerError">{{ viewerError }}</p>
+            </div>
+          </div>
+          <!-- Visor WebGL -->
+          <div class="webgl-viewer-shell" [style.display]="viewerType === 'webgl' ? 'block' : 'none'">
+            <button
+              type="button"
+              class="view-detail-btn model-viewer-recenter-btn model-viewer-recenter-fab"
+              (click)="resetWebGLView($event)">
+              Restablecer vista
+            </button>
+            <app-webgl-viewer [modelUrl]="webglModelUrl"></app-webgl-viewer>
+          </div>
+        </div>
+
+        <!-- Pestañas de Historia y Técnicas -->
+        <div class="tabs-container" *ngIf="displayHistoriaOrigen || displayImportanciaCultural || displayMateriasPrimas || displayProcesoElaboracion || displayTiempoElaboracion">
+          <div class="tabs-header">
+            <button *ngFor="let tab of productTabs" 
+                    [class.active]="activeTab === tab.id" 
+                    (click)="selectTab(tab.id)" class="tab-button">
+              <span class="tab-icon">{{ tab.icon }}</span>
+              <span class="tab-label">{{ tab.label }}</span>
+            </button>
+          </div>
+          <div class="tabs-content">
+            <div class="tab-pane" *ngIf="activeTab === 'history'">
+              <div class="product-section" *ngIf="displayHistoriaOrigen">
+                <h5>Origen e Historia</h5>
+                <p class="product-info">{{ displayHistoriaOrigen }}</p>
+              </div>
+              <div class="product-section" *ngIf="displayImportanciaCultural">
+                <h5>Importancia Cultural</h5>
+                <p class="product-info">{{ displayImportanciaCultural }}</p>
+              </div>
+            </div>
+            <div class="tab-pane" *ngIf="activeTab === 'techniques'">
+              <div class="product-section" *ngIf="displayMateriasPrimas">
+                <h5>Materias Primas</h5>
+                <p class="product-info">{{ displayMateriasPrimas }}</p>
+              </div>
+              <div class="product-section" *ngIf="displayProcesoElaboracion">
+                <h5>Proceso de Elaboración</h5>
+                <p class="product-info">{{ displayProcesoElaboracion }}</p>
+              </div>
+              <div class="product-section" *ngIf="displayTiempoElaboracion">
+                <h5>Tiempo de Elaboración</h5>
+                <p class="product-info">{{ displayTiempoElaboracion }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- â•â•â• Productos Relacionados â•â•â• -->
+    <section class="related-products-section" *ngIf="relatedProducts.length > 0">
+      <div class="related-header">
+        <h2 class="related-title">Productos relacionados</h2>
+        <p class="related-subtitle" *ngIf="displayCategory">
+          Productos más populares de <span class="related-category">{{ displayCategory }}</span>
+        </p>
+      </div>
+
+      <div class="related-carousel-wrapper">
+        <button
+          *ngIf="relatedScrollable"
+          type="button"
+          class="related-nav-btn"
+          aria-label="Anteriores"
+          (click)="scrollRelated('left')">
+          <span class="material-icons">chevron_left</span>
+        </button>
+
+        <div class="related-track" #relatedTrack>
+          <a
+            *ngFor="let rp of relatedProducts"
+            class="related-card"
+            [href]="'/producto/' + rp.slug"
+            (click)="goToRelatedProduct(rp, $event)">
+            <div class="related-card-img">
+              <img [src]="getRelatedImage(rp)" [alt]="rp.name" loading="lazy" />
+            </div>
+            <div class="related-card-body">
+              <h4 class="related-card-name">{{ rp.name }}</h4>
+              <p class="related-card-location">{{ rp.address_text || rp.province || '' }}</p>
+            </div>
+          </a>
+
+          <!-- End-Card -->
+          <div class="related-card related-end-card" (click)="goToMapWithCategory($event)">
+            <div class="related-end-card-inner">
+              <span class="material-icons related-end-icon">explore</span>
+              <h4 class="related-end-title">Explorar en el mapa</h4>
+              <p class="related-end-text" *ngIf="displayCategory">
+                Descubre más productos de {{ displayCategory }} en el mapa interactivo
+              </p>
+              <span class="related-end-cta">
+                <span>Ir al mapa</span>
+                <span class="material-icons">arrow_forward</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          *ngIf="relatedScrollable"
+          type="button"
+          class="related-nav-btn"
+          aria-label="Siguientes"
+          (click)="scrollRelated('right')">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+    </section>
+    </div>
+  </div>
+</main>
+
+<div class="carousel-expand-overlay" *ngIf="showExpandedCarousel" (click)="closeExpandedCarousel()">
+  <div class="carousel-expand-dialog" (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="popup-close carousel-expand-close"
+      aria-label="Cerrar carrusel ampliado"
+      (click)="closeExpandedCarousel($event)">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <app-carrusel [slides]="carouselSlides" [autoPlay]="true" [intervalMs]="5000"></app-carrusel>
+  </div>
+</div>
+
+<div *ngIf="pdfExportErrorMsg" class="product-error">
+  <p>{{ pdfExportErrorMsg }}</p>
+</div>
+
+<div class="report-popup-overlay" *ngIf="showReportPopup" (click)="closeReportPopup()">
+  <div class="report-popup" (click)="$event.stopPropagation()">
+    <p class="popup-title">Reportar producto</p>
+    <p class="popup-text">Selecciona el motivo de reporte y, si quieres, añade una breve explicación. Nuestro administrador revisará tu reporte lo antes posible.</p>
+
+    <div class="report-form-group">
+      <label for="report-reason">Motivo</label>
+      <ng-select
+        id="report-reason"
+        class="ngselect-glass report-reason-select"
+        [items]="reportReasonOptions"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="selectedReportReason"
+        [searchable]="false"
+        [clearable]="false"
+        [disabled]="reportLoading">
+      </ng-select>
+    </div>
+
+    <div class="report-form-group">
+      <label for="report-details">Detalles (opcional)</label>
+      <textarea
+        id="report-details"
+        rows="4"
+        maxlength="1000"
+        [(ngModel)]="reportDetails"
+        [disabled]="reportLoading"
+        placeholder="Describe qué has visto..."></textarea>
+    </div>
+
+    <p *ngIf="reportFeedback" class="report-popup-feedback is-error">
+      {{ reportFeedback }}
+    </p>
+
+    <div class="popup-acciones-flex">
+      <button type="button" class="btn-primary" (click)="submitReport($event)" [disabled]="reportLoading">
+        {{ reportLoading ? 'Enviando...' : 'Enviar reporte' }}
+      </button>
+      <button type="button" class="btn-secondary" (click)="closeReportPopup($event)" [disabled]="reportLoading">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Product Popup -->
+<div class="share-popup-overlay" *ngIf="showSharePopup" (click)="closeSharePopup()">
+  <div class="share-popup" (click)="$event.stopPropagation()">
+    <button class="popup-close share-popup-close" (click)="closeSharePopup()" aria-label="Cerrar">
+      <span class="material-icons-outlined">close</span>
+    </button>
+    <h3 class="share-popup-title">Compartir enlace</h3>
+    <p class="share-popup-text">Copia este enlace para compartir el producto:</p>
+    <div class="share-url-container">
+      <input type="text" class="share-url-input" [value]="shareUrl" readonly>
+      <button class="btn-primary share-popup-copy-btn" (click)="copyShareUrl()">
+        <span class="material-icons-outlined">content_copy</span>
+        <span class="share-copy-text-product">Copiar</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,259 @@
+<app-direccion-selector-modal
+  *ngIf="mostrarSelectorDireccion"
+  [opciones]="opcionesDireccion"
+  (seleccionarOpcion)="onDireccionSeleccionada($event)"
+  (cancelar)="onCancelarDireccion()"
+></app-direccion-selector-modal>
+<div class="editar-popup-overlay" (click)="cerrar.emit()">
+  <div class="editar-popup" (click)="$event.stopPropagation()">
+    <button
+      type="button"
+      class="popup-close"
+      (click)="onCloseButton($event)"
+      aria-label="Cerrar edición"
+    >
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <h3>Editar producto</h3>
+    <form [formGroup]="editarProductoForm" (ngSubmit)="guardarEdicionProducto()">
+      <div class="form-scroll-container producto-form-grid">
+        <h4 style="margin: 0; display: inline;">
+          Información básica del producto
+          <span class="material-icons" [customTooltip]="'Esta sección será visible tanto desde el mapa como desde la ficha completa del producto'" style="font-size: 20px; cursor: pointer; color: #888; vertical-align: middle; margin-left: 8px;">info</span>
+        </h4>
+
+        <div *ngIf="modoAdmin" class="campo ancho admin-owner-field">
+          <label>Artesano que publica el producto</label>
+          <div class="admin-owner-search">
+            <div class="buscador-inner">
+              <span class="material-icons search-icon">search</span>
+              <input
+                type="text"
+                class="buscador-input"
+                [value]="artisanSearchQuery"
+                (input)="onArtisanSearchInput($event)"
+                (focus)="onArtisanSearchFocus()"
+                (blur)="onArtisanSearchBlur()"
+                placeholder="Buscar artesano..."
+                autocomplete="off"
+              >
+            </div>
+
+            <div *ngIf="showArtisanResults" class="admin-owner-results">
+              <div *ngIf="loadingArtisans" class="admin-owner-empty">
+                Cargando artesanos...
+              </div>
+
+              <div
+                *ngFor="let artisan of filteredArtisanOptions"
+                class="admin-owner-option"
+                role="button"
+                tabindex="0"
+                [class.selected]="editarProductoForm.get('owner')?.value === artisan.uid"
+                (mousedown)="$event.preventDefault()"
+                (click)="selectArtisan(artisan)"
+                (keydown.enter)="selectArtisan(artisan)"
+                (keydown.space)="selectArtisan(artisan); $event.preventDefault()"
+              >
+                <span class="admin-owner-option-name">{{ artisan.displayLabel }}</span>
+                <span class="admin-owner-option-meta">{{ artisan.email || artisan.province || 'Artesano' }}</span>
+              </div>
+
+              <div *ngIf="!loadingArtisans && filteredArtisanOptions.length === 0" class="admin-owner-empty">
+                No hay artesanos que coincidan con la búsqueda.
+              </div>
+            </div>
+          </div>
+          <small class="error-text" *ngIf="editarProductoForm.get('owner')?.invalid && (editarProductoForm.get('owner')?.touched || editarProductoForm.get('owner')?.dirty)">
+            Debes seleccionar un artesano activo.
+          </small>
+          <small class="error-text" *ngIf="artisanLoadError">{{ artisanLoadError }}</small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Nombre</label>
+          <input type="text" formControlName="name" required minlength="3" maxlength="50" placeholder="Nombre del producto">
+          <small class="error-text" *ngIf="editarProductoForm.get('name')?.invalid && (editarProductoForm.get('name')?.touched || editarProductoForm.get('name')?.dirty)">
+            <span *ngIf="editarProductoForm.get('name')?.errors?.['required']">El nombre es obligatorio</span>
+            <span *ngIf="editarProductoForm.get('name')?.errors?.['minlength']">Mínimo 3 caracteres</span>
+            <span *ngIf="editarProductoForm.get('name')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+          </small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Descripción</label>
+          <input type="text" formControlName="description" required minlength="10" maxlength="50" placeholder="Breve descripción del producto (mínimo 10 caracteres)">
+          <small class="error-text" *ngIf="editarProductoForm.get('description')?.invalid && (editarProductoForm.get('description')?.touched || editarProductoForm.get('description')?.dirty)">
+            <span *ngIf="editarProductoForm.get('description')?.errors?.['required']">La descripción es obligatoria</span>
+            <span *ngIf="editarProductoForm.get('description')?.errors?.['minlength']">Mínimo 10 caracteres</span>
+            <span *ngIf="editarProductoForm.get('description')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+          </small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Resumen</label>
+          <textarea formControlName="resumen" rows="3" maxlength="300" placeholder="Resumen del producto (explica qué lo hace especial: materiales, uso, historia breve, ...)"></textarea>
+          <small class="error-text" *ngIf="editarProductoForm.get('resumen')?.invalid && (editarProductoForm.get('resumen')?.touched || editarProductoForm.get('resumen')?.dirty)">
+            <span *ngIf="editarProductoForm.get('resumen')?.errors?.['required']">El resumen es obligatorio</span>
+            <span *ngIf="editarProductoForm.get('resumen')?.errors?.['minlength']">Mínimo 50 caracteres</span>
+            <span *ngIf="editarProductoForm.get('resumen')?.errors?.['maxlength']">Máximo 300 caracteres</span>
+          </small>
+        </div>
+
+
+        <div class="campo ancho">
+          <label>Categoría</label>
+          <!-- ng-select reemplazo -->
+          <ng-select class="ngselect-glass" [items]="categorias" bindLabel="" bindValue="" formControlName="category" [searchable]="false" [clearable]="false" required>
+          </ng-select>
+          <small class="error-text" *ngIf="editarProductoForm.get('category')?.invalid && (editarProductoForm.get('category')?.touched || editarProductoForm.get('category')?.dirty)">
+            <span *ngIf="editarProductoForm.get('category')?.errors?.['required']">La categoría es obligatoria</span>
+          </small>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; margin: 0 0 8px 0; white-space: nowrap;">
+          <h4 style="margin: 0; white-space: nowrap; font-weight: 600;">Secciones con información detallada del producto</h4>
+          <span class="material-icons" [customTooltip]="'Esta sección solo será visible desde la ficha completa del producto'" style="font-size: 20px; cursor: pointer; color: #888;">info</span>
+        </div>
+
+        <div class="campo ancho">
+          <label>Origen histórico</label>
+          <textarea formControlName="historia_origen" rows="3" class="input-estilo" required minlength="20" maxlength="1000" placeholder="Origen histórico de la tradición"></textarea>
+          <small class="error-text" *ngIf="editarProductoForm.get('historia_origen')?.invalid && (editarProductoForm.get('historia_origen')?.touched || editarProductoForm.get('historia_origen')?.dirty)">
+            <span *ngIf="editarProductoForm.get('historia_origen')?.errors?.['required']">El origen histórico es obligatorio</span>
+            <span *ngIf="editarProductoForm.get('historia_origen')?.errors?.['minlength']">Mínimo 20 caracteres</span>
+            <span *ngIf="editarProductoForm.get('historia_origen')?.errors?.['maxlength']">Máximo 1000 caracteres</span>
+          </small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Importancia cultural</label>
+          <textarea formControlName="importancia_cultural" rows="3" class="input-estilo" required minlength="20" maxlength="1000" placeholder="Importancia cultural y patrimonial"></textarea>
+          <small class="error-text" *ngIf="editarProductoForm.get('importancia_cultural')?.invalid && (editarProductoForm.get('importancia_cultural')?.touched || editarProductoForm.get('importancia_cultural')?.dirty)">
+            <span *ngIf="editarProductoForm.get('importancia_cultural')?.errors?.['required']">La importancia cultural es obligatoria</span>
+            <span *ngIf="editarProductoForm.get('importancia_cultural')?.errors?.['minlength']">Mínimo 20 caracteres</span>
+            <span *ngIf="editarProductoForm.get('importancia_cultural')?.errors?.['maxlength']">Máximo 1000 caracteres</span>
+          </small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Materias primas</label>
+          <textarea formControlName="materias_primas" rows="3" class="input-estilo" required minlength="20" maxlength="1000" placeholder="Materias primas utilizadas"></textarea>
+          <small class="error-text" *ngIf="editarProductoForm.get('materias_primas')?.invalid && (editarProductoForm.get('materias_primas')?.touched || editarProductoForm.get('materias_primas')?.dirty)">
+            <span *ngIf="editarProductoForm.get('materias_primas')?.errors?.['required']">Las materias primas son obligatorias</span>
+            <span *ngIf="editarProductoForm.get('materias_primas')?.errors?.['minlength']">Mínimo 20 caracteres</span>
+            <span *ngIf="editarProductoForm.get('materias_primas')?.errors?.['maxlength']">Máximo 1000 caracteres</span>
+          </small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Proceso de elaboración</label>
+          <textarea formControlName="proceso_elaboracion" rows="4" class="input-estilo" required minlength="20" maxlength="1000" placeholder="Proceso de elaboración paso a paso"></textarea>
+          <small class="error-text" *ngIf="editarProductoForm.get('proceso_elaboracion')?.invalid && (editarProductoForm.get('proceso_elaboracion')?.touched || editarProductoForm.get('proceso_elaboracion')?.dirty)">
+            <span *ngIf="editarProductoForm.get('proceso_elaboracion')?.errors?.['required']">El proceso de elaboración es obligatorio</span>
+            <span *ngIf="editarProductoForm.get('proceso_elaboracion')?.errors?.['minlength']">Mínimo 20 caracteres</span>
+            <span *ngIf="editarProductoForm.get('proceso_elaboracion')?.errors?.['maxlength']">Máximo 1000 caracteres</span>
+          </small>
+        </div>
+
+        <div class="campo ancho">
+          <label>Tiempo de elaboración</label>
+          <textarea formControlName="tiempo_elaboracion" rows="2" class="input-estilo" required minlength="2" maxlength="500" placeholder="Tiempo aproximado de elaboración"></textarea>
+          <small class="error-text" *ngIf="editarProductoForm.get('tiempo_elaboracion')?.invalid && (editarProductoForm.get('tiempo_elaboracion')?.touched || editarProductoForm.get('tiempo_elaboracion')?.dirty)">
+            <span *ngIf="editarProductoForm.get('tiempo_elaboracion')?.errors?.['required']">El tiempo de elaboración es obligatorio</span>
+            <span *ngIf="editarProductoForm.get('tiempo_elaboracion')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+            <span *ngIf="editarProductoForm.get('tiempo_elaboracion')?.errors?.['maxlength']">Máximo 500 caracteres</span>
+          </small>
+        </div>
+        <h4>Certificaciones y protecciones</h4>
+        <div class="campo ancho">
+          <label>Certificaciones</label>
+          <ng-select class="ngselect-glass" [items]="certificaciones" bindLabel="label" bindValue="value" formControlName="certificaciones_protecciones" [searchable]="false" [clearable]="false">
+          </ng-select>
+        </div>
+        <h4>Ubicación</h4>
+        <div class="ubicacion-actions">
+          <button type="button" class="geo-fill-btn" (click)="autorrellenarUbicacionActual()" [disabled]="autoFillLocationLoading || editarLoading">
+            <span class="material-icons">my_location</span>
+            {{ autoFillLocationLoading ? 'Obteniendo ubicación...' : 'Usar mi ubicación actual' }}
+          </button>
+        </div>
+        <div class="fila">
+          <div class="campo">
+            <label>Dirección de origen</label>
+            <input type="text" formControlName="address_text" required minlength="5" maxlength="200" placeholder="Ej: Calle Mayor 23, Valencia, 28001">
+            <small class="error-text" *ngIf="editarProductoForm.get('address_text')?.invalid && (editarProductoForm.get('address_text')?.touched || editarProductoForm.get('address_text')?.dirty)">
+              <span *ngIf="editarProductoForm.get('address_text')?.errors?.['required']">La dirección es obligatoria</span>
+              <span *ngIf="editarProductoForm.get('address_text')?.errors?.['minlength']">Mínimo 5 caracteres</span>
+              <span *ngIf="editarProductoForm.get('address_text')?.errors?.['maxlength']">Máximo 200 caracteres</span>
+            </small>
+          </div>
+          <div class="campo">
+            <label>Provincia</label>
+            <input type="text" formControlName="province" required minlength="2" maxlength="50" placeholder="Ej: Valencia">
+            <small class="error-text" *ngIf="editarProductoForm.get('province')?.invalid && (editarProductoForm.get('province')?.touched || editarProductoForm.get('province')?.dirty)">
+              <span *ngIf="editarProductoForm.get('province')?.errors?.['required']">La provincia es obligatoria</span>
+              <span *ngIf="editarProductoForm.get('province')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+              <span *ngIf="editarProductoForm.get('province')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+            </small>
+          </div>
+        </div>
+        <h4>Imágenes del producto</h4>
+        <div class="campo ancho">
+          <label>Imágenes del producto</label>
+          <div class="upload-container">
+            <div class="upload-btn" (click)="editarFileInput.click()">
+              <span class="material-icons">add_a_photo</span>
+            </div>
+            <input #editarFileInput type="file" multiple accept="image/*" (change)="onEditarFileSelected($event)" style="display: none;">
+            <div class="preview-grid" *ngIf="editarPrevisualizaciones.length > 0">
+              <div class="preview-item" 
+                   *ngFor="let img of editarPrevisualizaciones; let i = index"
+                   draggable="true"
+                   (dragstart)="onDragStart($event, i)"
+                   (dragover)="onDragOver($event)"
+                   (drop)="onDrop($event, i)"
+                   (dragend)="onDragEnd()"
+                   [class.dragging]="draggedIndex === i">
+                <img [src]="img" alt="Vista previa">
+                <span class="remove-badge" (click)="removerEditarImagen(i)"></span>
+                <span class="star-badge" *ngIf="i === 0">
+                  <span class="material-icons">star</span>
+                </span>
+              </div>
+            </div>
+            <p class="foto-principal-hint" *ngIf="editarPrevisualizaciones.length > 0">
+              <span class="material-icons">info</span>
+            La primera imagen será la imagen principal del producto.
+            </p>
+          </div>
+        </div>
+
+        <h4>Modelo 3D</h4>
+        <div class="campo ancho">
+          <ng-container *ngIf="currentProd as prod">
+            <div *ngIf="(prod.model3d?.url || model3dFile)" class="model3d-preview-card">
+              <button type="button" class="remove-badge" (click)="clearModelSelection($event)"></button>
+              <div class="model3d-thumb" #model3dPreview></div>
+              <p class="modelo-subinfo" *ngIf="prod.model3d">Subido: {{ prod.model3d.uploadedAt | date:'short' }}</p>
+            </div>
+            <div class="upload-container model3d-upload" (click)="model3dInput.click()">
+              <div class="upload-btn">
+                <span class="material-icons">view_in_ar</span>
+              </div>
+            </div>
+            <p class="model3d-note">{{ model3dFile?.name || 'Solo .glb · máx 100MB' }}</p>
+            <input #model3dInput type="file" accept=".glb" (change)="onModel3dSelected($event)" hidden>
+            <p class="error-text" *ngIf="model3dError">{{ model3dError }}</p>
+            <p class="progress-text" *ngIf="model3dProgress !== null">Subiendo modelo 3D: {{ model3dProgress }}%</p>
+          </ng-container>
+        </div>
+      </div>
+      <div class="acciones">
+        <button type="submit" class="syncro-btn" [disabled]="(!editarProductoForm.dirty && !editarImagenesDirty && !editarModel3dDirty) || editarLoading">
+          {{ editarLoading ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

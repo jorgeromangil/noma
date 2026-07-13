@@ -1,0 +1,40 @@
+# Excluir la carpeta node_modules en cualquier subdirectorio
+node_modules/
+
+# Exluir la carpeta .local
+.local/
+
+# Excluir configuración local de VS Code
+.vscode/
+frontend/.vscode/
+
+# Archivos de logs o temporales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de compilación o configuración local
+dist/
+build/
+.env
+.DS_Store
+backend/ga4-*.json
+backend/google-credentials.json
+update_html.py
+
+# Excluir archivos de modelos 3D
+noma-assets/models/
+noma-assets/trash/
+
+# Mantener fuera del repo la documentación raíz no esencial
+API_PROVINCIAS.md
+GUIA_MIGRACION_Y_RESPALDO.md
+MIGRACION_PRODUCTOS.md
+LICENSE
+.nvmrc
+backend/README.md
+frontend/README.md
+backend/docs/load-balancing-apache.md
+backend/deploy/apache/noma-api-balancer.conf
+backend/deploy/systemd/noma-backend-3001.service

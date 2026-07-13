@@ -1,0 +1,143 @@
+<section class="estadisticas">
+  <div class="estadisticas-header">
+    <h2>Estadísticas globales de Noma</h2>
+    <div class="estadisticas-periodo">
+      <label for="periodo" class="periodo">Periodo:</label>
+      <ng-select
+        [items]="periodos"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="periodo"
+        (ngModelChange)="onPeriodoChange()"
+        [clearable]="false"
+        [searchable]="false"
+        class="ngselect-glass"
+        id="periodo"
+      >
+      </ng-select>
+    </div>
+  </div>
+  <ng-container *ngIf="!loading && initialLoadResolved && errorMsg">
+    <div class="auth-alert auth-alert-error">{{ errorMsg }}</div>
+  </ng-container>
+  <ng-container *ngIf="loading">
+    <div class="auth-alert auth-alert-info">Cargando estadísticas del periodo...</div>
+  </ng-container>
+  <div class="form-scroll-container">
+    <ng-container *ngIf="!globalLoading && globalSummaryCards.length > 0">
+        <section class="estadisticas-section">
+          <h4>Estadísticas agregadas por periodo</h4>
+          <p class="subtitulo">Consulta las estadísticas en el periodo seleccionado.</p>
+          <div class="estadisticas-grid">
+            <article class="estadisticas-card" *ngFor="let card of globalSummaryCards">
+              <p class="card-label">{{ card.label }}</p>
+              <div class="card-value">{{ card.value }}</div>
+              <div class="card-meta">
+                <span class="card-helper" *ngIf="card.helper">{{ card.helper }}</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Gráfica de evolución temporal de usuarios -->
+        <section class="estadisticas-section" *ngIf="hasData(evolucionUsuarios)">
+          <h4>Evolución de registros de usuarios</h4>
+          <p class="subtitulo">Cantidad de usuarios registrados en cada periodo.</p>
+          <estadisticas-barra-simple [data]="evolucionUsuarios" label="Usuarios" color="#5384ee"></estadisticas-barra-simple>
+        </section>
+
+        <!-- Gráfica de evolución temporal de productos -->
+        <section class="estadisticas-section" *ngIf="hasData(evolucionProductos)">
+          <h4>Evolución de productos subidos</h4>
+          <p class="subtitulo">Cantidad de productos subidos en cada periodo.</p>
+          <estadisticas-barra-simple [data]="evolucionProductos" xLabel="Hora o día" yLabel="Productos" color="#b44194"></estadisticas-barra-simple>
+        </section>
+      </ng-container>
+      <!-- Estadísticas generales SIEMPRE visibles -->
+      <ng-container *ngIf="stats">
+        <section class="estadisticas-section">
+          <h4>Usuarios registrados en noma</h4>
+          <p class="subtitulo">Cantidad de usuarios registrados en la plataforma, incluyendo artesanos y regulares.</p>
+          <div class="usuarios-total-row">
+            <article class="estadisticas-card usuarios-total-card">
+              <p class="card-label">Total usuarios</p>
+              <div class="card-value">{{ stats.users.total-1 }}</div>
+              <div class="card-meta">
+                <span class="card-delta" *ngIf="stats.users.totalDelta">{{ stats.users.totalDelta }}</span>
+                <span class="card-helper" *ngIf="stats.users.totalHelper">{{ stats.users.totalHelper }}</span>
+              </div>
+            </article>
+          </div>
+          <div class="usuarios-flex-panel">
+            <div class="usuarios-grafico">
+              <estadisticas-pie-chart [data]="usersPieData" [title]="'Usuarios: Artesanos vs Regulares'"></estadisticas-pie-chart>
+            </div>
+            <div class="usuarios-tarjetas-col">
+              <article class="estadisticas-card">
+                <p class="card-label">Artesanos</p>
+                <div class="card-value">{{ stats.users.artisan }}</div>
+                <div class="card-meta">
+                  <span class="card-delta" *ngIf="stats.users.artisanDelta">{{ stats.users.artisanDelta }}</span>
+                  <span class="card-helper" *ngIf="stats.users.artisanHelper">{{ stats.users.artisanHelper }}</span>
+                </div>
+              </article>
+              <article class="estadisticas-card">
+                <p class="card-label">Regulares</p>
+                <div class="card-value">{{ stats.users.regular }}</div>
+                <div class="card-meta">
+                  <span class="card-delta" *ngIf="stats.users.regularDelta">{{ stats.users.regularDelta }}</span>
+                  <span class="card-helper" *ngIf="stats.users.regularHelper">{{ stats.users.regularHelper }}</span>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+        <section class="estadisticas-section">
+          <h4>Productos subidos a Noma</h4>
+          <p class="subtitulo">Cantidad de productos subidos a la plataforma, desglosados por categoría.</p>
+          <div class="estadisticas-grid">
+            <article class="estadisticas-card">
+              <p class="card-label">Total productos</p>
+              <div class="card-value">{{ stats.products.total }}</div>
+              <div class="card-meta">
+                <span class="card-delta" *ngIf="stats.products.totalDelta">{{ stats.products.totalDelta }}</span>
+                <span class="card-helper" *ngIf="stats.products.totalHelper">{{ stats.products.totalHelper }}</span>
+              </div>
+            </article>
+            <article class="estadisticas-card" *ngIf="topProductCategory">
+              <p class="card-label">Categoría con más productos</p>
+              <div class="card-value">{{ topProductCategory.count }}</div>
+              <div class="card-meta">
+                <span class="card-helper">{{ topProductCategory.name }}</span>
+              </div>
+            </article>
+          </div>
+          <estadisticas-productos-pie [data]="productsPieData" [title]="'Productos por categoría'"></estadisticas-productos-pie>
+        </section>
+        
+          <!-- Gráfico de barras: productos por comunidad autónoma -->
+          <section class="estadisticas-section" *ngIf="productsByComunidad && productsByComunidad.length > 0">
+            <h4>Productos subidos por comunidad autónoma</h4>
+            <p class="subtitulo">Cantidad de productos subidos en cada comunidad autónoma.</p>
+            <estadisticas-barra-simple [data]="productsByComunidad" label="Productos"></estadisticas-barra-simple>
+          </section>
+        <section class="estadisticas-section" *ngIf="popularProducts.length > 0">
+          <h4>50 Productos más populares (favoritos)</h4>
+          <p class="subtitulo">Top 50 de productos con más favoritos en toda la plataforma.</p>
+          <div class="favoritos-list">
+            <div class="favoritos-row" *ngFor="let prod of popularPage">
+              <img *ngIf="prod.thumbnail" [src]="prod.thumbnail" alt="Miniatura" class="favoritos-thumb" />
+              <span class="favoritos-name">{{ prod.name }}</span>
+              <span class="favoritos-category">{{ prod.category }}</span>
+              <span class="favoritos-count">{{ prod.favorites }}</span>
+            </div>
+            <div class="favoritos-pagination" *ngIf="popularTotalPages > 1">
+              <button type="button" class="favoritos-btn" (click)="prevPopularPage()" [disabled]="popularPageIndex === 0">&lt;</button>
+              <span class="favoritos-page">{{ popularPageIndex + 1 }} / {{ popularTotalPages }}</span>
+              <button type="button" class="favoritos-btn" (click)="nextPopularPage()" [disabled]="popularPageIndex + 1 >= popularTotalPages">&gt;</button>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+</section>

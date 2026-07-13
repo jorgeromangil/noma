@@ -1,0 +1,182 @@
+:host {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0) + 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 21;
+  pointer-events: auto;
+}
+
+/* Fondo y borde igual que modal-content */
+.engine-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 1em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+  box-sizing: border-box;
+  color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.25s ease;
+  transform-origin: center;
+}
+
+.engine-menu:hover {
+  transform: none;
+  padding: 6px 8px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.26);
+}
+
+.divider {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.14), transparent);
+  margin: 0px;
+}
+
+/* Botón estilo product-modal */
+/* Botón base neutro */
+.engine-btn {
+  position: relative;
+  height: 38px;
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 1em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(0.5em);
+  color: #f1f5f9;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0 10px;
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 200ms ease, border-color 160ms ease, background 200ms ease, padding 160ms ease, height 160ms ease, border-radius 160ms ease;
+  overflow: hidden;
+  box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.08);
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Eliminar transición de border y border-color para evitar retardo visual al cambiar de activo */
+.engine-btn {
+  transition: transform 140ms ease, box-shadow 200ms ease, background 200ms ease, padding 160ms ease, height 160ms ease, border-radius 160ms ease;
+}
+
+.engine-btn .label {
+  opacity: 0;
+  max-width: 0;
+  transform: translateY(6px);
+  transition: opacity 150ms ease, transform 150ms ease, max-width 180ms ease, margin-left 150ms ease;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+  color: #f7f7f7;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.engine-btn .icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: #e5e7eb;
+  transition: color 160ms ease;
+}
+
+.engine-btn .icon img,
+.engine-btn .icon svg {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
+.engine-btn .icon img.three-logo {
+  opacity: 0.7;
+  /* El PNG original es negro; invertimos y subimos brillo para que quede blanco sobre fondo oscuro */
+  filter: invert(1) brightness(1.8) saturate(0);
+}
+
+
+
+.engine-btn:hover .label {
+  opacity: 1;
+  transform: translateY(0);
+  max-width: 70px;
+  margin-left: 6px;
+}
+
+.engine-btn.active .label {
+  opacity: 0;
+  max-width: 0;
+  margin-left: 0;
+}
+
+.engine-btn.active:hover .label {
+  opacity: 1;
+  max-width: 70px;
+  transform: translateY(0);
+  margin-left: 6px;
+}
+
+/* Botón activo estilo product-modal */
+/* Botón activo estilo product-modal */
+/* Botón activo igual que product-modal */
+.engine-btn.active {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.15) 0%, rgba(147, 44, 141, 0.15) 100%);
+  border: 1px solid rgba(235, 64, 33, 0.25);
+  color: #fff;
+  box-shadow: 0 0.25em 0.75em rgba(235, 64, 33, 0.08);
+  opacity: 1;
+}
+
+.engine-btn.active .icon {
+  color: #fff;
+}
+
+/* Hover estilo product-modal */
+/* Hover neutro, solo el activo es rojo */
+/* Hover neutro, solo el activo es rojo */
+.engine-btn:hover,
+.engine-menu:hover .engine-btn {
+  transform: none;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  padding-left: 12px;
+  padding-right: 12px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 1em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(0.5em);
+  color: #fff;
+}
+
+/* El botón activo mantiene el fondo rojo en hover */
+/* Hover activo igual que product-modal */
+.engine-btn.active:hover,
+.engine-menu:hover .engine-btn.active {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.25) 0%, rgba(147, 44, 141, 0.25) 100%);
+  border: 1px solid rgba(235, 64, 33, 0.4);
+  color: #fff;
+  box-shadow: 0 0.25em 0.75em rgba(235, 64, 33, 0.08);
+}
+
+.engine-menu:not(:hover) .engine-btn {
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 38px;
+  border-radius: 12px;
+  transform: none;
+}
+
+.engine-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+  box-shadow: none;
+}

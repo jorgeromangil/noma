@@ -1,0 +1,62 @@
+<div class="engine-menu" [class.switching]="switching">
+  <button
+    class="engine-btn"
+    [class.active]="engine === 'three'"
+    [disabled]="disabled || switching"
+    aria-label="Seleccionar motor Three.js"
+    (click)="select('three')">
+    <span class="icon" aria-hidden="true">
+      <img class="three-logo" src="icons/three-logo.png" alt="Three.js logo">
+    </span>
+    <span class="label">Three.js</span>
+  </button>
+
+  <button
+    class="engine-btn"
+    [class.active]="engine === 'opengl'"
+    [disabled]="disabled || switching"
+    aria-label="Seleccionar motor WebGL"
+    (click)="select('opengl')">
+    <span class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="7.5"/>
+        <path d="M4.5 12h15"/>
+        <path d="M12 4.5c2.2 2 3.5 4.7 3.5 7.5 0 2.8-1.3 5.5-3.5 7.5-2.2-2-3.5-4.7-3.5-7.5 0-2.8 1.3-5.5 3.5-7.5Z"/>
+      </svg>
+    </span>
+    <span class="label">WebGL</span>
+  </button>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <button
+    class="engine-btn"
+    [class.active]="viewMode === '2d'"
+    [disabled]="disabled || switching"
+    aria-label="Vista 2D"
+    (click)="selectView('2d')">
+    <span class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="3" ry="3"/>
+        <path d="M4 9.5h16M4 14.5h16M9.5 4v16M14.5 4v16"/>
+      </svg>
+    </span>
+    <span class="label">2D</span>
+  </button>
+
+  <button
+    class="engine-btn"
+    [class.active]="viewMode === '3d'"
+    [disabled]="disabled || switching"
+    aria-label="Vista 3D"
+    (click)="selectView('3d')">
+    <span class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 7.5 12 5l5 2.5v5L12 15l-5-2.5z"/>
+        <path d="m7 7.5 5 2.5 5-2.5m-5 2.5v5"/>
+        <path d="M7 10v5l5 2.5 5-2.5v-5"/>
+      </svg>
+    </span>
+    <span class="label">3D</span>
+  </button>
+</div>

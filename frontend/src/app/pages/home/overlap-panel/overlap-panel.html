@@ -1,0 +1,47 @@
+<div
+  class="overlap-backdrop"
+  *ngIf="visible"
+  (click)="onBackdropClick($event)"
+  @backdropAnim>
+
+  <div class="overlap-panel" @panelAnim (click)="$event.stopPropagation()">
+    <!-- Cabecera -->
+    <div class="overlap-header">
+      <div class="overlap-header-icon">
+        <span class="material-symbols-outlined" style="color: #e05252;">location_on</span>
+      </div>
+      <div class="overlap-header-text">
+        <h3>Productos en este punto</h3>
+        <span class="overlap-count">{{ products.length }} productos en esta zona</span>
+      </div>
+      <button class="overlap-close-btn" (click)="onClose()" aria-label="Cerrar panel">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Listado de mini-cards -->
+    <div class="overlap-list">
+      <button
+        class="overlap-card"
+        *ngFor="let product of products; let i = index"
+        (click)="onSelect(product)"
+        [style.animation-delay]="(i * 60) + 'ms'">
+        <img
+          class="overlap-card-img"
+          [src]="getProductImage(product)"
+          [alt]="getProductName(product)"
+          loading="lazy" />
+        <div class="overlap-card-info">
+          <span class="overlap-card-name">{{ getProductName(product) }}</span>
+          <span class="overlap-card-artisan" *ngIf="getArtisanName(product)">
+            {{ getArtisanName(product) }}
+          </span>
+          <span class="overlap-card-category" *ngIf="getCategoryLabel(product)">
+            {{ getCategoryLabel(product) }}
+          </span>
+        </div>
+        <span class="material-symbols-outlined overlap-card-arrow">chevron_right</span>
+      </button>
+    </div>
+  </div>
+</div>

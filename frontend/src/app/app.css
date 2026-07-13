@@ -1,0 +1,55 @@
+/* Contenedor general; sin estilos globales previos */
+
+/* Para la landing, limitamos ancho y aseguramos un mínimo de 29.25em para no romper la navbar */
+body.landing-mode app-root {
+  display: flex;
+  justify-content: center;
+  min-width: 29.25em;
+}
+
+body.landing-mode app-root > * {
+  width: min(100%, 75em);
+}
+
+/* Para las páginas legales, usamos el mismo sistema de centrado y efectos visuales */
+body.legal-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(68.75em 51.25em at 26% 18%, rgba(32, 22, 35, 0.9) 0%, rgba(10, 10, 15, 0.92) 65%, rgba(10, 10, 15, 0.98) 82%),
+    linear-gradient(145deg, rgba(235, 66, 36, 0.12) 0%, rgba(147, 44, 141, 0.12) 42%, rgba(55, 66, 154, 0.12) 100%),
+    #0c0d16;
+  color: #f8f6f6;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body.legal-page * {
+  box-sizing: border-box;
+}
+
+body.legal-page::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2.125em;
+  background: linear-gradient(to bottom, #0a0a0f 0%, rgba(10, 10, 15, 0) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+body.legal-page app-root {
+  display: flex;
+  justify-content: center;
+  min-width: 29.25em;
+  width: 100%;
+}
+
+body.legal-page app-root > * {
+  width: min(100%, 75em);
+}

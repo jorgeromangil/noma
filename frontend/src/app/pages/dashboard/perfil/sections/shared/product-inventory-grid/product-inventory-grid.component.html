@@ -1,0 +1,284 @@
+<ng-container *ngIf="viewMode === 'mosaic'; else tableView">
+  <section class="productos-section" *ngFor="let section of productSections; let sectionIndex = index; trackBy: trackBySection">
+    <div class="productos-header">
+      <h4 class="productos-title">{{ section.title }}</h4>
+      <div class="inventory-view-switcher" *ngIf="showViewModeSwitcher && sectionIndex === 0" role="group" aria-label="Seleccionar vista del inventario">
+        <button
+          *ngFor="let option of viewModeOptions"
+          type="button"
+          class="inventory-view-btn"
+          [class.inventory-view-btn-active]="viewMode === option.value"
+          [attr.aria-pressed]="viewMode === option.value"
+          [attr.title]="option.label"
+          (click)="requestViewModeChange(option.value)"
+        >
+          <span class="material-icons">{{ option.icon }}</span>
+          {{ option.label }}
+        </button>
+      </div>
+    </div>
+    <div *ngIf="isSectionLoading(section); else sectionProductsGrid" class="inventory-section-loading">
+      <span>Cargando productos...</span>
+    </div>
+
+    <ng-template #sectionProductsGrid>
+      <div class="productos-grid">
+        <div
+          *ngFor="let prod of section.products; let i = index; trackBy: trackByProduct"
+          class="producto-card"
+          [class.producto-oculto]="section.hidden"
+          [class.producto-card-selected]="selectionEnabled && isProductSelected(prod)"
+          [class.producto-card-selection-mode]="selectionEnabled"
+          [routerLink]="selectionEnabled || section.hidden ? null : ['/home']"
+          [queryParams]="selectionEnabled || section.hidden ? null : { product: getProductId(prod) }"
+          [customTooltip]="getCardTooltip(prod, section.hidden)"
+          (click)="onCardClick(prod, $event)"
+          style="position: relative; cursor: pointer;"
+        >
+          <div
+            *ngIf="selectionEnabled"
+            class="producto-selection-wrapper"
+            (click)="onSelectionCheckboxClick($event)"
+          >
+            <input
+              type="checkbox"
+              class="producto-selection-checkbox"
+              [checked]="isProductSelected(prod)"
+              [disabled]="selectionDisabled"
+              [attr.aria-label]="'Seleccionar producto ' + prod.name"
+              (change)="onSelectionToggle(prod, $any($event.target).checked, $event)"
+            >
+          </div>
+
+          <div *ngIf="!selectionEnabled" class="menu-puntos-wrapper">
+            <button
+              type="button"
+              class="menu-puntos-btn"
+              [class.menu-puntos-btn-open]="prod.menuAbierto"
+              [attr.aria-expanded]="prod.menuAbierto ? 'true' : 'false'"
+              (click)="toggleMenu(prod, $event)"
+              [customTooltip]="'Opciones'"
+            >
+              <span class="material-icons more-vert-icon">more_vert</span>
+            </button>
+            <div class="menu-puntos-dropdown" *ngIf="prod.menuAbierto" (click)="$event.stopPropagation()">
+              <button type="button" class="menu-puntos-item" [class.ocultar]="!section.hidden" (click)="onToggleVisibility(prod, $event)">
+                <span class="material-icons">{{ section.hidden ? 'visibility' : 'visibility_off' }}</span>
+                {{ section.hidden ? 'Mostrar' : 'Ocultar' }}
+              </button>
+              <button type="button" class="menu-puntos-item borrar" (click)="onDelete(prod, $event)">
+                <span class="material-icons">delete</span> Borrar
+              </button>
+              <button type="button" class="menu-puntos-item editar" (click)="onEdit(prod, i, $event)">
+                <span class="material-icons">edit</span> Editar
+              </button>
+            </div>
+          </div>
+
+          <div class="producto-img-container">
+            <img [src]="getProductImage(prod)" alt="producto">
+            <div class="producto-tag">
+              <span class="producto-tag-title">{{ prod.name }}</span>
+              <span *ngIf="showOwnerInfo && getOwnerLabel(prod)" class="producto-owner">{{ getOwnerLabel(prod) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-container *ngIf="getSectionPagination(section) as pagination">
+      <div *ngIf="shouldShowPagination(pagination)" class="inventory-section-pagination">
+        <button
+          class="btn-secondary"
+          type="button"
+          (click)="requestSectionPageChange(section, pagination.currentPage - 1)"
+          [disabled]="pagination.currentPage === 1 || pagination.disabled"
+        >
+          &lt;
+        </button>
+        <span>{{ pagination.currentPage }} / {{ pagination.totalPages }}</span>
+        <button
+          class="btn-secondary"
+          type="button"
+          (click)="requestSectionPageChange(section, pagination.currentPage + 1)"
+          [disabled]="pagination.currentPage === pagination.totalPages || pagination.disabled"
+        >
+          &gt;
+        </button>
+      </div>
+    </ng-container>
+  </section>
+</ng-container>
+
+<ng-template #tableView>
+  <section class="productos-section productos-section-table" *ngIf="tableHasContent">
+    <div class="productos-header">
+      <h4 class="productos-title">Listado de productos</h4>
+      <div class="inventory-view-switcher" *ngIf="showViewModeSwitcher" role="group" aria-label="Seleccionar vista del inventario">
+        <button
+          *ngFor="let option of viewModeOptions"
+          type="button"
+          class="inventory-view-btn"
+          [class.inventory-view-btn-active]="viewMode === option.value"
+          [attr.aria-pressed]="viewMode === option.value"
+          [attr.title]="option.label"
+          (click)="requestViewModeChange(option.value)"
+        >
+          <span class="material-icons">{{ option.icon }}</span>
+          {{ option.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="productos-table-shell">
+      <table class="productos-table">
+        <thead>
+          <tr>
+            <th *ngIf="selectionEnabled" class="productos-table-selection-col">Selección</th>
+            <th class="productos-table-thumb-col">Imagen</th>
+            <th>Nombre del producto</th>
+            <th *ngIf="showOwnerInfo">Artesano</th>
+            <th>Categoría</th>
+            <th>Provincia</th>
+            <th>Estado</th>
+            <th *ngIf="!selectionEnabled" class="productos-table-actions-col">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let prod of tableProducts; trackBy: trackByProduct"
+            class="productos-table-row"
+            [class.productos-table-row-hidden]="isProductHidden(prod)"
+            [class.productos-table-row-selection-mode]="selectionEnabled"
+            [class.productos-table-row-selected]="selectionEnabled && isProductSelected(prod)"
+            [attr.tabindex]="selectionEnabled ? 0 : null"
+            (click)="onTableRowClick(prod, $event)"
+            (keydown.enter)="onTableRowClick(prod, $event)"
+            (keydown.space)="onTableRowClick(prod, $event)"
+          >
+            <td *ngIf="selectionEnabled" class="productos-table-selection-cell" (click)="onSelectionCheckboxClick($event)">
+              <input
+                type="checkbox"
+                class="producto-selection-checkbox"
+                [checked]="isProductSelected(prod)"
+                [disabled]="selectionDisabled"
+                [attr.aria-label]="'Seleccionar producto ' + prod.name"
+                (change)="onSelectionToggle(prod, $any($event.target).checked, $event)"
+              >
+            </td>
+
+            <td class="productos-table-thumb-cell">
+              <div class="productos-table-thumb">
+                <img [src]="getProductImage(prod)" [alt]="prod.name || 'Producto'">
+              </div>
+            </td>
+
+            <td class="productos-table-name-cell">
+              <div class="productos-table-name">
+                <strong>{{ prod.name || 'Sin nombre' }}</strong>
+                <span *ngIf="showOwnerInfo && getOwnerLabel(prod)" class="productos-table-subtitle">
+                  {{ getOwnerLabel(prod) }}
+                </span>
+              </div>
+            </td>
+
+            <td *ngIf="showOwnerInfo">{{ getOwnerLabel(prod) || 'Sin artesano' }}</td>
+            <td>{{ prod.category || 'Sin categoría' }}</td>
+            <td>{{ prod.province || 'Sin provincia' }}</td>
+            <td>
+              <span
+                class="inventory-status-badge"
+                [class.inventory-status-badge-hidden]="isProductHidden(prod)"
+              >
+                {{ getProductStatusLabel(prod) }}
+              </span>
+            </td>
+
+            <td *ngIf="!selectionEnabled" class="productos-table-actions">
+              <button
+                type="button"
+                class="inventory-action-btn"
+                [disabled]="selectionDisabled"
+                (click)="onEdit(prod, getProductEditIndex(prod), $event)"
+              >
+                <span class="material-icons">edit</span>
+                Editar
+              </button>
+              <button
+                type="button"
+                class="inventory-action-btn"
+                [disabled]="selectionDisabled"
+                (click)="onToggleVisibility(prod, $event)"
+              >
+                <span class="material-icons">{{ isProductHidden(prod) ? 'visibility' : 'visibility_off' }}</span>
+                {{ isProductHidden(prod) ? 'Mostrar' : 'Ocultar' }}
+              </button>
+              <button
+                type="button"
+                class="inventory-action-btn inventory-action-btn-danger"
+                [disabled]="selectionDisabled"
+                (click)="onDelete(prod, $event)"
+              >
+                <span class="material-icons">delete</span>
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="visibleLoading || hiddenLoading" class="inventory-section-loading inventory-section-loading-table">
+      <span>Cargando productos...</span>
+    </div>
+
+    <div class="inventory-table-pagination-row">
+      <ng-container *ngIf="visiblePagination as pagination">
+        <div *ngIf="shouldShowPagination(pagination)" class="inventory-section-pagination">
+          <span class="inventory-section-pagination-label">Visibles</span>
+          <button
+            class="btn-secondary"
+            type="button"
+            (click)="requestPageForKind('visible', pagination.currentPage - 1)"
+            [disabled]="pagination.currentPage === 1 || pagination.disabled"
+          >
+            &lt;
+          </button>
+          <span>{{ pagination.currentPage }} / {{ pagination.totalPages }}</span>
+          <button
+            class="btn-secondary"
+            type="button"
+            (click)="requestPageForKind('visible', pagination.currentPage + 1)"
+            [disabled]="pagination.currentPage === pagination.totalPages || pagination.disabled"
+          >
+            &gt;
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="hiddenPagination as pagination">
+        <div *ngIf="shouldShowPagination(pagination)" class="inventory-section-pagination">
+          <span class="inventory-section-pagination-label">Ocultos</span>
+          <button
+            class="btn-secondary"
+            type="button"
+            (click)="requestPageForKind('hidden', pagination.currentPage - 1)"
+            [disabled]="pagination.currentPage === 1 || pagination.disabled"
+          >
+            &lt;
+          </button>
+          <span>{{ pagination.currentPage }} / {{ pagination.totalPages }}</span>
+          <button
+            class="btn-secondary"
+            type="button"
+            (click)="requestPageForKind('hidden', pagination.currentPage + 1)"
+            [disabled]="pagination.currentPage === pagination.totalPages || pagination.disabled"
+          >
+            &gt;
+          </button>
+        </div>
+      </ng-container>
+    </div>
+  </section>
+</ng-template>

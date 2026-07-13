@@ -1,0 +1,41 @@
+<div
+  class="pin-preview"
+  [class.pin-preview--visible]="visible"
+  [style.left.px]="cardX"
+  [style.top.px]="cardY"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()"
+  (click)="onCardClick($event)"
+>
+  <!-- Imagen única -->
+  <div class="pin-preview__single-image" *ngIf="carouselSlides.length === 1">
+    <img [src]="carouselSlides[0].src" [alt]="productName" />
+  </div>
+
+  <!-- Carrusel de imágenes (2 o más) -->
+  <div class="pin-preview__carousel-wrapper" *ngIf="carouselSlides.length > 1">
+    <app-carrusel
+      [slides]="carouselSlides"
+      [heading]="''"
+      [subtitle]="''"
+      [autoPlay]="true"
+      [intervalMs]="4000">
+    </app-carrusel>
+  </div>
+
+  <!-- Fallback sin fotos -->
+  <div class="pin-preview__image-fallback" *ngIf="carouselSlides.length === 0">
+    {{ fallbackInitial }}
+  </div>
+
+  <!-- Info del producto -->
+  <div class="pin-preview__info">
+    <h4 class="pin-preview__product-name">{{ productName }}</h4>
+    <span class="pin-preview__meta-row" *ngIf="artisanName">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="10" height="10">
+        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm5 6a5 5 0 0 0-10 0h10z"/>
+      </svg>
+      {{ artisanName }}
+    </span>
+  </div>
+</div>

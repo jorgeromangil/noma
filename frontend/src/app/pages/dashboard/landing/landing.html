@@ -1,0 +1,214 @@
+<div class="nav-wrapper landing-nav">
+    <app-navbar></app-navbar>
+</div>
+
+<div class="page">
+    <div class="ambient-glow-layer" aria-hidden="true"></div>
+    <main class="landing">
+        <div class="landing-hero-block">
+            <app-carrusel
+                [slides]="heroSlides"
+                [heading]="heroHeading"
+                [subtitle]="heroSubtitle"
+                [note]="heroNote"
+                [ctaLabel]="heroCtaLabel"
+                [ctaLink]="heroCtaLink"
+                [intervalMs]="5000">
+            </app-carrusel>
+
+        </div>
+
+        <section class="feature-section reveal">
+            <div class="section-header">
+                <h2>Características</h2>
+            </div>
+            <div class="feature-grid">
+                <article class="feature-card glass-card reveal">
+                    <div class="info-icon icon-primary">
+                        <span class="material-symbols-outlined">map_search</span>
+                    </div>
+                    <div>
+                        <h3>Mapa interactivo</h3>
+                        <p>Navega y descubre productos.</p>
+                    </div>
+                </article>
+                <article class="feature-card glass-card reveal">
+                    <div class="info-icon icon-accent">
+                        <span class="material-symbols-outlined">perm_media</span>
+                    </div>
+                    <div>
+                        <h3>Fichas multimedia</h3>
+                        <p>Fichas con contenido multimedia.</p>
+                    </div>
+                </article>
+                <article class="feature-card glass-card reveal">
+                    <div class="info-icon icon-secondary">
+                        <span class="material-symbols-outlined">contact_support</span>
+                    </div>
+                    <div>
+                        <h3>Asistente inteligente</h3>
+                        <p>Recibe recomendaciones del chatbot.</p>
+                    </div>
+                </article>
+                <article class="feature-card glass-card reveal">
+                    <div class="info-icon">
+                        <span class="material-symbols-outlined">diversity_3</span>
+                    </div>
+                    <div>
+                        <h3>Comunidad</h3>
+                        <p>Apoya a los artesanos locales.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Sección de estadísticas movida aquí debajo de características -->
+        <section class="stat-track reveal">
+            <div class="stat-card glass-card">
+                <p class="stat-value">
+                    <ng-container *ngIf="artisansCount !== null; else loading">
+                        <ng-container *ngIf="getRoundedCount(artisansCount) as rounded">
+                            <ng-container *ngIf="rounded !== '-' && (typeof rounded === 'number' && rounded < 10); else plusArtisans">
+                                {{ rounded }}
+                            </ng-container>
+                            <ng-template #plusArtisans>+{{ rounded }}</ng-template>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #loading>...</ng-template>
+                </p>
+                <p class="stat-label">Artesanos registrados</p>
+            </div>
+            <div class="stat-card glass-card">
+                <p class="stat-value">
+                    <ng-container *ngIf="productsCount !== null; else loading">
+                        <ng-container *ngIf="getRoundedCount(productsCount) as rounded">
+                            <ng-container *ngIf="rounded !== '-' && (typeof rounded === 'number' && rounded < 10); else plusProducts">
+                                {{ rounded }}
+                            </ng-container>
+                            <ng-template #plusProducts>+{{ rounded }}</ng-template>
+                        </ng-container>
+                    </ng-container>
+                </p>
+                <p class="stat-label">Productos subidos</p>
+            </div>
+            <div class="stat-card glass-card">
+                <p class="stat-value">
+                  <ng-container *ngIf="categoriesCount !== null; else loading">{{ categoriesCount }}</ng-container>
+                </p>
+                <p class="stat-label">Categorías de productos</p>
+            </div>
+        </section>
+
+        <section class="team-section reveal">
+            <div class="team-glow team-glow-left"></div>
+            <div class="team-glow team-glow-right"></div>
+            <div class="team-layout">
+                <div class="team-copy glass-card reveal">
+                    <h2>
+                        Syncro, el squad que hace<br />
+                        <span class="text-gradient">posible Noma</span>
+                    </h2>
+                    <p class="lede">
+                        Somos 5 estudiantes de Ingeniería Multimedia y como desarrolladores queremos crear una plataforma que conecte tradición y tecnología.
+                    </p>
+
+                    <div class="chip-row">
+                        <span class="chip chip-primary">Multimedia</span>
+                        <span class="chip chip-accent">Innovación</span>
+                        <span class="chip chip-secondary">Patrimonio</span>
+                    </div>
+
+                    <p class="lede tight">
+                       Desde la Universidad de Alicante, combinamos creatividad y conocimiento para acercar la artesanía al mundo digital.
+                    </p>
+
+                    <a class="syncro-btn" href="https://noma.ovh/syncro" target="_blank" rel="noopener">
+                        <span>Conoce al equipo Syncro</span>
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                </div>
+
+                <div class="team-grid">
+                    <article class="info-card glass-card reveal">
+                        <div class="info-icon icon-primary">
+                            <span class="material-symbols-outlined">partner_exchange</span>
+                        </div>
+                        <div>
+                            <h3>Lo que nos une</h3>
+                            <p>La pasión de crear soluciones digitales con impacto.</p>
+                        </div>
+                    </article>
+                    <article class="info-card glass-card reveal">
+                        <div class="info-icon icon-accent">
+                            <span class="material-symbols-outlined">handyman</span>
+                        </div>
+                        <div>
+                            <h3>Cómo trabajamos</h3>
+                            <p>Colaboramos en equipo, aprendiendo juntos.</p>
+                        </div>
+                    </article>
+                    <article class="info-card glass-card reveal">
+                        <div class="info-icon icon-secondary">
+                            <span class="material-symbols-outlined">flag</span>
+                        </div>
+                        <div>
+                            <h3>Lo que nos motiva</h3>
+                            <p>Nos mueve la idea de conectar tradición y tecnología.</p>
+                        </div>
+                    </article>
+                    <article class="info-card glass-card reveal">
+                        <div class="info-icon">
+                            <span class="material-symbols-outlined">school</span>
+                        </div>
+                        <div>
+                            <h3>Nuestro reto</h3>
+                            <p>Noma es nuestro espacio para crecer y experimentar.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="learning-section reveal">
+            <div class="learning-shell glass-card">
+                <div class="learning-glow learning-glow-left"></div>
+                <div class="learning-glow learning-glow-right"></div>
+
+                <div class="section-header">
+                    <div class="eyebrow eyebrow-inline">
+                        <span class="material-symbols-outlined">school</span>
+                        <span>Objeto de aprendizaje</span>
+                    </div>
+                    <h2>Aprende con el recurso interactivo</h2>
+                    <p class="lede">
+                        Explora el módulo educativo diseñado para artesanos y entusiastas. Domina las herramientas del mapa interactivo y accede al manual completo.
+                    </p>
+                </div>
+
+                <div class="learning-meta-bar">
+                    <span class="learning-pill">
+                        <span class="material-symbols-outlined">play_circle</span>
+                        Recurso interactivo
+                    </span>
+                    <span class="learning-pill pill-accent">
+                        <span class="material-symbols-outlined">book_2</span>
+                        Manual completo
+                    </span>
+                    <span class="learning-duration">
+                        <span class="material-symbols-outlined">schedule</span>
+                        15-20 min
+                    </span>
+                </div>
+
+                <div class="learning-card glass-card">
+                    <div class="learning-visual learning-visual-decorated">
+                        <div class="learning-overlay gradient-mask"></div>
+                        <iframe #learningObjectFrame class="learning-object-frame framed" src="assets/objeto-aprendizaje/index.html" [customTooltip]="'Objeto de aprendizaje Noma'" width="100%" height="650" loading="lazy" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <app-footer></app-footer>
+</div>

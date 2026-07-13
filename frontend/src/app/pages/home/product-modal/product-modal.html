@@ -1,0 +1,140 @@
+<!-- Modal de Ficha de Producto -->
+<div class="modal-overlay" [class.visible]="visible" [attr.aria-hidden]="!visible" role="presentation">
+    <div class="modal-content" [style.width.px]="modalWidth" [class.show-resize-shadow]="showResizeShadow" role="dialog" aria-modal="true" [attr.aria-labelledby]="visible ? 'product-title' : null" (click)="$event.stopPropagation()">
+
+        <!-- Handle de resize -->
+        <div class="resize-handle" (mousedown)="onResizeStart($event)" (mouseenter)="onResizeHoverStart()" (mouseleave)="onResizeHoverEnd()" aria-label="Redimensionar panel">
+        </div>
+
+        <!-- Botón de cerrar flotante -->
+        <button class="popup-close" aria-label="Cerrar" (click)="onClose()">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <!-- Body con scroll -->
+        <div class="modal-body">
+            <!-- Carrusel de imágenes del producto -->
+            <div class="product-carousel" *ngIf="visible && carouselSlides.length > 0">
+                <app-carrusel [slides]="carouselSlides" [heading]="''" [subtitle]="''" [autoPlay]="true" [intervalMs]="5000">
+                </app-carrusel>
+            </div>
+
+            <div class="product-details">
+                <!-- Título -->
+                <div class="product-header">
+                    <h3 id="product-title">{{ displayTitle }}</h3>
+                    <button
+                        *ngIf="isAuthenticated()"
+                        type="button"
+                        class="icon-action-btn"
+                        (click)="openReportPopup($event)"
+                        [disabled]="reportLoading"
+                        [customTooltip]="reportTitle"
+                        aria-label="Reportar producto">
+                        <span class="material-symbols-outlined">report</span>
+                    </button>
+                    <button *ngIf="isAuthenticated()" type="button" class="favorite-btn" [class.active]="isFavorite" [attr.aria-pressed]="isFavorite" [customTooltip]="favoriteTitle" [disabled]="favoriteLoading" (click)="toggleFavorite($event)">
+                        <span class="material-icons">{{ isFavorite ? 'favorite' : 'favorite_border' }}</span>
+                    </button>
+                </div>
+
+
+                <!-- Ubicación -->
+                <div class="product-section" *ngIf="displayAddress">
+                    <h4>Ubicación</h4>
+                    <p class="product-address">{{ displayAddress }}</p>
+                </div>
+
+                <!-- Contacto del Artesano -->
+                <div class="product-section" *ngIf="ownerProfileSlug">
+                    <h4>Contacto del Artesano</h4>
+                    <div class="artisan-card">
+                        <div class="artisan-header">
+                        <div class="artisan-icon" [class.has-image]="displayOwnerImage">
+                            <img *ngIf="displayOwnerImage" [src]="displayOwnerImage" [alt]="displayOwnerName" class="artisan-avatar">
+                            <span *ngIf="!displayOwnerImage" class="material-symbols-outlined">person</span>
+                        </div>
+                        <div class="artisan-info">
+                            <p class="artisan-name">{{ product?.owner?.company_name || displayOwnerName }}</p>
+                        </div>
+                        <button class="artisan-profile-btn" *ngIf="ownerProfileSlug" (click)="goToOwnerProfile($event)">
+                            <span>Ver perfil del artesano</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Descripción breve -->
+                <div class="product-section" *ngIf="displayDescription">
+                    <h4>Descripción</h4>
+                    <p id="product-description">{{ displayDescription }}</p>
+                </div>
+
+                <!-- Resumen -->
+                <div class="product-section" *ngIf="displayResumen">
+                    <h4>Resumen</h4>
+                    <p>{{ displayResumen }}</p>
+                </div>
+
+                <!-- Categoría -->
+                <div class="product-section" *ngIf="displayCategory">
+                    <h4>Categoría</h4>
+                    <p>{{ displayCategory }}</p>
+                </div>
+
+                <button class="view-detail-btn" (click)="goToProductDetail($event)" *ngIf="getProductSlug()">
+                    Ver ficha completa
+                </button>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="report-popup-overlay" *ngIf="showReportPopup" (click)="closeReportPopup()">
+        <div class="report-popup" (click)="$event.stopPropagation()">
+            <p class="popup-title">Reportar producto</p>
+            <p class="popup-text">Selecciona el motivo de reporte y, si quieres, añade una breve explicación. Nuestro administrador revisará tu reporte lo antes posible.</p>
+
+            <div class="report-form-group">
+                <label for="modal-report-reason">Motivo</label>
+                <ng-select
+                    id="modal-report-reason"
+                    class="ngselect-glass report-reason-select"
+                    [items]="reportReasonOptions"
+                    bindLabel="label"
+                    bindValue="value"
+                    [(ngModel)]="selectedReportReason"
+                    [searchable]="false"
+                    [clearable]="false"
+                    [disabled]="reportLoading">
+                </ng-select>
+            </div>
+
+            <div class="report-form-group">
+                <label for="modal-report-details">Detalles (opcional)</label>
+                <textarea
+                    id="modal-report-details"
+                    rows="4"
+                    maxlength="1000"
+                    [(ngModel)]="reportDetails"
+                    [disabled]="reportLoading"
+                    placeholder="Describe qué has visto..."></textarea>
+            </div>
+
+            <p *ngIf="reportFeedback" class="report-popup-feedback is-error">
+                {{ reportFeedback }}
+            </p>
+
+            <div class="popup-acciones-flex">
+                <button type="button" class="btn-primary" (click)="submitReport($event)" [disabled]="reportLoading">
+                    {{ reportLoading ? 'Enviando...' : 'Enviar reporte' }}
+                </button>
+                <button type="button" class="btn-secondary" (click)="closeReportPopup($event)" [disabled]="reportLoading">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

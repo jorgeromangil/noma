@@ -1,0 +1,128 @@
+<!-- Navbar removed as requested -->
+<button type="button" class="product-detail-back-btn" [routerLink]="['/home']" [customTooltip]="'Volver al mapa'" aria-label="Volver al mapa">
+  <span class="material-icons">arrow_back</span>
+</button>
+<main class="artesano-main artesano-publico-bg" *ngIf="artesano && artesano.name">
+  <div class="artesano-profile-grid">
+    <div class="artesano-profile-left">
+      <div class="artesano-avatar-group">
+        <div class="artesano-avatar-gradient"></div>
+        <img alt="{{ artesano?.company_name }} - Artisan Profile" class="artesano-avatar" [src]="artesano?.image || '/default.png'">
+      </div>
+      <div class="artesano-profile-title">
+        <h1 class="artesano-company">{{ artesano?.company_name }}</h1>
+        <div class="artesano-location">
+          <span class="material-icons-outlined artesano-location-icon">location_on</span>
+          <span class="artesano-location-text">
+            {{ artesano?.province }}
+          </span>
+        </div>
+      </div>
+      <div class="artesano-profile-actions" style="display: flex; gap: 1.5em;">
+        <a
+          class="btn-primary"
+          *ngIf="artesano?.email"
+          [href]="'mailto:' + artesano.email"
+          style="display:inline-flex;align-items:center;gap:0.5em;"
+          [customTooltip]="'Envía un correo a ' + artesano.name"
+        >
+          <span class="material-symbols-outlined" style="vertical-align:middle;">3p</span>
+          Contactar
+        </a>
+        <button class="btn-primary" *ngIf="!artesano?.email" disabled>
+          <span class="material-symbols-outlined" style="vertical-align:middle;">3p</span>
+          Contactar
+        </button>
+        <button class="btn-secondary" (click)="copiarUrl()" [customTooltip]="'Copia el enlace al perfil de ' + artesano.name" style="display:inline-flex;align-items:center;gap:0.5em;">
+          <span class="material-icons-outlined artesano-location-icon">share</span>
+          Compartir
+        </button>
+      </div>
+    </div>
+    <div class="artesano-profile-right">
+      <div class="artesano-info-grid">
+        <div class="artesano-info-block">
+          <label class="artesano-info-label artesano-info-label-primary">Artesano</label>
+          <p class="artesano-info-value">{{ artesano?.name }} {{ artesano?.surname || '' }}</p>
+        </div>
+        <div class="artesano-info-block">
+          <label class="artesano-info-label artesano-info-label-purple">Email</label>
+            <p class="artesano-info-value email-red">{{ artesano?.email || 'No disponible' }}</p>
+        </div>
+        <div class="artesano-info-block">
+          <label class="artesano-info-label artesano-info-label-blue">Dirección</label>
+            <p class="artesano-info-value direccion-red">{{ artesano?.address_text || 'No disponible' }}</p>
+        </div>
+        <div class="artesano-info-block">
+          <label class="artesano-info-label artesano-info-label-primary">Contacto</label>
+          <p class="artesano-info-value">{{ artesano?.contact || 'No disponible' }}</p>
+        </div>
+      </div>
+      <div class="artesano-description-block">
+        <span class="material-icons-outlined artesano-description-icon">format_quote</span>
+        <label class="artesano-description-label">Descripción</label>
+        <p class="artesano-description-text">
+          {{ artesano?.description || 'Este artesano no añadió descripción.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="artesano-gallery-header">
+    <h2 class="artesano-gallery-title">Galería de productos</h2>
+    <div class="buscador-wrapper" style="max-width:350px; margin-bottom:0;">
+      <div class="buscador-inner">
+        <span class="material-icons search-icon">search</span>
+        <input class="buscador-input" placeholder="Buscar productos del artesano..." type="text" (input)="buscar($event)">
+      </div>
+    </div>
+  </div>
+  <div class="artesano-gallery-grid">
+    <a *ngFor="let prod of paginatedProductos"
+       class="artesano-gallery-card"
+       [href]="'/producto/' + prod.slug"
+       target="_blank"
+       rel="noopener noreferrer">
+      <div class="artesano-gallery-img-container">
+        <img alt="{{ prod.name }}" class="artesano-gallery-img" [src]="getPrimaryImage(prod)">
+        <!-- Overlay icons eliminados -->
+      </div>
+      <div class="artesano-gallery-card-info">
+        <div>
+          <h3 class="artesano-gallery-card-title" [customTooltip]="prod.name">
+            <span class="artesano-title-ellipsis">{{ prod.name }}</span>
+          </h3>
+          <p class="artesano-gallery-card-subtitle">{{ prod.subtitle || '' }}</p>
+        </div>
+        <span class="artesano-gallery-card-price">{{ prod.price || '' }}</span>
+      </div>
+    </a>
+    <div *ngIf="totalProductos === 0" class="artesano-gallery-empty">
+      No hay productos publicados.
+    </div>
+    <div *ngIf="totalProductos > pageSize" class="pagination-controls" style="display:flex;justify-content:flex-start;align-items:center;gap:0.5em;margin:1.5em 0;">
+      <button class="btn-secondary" (click)="setPage(page-1)" [disabled]="page === 1" style="min-width:2.5em;">&lt;</button>
+      <span style="align-self:center;min-width:4em;text-align:center;font-weight:bold;">{{page}} / {{totalPages}}</span>
+      <button class="btn-secondary" (click)="setPage(page+1)" [disabled]="page === totalPages" style="min-width:2.5em;">&gt;</button>
+    </div>
+  </div>
+</main>
+
+
+<!-- Share URL Popup -->
+<div class="share-popup-overlay" *ngIf="showSharePopup" (click)="closeSharePopup()">
+  <div class="share-popup" (click)="$event.stopPropagation()">
+    <button class="popup-close share-popup-close" (click)="closeSharePopup()" aria-label="Cerrar">
+      <span class="material-icons-outlined">close</span>
+    </button>
+    <h3 class="share-popup-title">Compartir enlace</h3>
+    <p class="share-popup-text">Copia este enlace para compartir el perfil:</p>
+    <div class="share-url-container">
+      <input type="text" class="share-url-input" [value]="shareUrl" readonly>
+      <button class="btn-primary share-popup-copy-btn" (click)="copiarAlPortapapeles()">
+        <span class="material-icons-outlined">content_copy</span>
+        <span class="share-copy-text">Copiar</span>
+      </button>
+    </div>
+  </div>
+</div>
+

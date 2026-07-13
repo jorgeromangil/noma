@@ -1,0 +1,22 @@
+<div class="cookie-banner" [@slideIn] *ngIf="!hasConsented">
+    <div class="cookie-content">
+        <div class="cookie-text">
+            <h3>Política de Cookies</h3>
+            <p>
+                Utilizamos cookies esenciales para que funcione Noma. También usamos Google Analytics
+                para entender cómo usas nuestra plataforma. Puedes aceptar todas o solo las esenciales.
+            </p>
+            <p class="cookie-link">
+                <a routerLink="/cookies-policy" target="_blank">Más información sobre nuestras cookies</a>
+            </p>
+        </div>
+        <div class="cookie-buttons">
+            <button class="btn-secondary" (click)="onRejectAnalytics()">
+                Solo esenciales
+            </button>
+            <button class="btn-primary" (click)="onAcceptAll()">
+                Aceptar todas
+            </button>
+        </div>
+    </div>
+</div>

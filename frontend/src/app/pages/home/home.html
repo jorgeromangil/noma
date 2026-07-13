@@ -1,0 +1,93 @@
+<div class="nav-wrapper">
+    <app-navbar>
+        <app-map-search-overlay
+            navbar-slot="search"
+            [inline]="true"
+            [isLoggedIn]="isLoggedIn"
+            (filtersChange)="onMapFiltersChanged($event)">
+        </app-map-search-overlay>
+        <button 
+            navbar-slot="actions"
+            class="btn-instructions" 
+            (click)="toggleInstructions()"
+            [customTooltip]="'Guía de uso'">
+            ?
+        </button>
+    </app-navbar>
+</div>
+
+<!--
+<app-engine-switch
+    [engine]="engineType"
+    [switching]="switchingEngine"
+    [viewMode]="viewMode"
+    (engineChange)="setEngine($event)"
+    (viewModeChange)="setViewMode($event)">
+</app-engine-switch>
+-->
+
+<div *ngIf="isMapLoading" class="map-status" aria-live="polite">
+    Cargando mapa...
+</div>
+
+<div #mapContainer id="three-container"></div>
+
+<app-pin-preview-card
+    *ngIf="!switchingEngine"
+    [hoverEvent]="pinHoverEvent"
+    (productClick)="onPreviewCardClick($event)">
+</app-pin-preview-card>
+
+<app-cluster-preview-card
+    *ngIf="!switchingEngine"
+    [hoverEvent]="clusterHoverEvent"
+    (productClick)="onClusterPreviewCardClick($event)">
+</app-cluster-preview-card>
+
+<div id="info-popup"></div>
+
+<app-product-modal 
+    [product]="selectedProduct" 
+    [visible]="modalVisible" 
+    (close)="hideProductModal()">
+</app-product-modal>
+
+<app-overlap-panel
+    [products]="overlapProducts"
+    [visible]="overlapPanelVisible"
+    (productSelected)="onOverlapProductSelected($event)"
+    (close)="onOverlapPanelClose()">
+</app-overlap-panel>
+
+<app-instructions-modal 
+    *ngIf="showInstructions"
+    (close)="toggleInstructions()">
+</app-instructions-modal>
+
+<app-chatbot
+  (productSelected)="onChatbotProductSelected($event)"
+  (mapFilterChange)="onChatbotMapFilterChange($event)">
+</app-chatbot>
+
+<!-- Chip de proximidad activa (oculto mientras el modal de producto está abierto) -->
+<div
+  class="proximity-chip"
+  *ngIf="activeMapFilters.userLat !== null && !modalVisible"
+  role="status"
+  aria-live="polite">
+  <button
+    type="button"
+    class="proximity-chip-body"
+    aria-label="Ajustar filtro de proximidad"
+    (click)="onOpenProximityPanel()">
+    <span class="material-symbols-outlined proximity-chip-icon" aria-hidden="true">my_location</span>
+    <span class="proximity-chip-label">{{ activeMapFilters.proximityKm }} km</span>
+  </button>
+  <button
+    type="button"
+    class="proximity-chip-close"
+    aria-label="Desactivar filtro de proximidad"
+    (click)="onDeactivateProximity()">
+    <span class="material-symbols-outlined" aria-hidden="true">close</span>
+  </button>
+</div>

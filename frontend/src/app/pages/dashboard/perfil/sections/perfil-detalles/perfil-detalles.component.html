@@ -1,0 +1,105 @@
+<section class="tarjeta perfil-card">
+  <form [formGroup]="perfilForm" (ngSubmit)="actualizarUsuario()">
+        <div *ngIf="backendError" class="auth-alert auth-alert-error" role="alert">
+          {{ backendError }}
+        </div>
+    <div class="form-scroll-container" [class.no-scroll]="usuario?.role !== 'artisan'" [class.solo-columna]="usuario?.role === 'regular' || usuario?.role === 'admin'">
+      <div class="perfil-form-grid" [class.solo-columna]="usuario?.role === 'regular' || usuario?.role === 'admin'">
+      <div class="avatar-box" *ngIf="usuario">
+      <div class="avatar-wrap" (click)="profileFileInput.click()">
+        <img [src]="previewImagenPerfil || usuario.image || '/default.png'" 
+             [alt]="usuario.name + ' ' + usuario.surname"
+             loading="lazy"
+             crossorigin="anonymous"
+             referrerpolicy="no-referrer">
+        <span class="avatar-btn material-symbols-outlined">edit</span>
+      </div>
+      <input #profileFileInput type="file" accept="image/*" (change)="onProfileImageSelected($event)" style="display: none;">
+    </div>
+
+    <div class="campo">
+      <label>Nombre</label>
+      <input type="text" formControlName="name" minlength="2" maxlength="50" pattern="[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s]+">
+      <small class="error-text" *ngIf="perfilForm.get('name')?.invalid && (perfilForm.get('name')?.touched || perfilForm.get('name')?.dirty || perfilSubmitted)">
+        <span *ngIf="perfilForm.get('name')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+        <span *ngIf="perfilForm.get('name')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+        <span *ngIf="perfilForm.get('name')?.errors?.['pattern']">Solo se permiten letras</span>
+      </small>
+    </div>
+    <div class="campo">
+      <label>Apellidos</label>
+      <input type="text" formControlName="surname" minlength="2" maxlength="50" pattern="[A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\s]+">
+      <small class="error-text" *ngIf="perfilForm.get('surname')?.invalid && (perfilForm.get('surname')?.touched || perfilForm.get('surname')?.dirty || perfilSubmitted)">
+        <span *ngIf="perfilForm.get('surname')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+        <span *ngIf="perfilForm.get('surname')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+        <span *ngIf="perfilForm.get('surname')?.errors?.['pattern']">Solo se permiten letras</span>
+      </small>
+    </div>
+
+    <div class="campo">
+      <label>Email</label>
+      <input type="email" formControlName="email" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+      <small class="error-text" *ngIf="perfilForm.get('email')?.invalid && (perfilForm.get('email')?.touched || perfilForm.get('email')?.dirty || perfilSubmitted)">
+        <span *ngIf="perfilForm.get('email')?.errors?.['email']">Correo inválido</span>
+      </small>
+    </div>
+
+    <div class="campo">
+      <label>Contraseña</label>
+      <input type="password" formControlName="password" placeholder="*************" minlength="6" maxlength="100">
+      <small class="error-text" *ngIf="perfilForm.get('password')?.invalid && (perfilForm.get('password')?.touched || perfilForm.get('password')?.dirty || perfilSubmitted)">
+        <span *ngIf="perfilForm.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</span>
+        <span *ngIf="perfilForm.get('password')?.errors?.['maxlength']">Máximo 100 caracteres</span>
+      </small>
+    </div>
+
+    <ng-container *ngIf="usuario?.role === 'artisan'">
+      <div class="campo">
+        <label>Nombre de la Compañía/Taller</label>
+        <input type="text" formControlName="company_name" minlength="2" maxlength="100">
+        <small class="error-text" *ngIf="perfilForm.get('company_name')?.invalid && (perfilForm.get('company_name')?.touched || perfilForm.get('company_name')?.dirty || perfilSubmitted)">
+          <span *ngIf="perfilForm.get('company_name')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          <span *ngIf="perfilForm.get('company_name')?.errors?.['maxlength']">Máximo 100 caracteres</span>
+        </small>
+      </div>
+      <div class="campo">
+        <label>Dirección</label>
+        <input type="text" formControlName="address_text" minlength="5" maxlength="200">
+        <small class="error-text" *ngIf="perfilForm.get('address_text')?.invalid && (perfilForm.get('address_text')?.touched || perfilForm.get('address_text')?.dirty || perfilSubmitted)">
+          <span *ngIf="perfilForm.get('address_text')?.errors?.['minlength']">Mínimo 5 caracteres</span>
+          <span *ngIf="perfilForm.get('address_text')?.errors?.['maxlength']">Máximo 200 caracteres</span>
+        </small>
+      </div>
+      <div class="campo">
+        <label>Contacto (Teléfono)</label>
+        <input type="tel" formControlName="contact" pattern="[0-9+\s()-]{9,15}" placeholder="Ej: 600123456">
+        <small class="error-text" *ngIf="perfilForm.get('contact')?.invalid && (perfilForm.get('contact')?.touched || perfilForm.get('contact')?.dirty || perfilSubmitted)">
+          <span *ngIf="perfilForm.get('contact')?.errors?.['pattern']">Formato de teléfono inválido</span>
+        </small>
+      </div>
+      <div class="campo">
+        <label>Provincia</label>
+        <input type="text" formControlName="province" minlength="2" maxlength="50" placeholder="Ej: Valencia">
+        <small class="error-text" *ngIf="perfilForm.get('province')?.invalid && (perfilForm.get('province')?.touched || perfilForm.get('province')?.dirty || perfilSubmitted)">
+          <span *ngIf="perfilForm.get('province')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          <span *ngIf="perfilForm.get('province')?.errors?.['maxlength']">Máximo 50 caracteres</span>
+        </small>
+      </div>
+      <div class="campo ancho">
+        <label>Descripción</label>
+        <textarea formControlName="description" rows="3" class="input-estilo" minlength="10" maxlength="500"></textarea>
+        <small class="error-text" *ngIf="perfilForm.get('description')?.invalid && (perfilForm.get('description')?.touched || perfilForm.get('description')?.dirty || perfilSubmitted)">
+          <span *ngIf="perfilForm.get('description')?.errors?.['minlength']">Mínimo 10 caracteres</span>
+          <span *ngIf="perfilForm.get('description')?.errors?.['maxlength']">Máximo 500 caracteres</span>
+        </small>
+      </div>
+    </ng-container>
+        </div> <!-- cierre .perfil-form-grid -->
+      </div> <!-- cierre .form-scroll-container -->
+      <div class="acciones">
+        <button type="submit" class="syncro-btn" [disabled]="perfilForm.invalid || loading || !perfilFormDirty">
+          {{ loading ? 'Cargando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+  </form>
+</section>

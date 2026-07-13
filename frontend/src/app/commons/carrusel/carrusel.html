@@ -1,0 +1,44 @@
+<section class="hero">
+    <div class="hero-glow glow-primary"></div>
+    <div class="hero-glow glow-secondary"></div>
+
+    <div class="hero-slider">
+        <div class="hero-slide" *ngFor="let slide of slides; let i = index" [class.active]="i === currentSlide" [class.prev]="isPrev(i)" [class.next]="isNext(i)" [style.background-image]="'url(' + slide.src + ')'" [attr.aria-hidden]="i === currentSlide ? 'false' : 'true'">
+            <div class="slide-overlay" *ngIf="heading || subtitle"></div>
+        </div>
+
+        <button type="button" class="hover-zone hover-left" aria-label="Imagen anterior" (click)="$event.stopPropagation(); prevSlide()"></button>
+        <button type="button" class="hover-zone hover-right" aria-label="Imagen siguiente" (click)="$event.stopPropagation(); nextSlideManual()"></button>
+
+        <div class="slide-content" *ngIf="heading || subtitle">
+            <h1 class="hero-heading text-gradient">{{ heading }}</h1>
+            <br aria-hidden="true">
+            <p class="hero-subtitle">
+                {{ subtitle }}
+            </p>
+            <br *ngIf="note" class="hero-break" aria-hidden="true">
+            <p class="hero-note" *ngIf="note">
+                {{ note }}
+            </p>
+            <a *ngIf="ctaLabel" class="syncro-btn hero-cta" [routerLink]="ctaLink || '/home'">
+                <span>{{ ctaLabel }}</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+        </div>
+
+        <div class="slider-nav" *ngIf="slides.length > 1" aria-label="Controles del carrusel">
+            <button type="button" class="nav-btn nav-prev" aria-label="Imagen anterior" (click)="$event.stopPropagation(); prevSlide()">
+        <span class="material-symbols-outlined">arrow_back_ios_new</span>
+      </button>
+            <button type="button" class="nav-btn nav-next" aria-label="Imagen siguiente" (click)="$event.stopPropagation(); nextSlideManual()">
+        <span class="material-symbols-outlined">arrow_forward_ios</span>
+      </button>
+        </div>
+
+        <div class="slider-dots" *ngIf="slides.length > 1" role="tablist" aria-label="Carrusel de imágenes">
+            <button class="dot" *ngFor="let slide of slides; let i = index" type="button" [class.active]="i === currentSlide" [attr.aria-label]="'Ir a la imagen ' + (i + 1)" [attr.aria-selected]="i === currentSlide" role="tab" (click)="$event.stopPropagation(); goToSlide(i)">
+        <span class="dot-fill" [style.width.%]="i === currentSlide ? progress : 0"></span>
+      </button>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,213 @@
+<div
+  class="search-overlay"
+  role="search"
+  aria-label="Buscar productos en el mapa"
+  (focusin)="onFocusIn()"
+  (focusout)="onFocusOut($event)"
+>
+  <div class="bar glass">
+    <div class="input-wrap">
+      <span class="material-symbols-outlined icon" aria-hidden="true">search</span>
+      <input
+        #searchInput
+        class="search-input"
+        type="text"
+        placeholder="Buscar en el mapa…"
+        [value]="query"
+        (input)="onQueryInput(($any($event.target)).value)"
+        autocomplete="off"
+      />
+
+      <button
+        *ngIf="query"
+        type="button"
+        class="clear-btn"
+        (click)="clearQuery()"
+        aria-label="Borrar búsqueda"
+        title="Borrar"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    </div>
+
+    <button
+      type="button"
+      class="chips-btn"
+      (click)="toggleChips()"
+      [attr.aria-expanded]="showChipsRow"
+      aria-label="Mostrar categorías"
+      [customTooltip]="getChipsButtonTooltip()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">{{ showChipsRow ? 'expand_less' : 'expand_more' }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="filters-btn"
+      (click)="toggleAdvanced()"
+      [attr.aria-expanded]="isAdvancedOpen"
+      aria-label="Abrir filtros"
+      [customTooltip]="getFiltersButtonTooltip()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+      <span class="filters-badge" *ngIf="activeCount > 0">{{ activeCount }}</span>
+    </button>
+  </div>
+
+  <div class="panels" aria-label="Paneles">
+    <div class="chips-row glass" [class.is-hidden]="!showChipsRow" aria-label="Categorías">
+      <div class="chips-scroll">
+        <button
+          type="button"
+          class="chip"
+          *ngFor="let c of chips"
+          [class.active]="selectedCategories.has(c.key)"
+          (click)="toggleCategory(c.key)"
+        >
+          <span class="chip-color-dot" [style.background]="categoryColors[c.key]"></span>
+          {{ c.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="advanced glass dropdown" *ngIf="isAdvancedOpen" aria-label="Filtros avanzados">
+
+      <!-- ── SWITCHER: ambos paneles siempre en DOM, cruce con opacidad ── -->
+      <div class="panel-switcher">
+
+        <!-- Diálogo de confirmación de ubicación -->
+        <div class="geo-confirm" [class.panel-hidden]="!showGeoModal" aria-hidden="!showGeoModal">
+          <div class="geo-confirm-icon">
+            <span class="material-symbols-outlined">my_location</span>
+          </div>
+          <h3 class="geo-confirm-title">Acceso a tu ubicación</h3>
+          <p class="geo-confirm-desc">
+            Noma necesita acceder a tu ubicación para mostrarte los productores
+            más cercanos y filtrar el mapa por distancia.
+          </p>
+          <p class="geo-confirm-note">
+            <span class="material-symbols-outlined" aria-hidden="true">shield</span>
+            Tu posición no se almacena en nuestros servidores.
+          </p>
+          <div class="geo-confirm-actions">
+            <button type="button" class="geo-cancel-btn" (click)="cancelGeoModal()">Cancelar</button>
+            <button type="button" class="geo-allow-btn" (click)="confirmGeoRequest()">
+              <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+              Permitir ubicación
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenido normal de filtros -->
+        <div class="filter-content-wrap" [class.panel-hidden]="showGeoModal" aria-hidden="showGeoModal">
+        <div class="advanced-header">
+          <div class="advanced-title">
+            <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+            Filtros
+          </div>
+          <button type="button" class="reset-btn" (click)="reset()">Resetear</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Proximidad</div>
+
+          <!-- Botón para activar ubicación si aún no se ha concedido -->
+          <div class="geo-activation" *ngIf="!isLocationAvailable">
+
+            <!-- Caso: ubicación ya concedida pero filtro desactivado por reset -->
+            <button
+              *ngIf="geoStatus === 'granted'"
+              type="button"
+              class="geo-btn"
+              (click)="reactivateProximity()"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
+              Activar filtro de proximidad
+            </button>
+
+            <!-- Caso: ubicación no solicitada aún, o error/denegado -->
+            <button
+              *ngIf="geoStatus !== 'granted'"
+              type="button"
+              class="geo-btn"
+              [disabled]="geoRequesting || geoStatus === 'unavailable'"
+              (click)="openGeoModal()"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">my_location</span>
+              <span *ngIf="geoStatus === 'idle' || geoStatus === 'error' || geoStatus === 'denied'">
+                Activar mi ubicación
+              </span>
+              <span *ngIf="geoStatus === 'requesting'">
+                Obteniendo ubicación…
+              </span>
+              <span *ngIf="geoStatus === 'unavailable'">
+                No disponible
+              </span>
+            </button>
+
+            <div class="hint">{{ locationStatusMessage }}</div>
+          </div>
+
+          <!-- Slider activo solo si la ubicación está disponible -->
+          <div class="slider-row" [class.disabled]="!isLocationAvailable">
+            <input
+              class="slider"
+              type="range"
+              min="1"
+              max="500"
+              step="1"
+              [value]="proximityKm"
+              [disabled]="!isLocationAvailable"
+              (input)="setProximityKm(($any($event.target)).valueAsNumber)"
+            />
+            <div class="slider-value">{{ proximityKm }} km</div>
+          </div>
+
+          <!-- Mensaje de estado cuando la ubicación está activa -->
+          <div class="hint" *ngIf="isLocationAvailable">
+            {{ locationStatusMessage }}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Certificaciones</div>
+
+          <div class="checks-grid" role="group" aria-label="Certificaciones">
+            <button
+              type="button"
+              class="check"
+              *ngFor="let certification of certificationOptions"
+              [class.active]="certifications[certification.key]"
+              [attr.aria-pressed]="certifications[certification.key]"
+              (click)="toggleCertification(certification.key)"
+            >
+              <span class="check-box" [class.checked]="certifications[certification.key]" aria-hidden="true"></span>
+              <span>{{ certification.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="section" *ngIf="isLoggedIn">
+          <div class="section-title">Mis favoritos</div>
+
+          <div role="group" aria-label="Mis favoritos">
+            <button
+              type="button"
+              class="check"
+              [class.active]="favoritesOnly"
+              [attr.aria-pressed]="favoritesOnly"
+              (click)="toggleFavoritesOnly()"
+            >
+              <span class="check-box" [class.checked]="favoritesOnly" aria-hidden="true"></span>
+              <span>Mostrar solo mis productos favoritos</span>
+            </button>
+          </div>
+
+        </div>
+        </div><!-- /.filter-content-wrap -->
+
+      </div><!-- /.panel-switcher -->
+
+    </div>
+  </div>
+</div>

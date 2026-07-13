@@ -1,0 +1,2048 @@
+<html>
+
+<head>
+<title>ICG WebGL &mdash; HW1</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<script type="text/javascript" src="./js/glMatrix-0.9.5.min.js"></script>
+<script type="text/javascript" src="./js/webgl-utils.js"></script>
+<!-- Three.js para carga de GLB -->
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script type="text/javascript" src="./js/model-loader.js"></script>
+<link rel="stylesheet" href="./css/index.css">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet"> 
+
+
+
+<script id="fragmentShaderFlat" type="fragment">
+    #extension GL_OES_standard_derivatives : enable
+
+    precision mediump float;
+
+    varying vec3 vLightSource1;
+    varying vec3 vLightSource2;
+    varying vec3 vLightSource3;
+    
+    varying vec3 vLightColor1;
+    varying vec3 vLightColor2;
+    varying vec3 vLightColor3;
+
+    varying vec3 vAmbientColor;
+    varying float vSpecularOrder;
+    
+    varying float vAmbientIntensity;
+    varying float vDiffuseIntensity;
+    varying float vSpecularIntensity;
+
+    varying vec4 fragcolor;
+    varying vec3 vertexViewPosition;
+
+    void main(void) {
+        vec3 U = dFdx(vertexViewPosition);
+        vec3 V = dFdy(vertexViewPosition);
+        vec3 N =  normalize(cross(U, V));
+
+        // ambient lighting
+        vec3 ambientColor = vAmbientColor * fragcolor.rgb;
+
+        // directional lighting
+        vec3 l1Vec = vLightSource1 - vertexViewPosition;
+        float l1I = max(dot(N, l1Vec), 0.0) / length(l1Vec);
+        vec3 l1Color = vLightColor1 * fragcolor.rgb * l1I;
+
+        vec3 l2Vec = vLightSource2 - vertexViewPosition;
+        float l2I = max(dot(N, l2Vec), 0.0) / length(l2Vec);
+        vec3 l2Color = vLightColor2 * fragcolor.rgb * l2I;
+
+        vec3 l3Vec = vLightSource3 - vertexViewPosition;
+        float l3I = max(dot(N, l3Vec), 0.0) / length(l3Vec);
+        vec3 l3Color = vLightColor3 * fragcolor.rgb * l3I;
+
+        vec3 directionalColor = l1Color + l2Color + l3Color;
+
+        // specular Color
+        vec3 viewVec = normalize(-vertexViewPosition);
+        vec3 reflect1 = normalize(reflect(-l1Vec, N));
+        vec3 reflect2 = normalize(reflect(-l2Vec, N));
+        vec3 reflect3 = normalize(reflect(-l3Vec, N));
+        vec3 spec1Color = pow(max(dot(reflect1, viewVec), 0.0), vSpecularOrder) * vLightColor1;
+        vec3 spec2Color = pow(max(dot(reflect2, viewVec), 0.0), vSpecularOrder) * vLightColor2;
+        vec3 spec3Color = pow(max(dot(reflect3, viewVec), 0.0), vSpecularOrder) * vLightColor3;
+        vec3 specColor = spec1Color + spec2Color + spec3Color;
+
+        vec3 finalColor = vAmbientIntensity * ambientColor + vDiffuseIntensity * directionalColor + vSpecularIntensity * specColor;
+        finalColor = clamp(finalColor, vec3(0.0), vec3(1.0));
+
+        // Corrección gamma (sRGB)
+        finalColor = pow(finalColor, vec3(1.0 / 2.2));
+
+        gl_FragColor = vec4(finalColor, 1.0);
+    }
+</script>
+
+
+<script id="vertexShaderFlat" type="vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aFrontColor;  // RGBA: alpha = índice de material
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    uniform vec3 uLightSource1;
+    uniform vec3 uLightSource2;
+    uniform vec3 uLightSource3;
+    
+    uniform vec3 uLightColor1;
+    uniform vec3 uLightColor2;
+    uniform vec3 uLightColor3;
+
+    uniform vec3 uAmbientColor;
+    uniform float uSpecularOrder;
+
+    uniform float uAmbientIntensity;
+    uniform float uDiffuseIntensity;
+    uniform float uSpecularIntensity;
+
+    varying vec3 vLightSource1;
+    varying vec3 vLightSource2;
+    varying vec3 vLightSource3;
+    
+    varying vec3 vLightColor1;
+    varying vec3 vLightColor2;
+    varying vec3 vLightColor3;
+
+    varying vec3 vAmbientColor;
+    varying float vSpecularOrder;
+
+    varying float vAmbientIntensity;
+    varying float vDiffuseIntensity;
+    varying float vSpecularIntensity;
+    
+    
+	varying vec4 fragcolor;
+    varying vec3 vertexViewPosition;
+
+    void main(void) {
+        fragcolor = aFrontColor;  // Pasar RGBA completo
+        vertexViewPosition = (uMVMatrix * vec4(aVertexPosition, 1.0)).xyz;
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+        vLightColor1 = uLightColor1;
+        vLightColor2 = uLightColor2;
+        vLightColor3 = uLightColor3;
+        vLightSource1 = uLightSource1;
+        vLightSource2 = uLightSource2;
+        vLightSource3 = uLightSource3;
+        vAmbientColor = uAmbientColor;
+        vSpecularOrder = uSpecularOrder;
+        vAmbientIntensity = uAmbientIntensity;
+        vDiffuseIntensity = uDiffuseIntensity;
+        vSpecularIntensity = uSpecularIntensity;
+    }
+</script>
+
+<!--
+    Gouraud Shading: Per-vertex shading
+-->
+
+<script id="fragmentShaderGouraud" type="fragment">
+    #extension GL_OES_standard_derivatives : enable
+
+    precision mediump float;
+
+    varying vec4 fragcolor;
+
+    void main(void) {
+        
+        gl_FragColor = fragcolor;
+    }
+</script>
+
+<script id="vertexShaderGouraud" type="vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aFrontColor;  // RGBA
+    attribute vec3 aVertexNormal;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat4 uNMatrix;
+
+    uniform vec3 uLightSource1;
+    uniform vec3 uLightSource2;
+    uniform vec3 uLightSource3;
+    
+    uniform vec3 uLightColor1;
+    uniform vec3 uLightColor2;
+    uniform vec3 uLightColor3;
+
+    uniform vec3 uAmbientColor;
+    uniform float uSpecularOrder;
+    
+    uniform float uAmbientIntensity;
+    uniform float uDiffuseIntensity;
+    uniform float uSpecularIntensity;
+    
+	varying vec4 fragcolor;
+    varying vec3 vertexViewPosition;
+    varying vec3 vertexViewNormal;
+
+    void main(void) {
+        vertexViewPosition = (uMVMatrix * vec4(aVertexPosition, 1.0)).xyz;
+        vertexViewNormal = normalize((uNMatrix * vec4(aVertexNormal, 0.0)).xyz);
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        
+        // ambient lighting
+        vec3 ambientColor = uAmbientColor * aFrontColor.rgb;
+
+        // directional lighting
+        vec3 l1Vec = uLightSource1 - vertexViewPosition;
+        float l1I = max(dot(vertexViewNormal, l1Vec), 0.0) / length(l1Vec);
+        vec3 l1Color = uLightColor1 * aFrontColor.rgb * l1I;
+        
+        vec3 l2Vec = uLightSource2 - vertexViewPosition;
+        float l2I = max(dot(vertexViewNormal, l2Vec), 0.0) / length(l2Vec);
+        vec3 l2Color = uLightColor2 * aFrontColor.rgb * l2I;
+
+        vec3 l3Vec = uLightSource3 - vertexViewPosition;
+        float l3I = max(dot(vertexViewNormal, l3Vec), 0.0) / length(l3Vec);
+        vec3 l3Color = uLightColor3 * aFrontColor.rgb * l3I;
+
+        vec3 directionalColor = l1Color + l2Color + l3Color;
+
+        // specular Color
+        vec3 viewVec = normalize(-vertexViewPosition);
+        vec3 reflect1 = normalize(reflect(-l1Vec, vertexViewNormal));
+        vec3 reflect2 = normalize(reflect(-l2Vec, vertexViewNormal));
+        vec3 reflect3 = normalize(reflect(-l3Vec, vertexViewNormal));
+        vec3 spec1Color = pow(max(dot(reflect1, viewVec), 0.0), uSpecularOrder) * uLightColor1;
+        vec3 spec2Color = pow(max(dot(reflect2, viewVec), 0.0), uSpecularOrder) * uLightColor2;
+        vec3 spec3Color = pow(max(dot(reflect3, viewVec), 0.0), uSpecularOrder) * uLightColor3;
+        vec3 specColor = spec1Color + spec2Color + spec3Color;
+
+        vec3 finalColor = uAmbientIntensity * ambientColor + uDiffuseIntensity * directionalColor + uSpecularIntensity * specColor;
+        fragcolor = vec4(finalColor, 1.0);
+    }
+</script>
+
+<!--
+    Phong Shading: Per-pixel shading
+-->
+
+<script id="fragmentShaderPhong" type="fragment">
+    #extension GL_OES_standard_derivatives : enable
+
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
+    precision mediump float;
+    #endif
+
+    varying vec3 vLightSource1;
+    varying vec3 vLightSource2;
+    varying vec3 vLightSource3;
+    
+    varying vec3 vLightColor1;
+    varying vec3 vLightColor2;
+    varying vec3 vLightColor3;
+
+    varying vec3 vAmbientColor;
+    varying float vSpecularOrder;
+    varying float vAmbientIntensity;
+    varying float vDiffuseIntensity;
+    varying float vSpecularIntensity;
+    
+    varying vec3 vertexViewPosition;
+    varying vec3 vertexViewNormal;
+    varying vec4 fragcolor;
+    varying vec2 vTextureCoord;
+    varying vec2 vMaterialProps;
+
+    uniform bool uUseTexture;
+    uniform sampler2D uSampler0;
+    uniform sampler2D uSampler1;
+    uniform sampler2D uSampler2;
+    uniform sampler2D uSampler3;
+    uniform sampler2D uSampler4;
+    uniform sampler2D uSampler5;
+    uniform sampler2D uSampler6;
+    uniform sampler2D uSampler7;
+    uniform int uTextureCount;
+
+    const float PI = 3.14159265359;
+
+    vec3 srgbToLinear(vec3 color) {
+        vec3 c = max(color, vec3(0.0));
+        vec3 low = c / 12.92;
+        vec3 high = pow((c + 0.055) / 1.055, vec3(2.4));
+        return mix(low, high, step(vec3(0.04045), c));
+    }
+
+    vec3 linearToSrgb(vec3 color) {
+        vec3 c = max(color, vec3(0.0));
+        vec3 low = 12.92 * c;
+        vec3 high = 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055;
+        vec3 encoded = mix(low, high, step(vec3(0.0031308), c));
+        return clamp(encoded, vec3(0.0), vec3(1.0));
+    }
+
+    vec3 toneMapACES(vec3 color) {
+        const float a = 2.51;
+        const float b = 0.03;
+        const float c = 2.43;
+        const float d = 0.59;
+        const float e = 0.14;
+        return clamp((color * (a * color + b)) / (color * (c * color + d) + e), vec3(0.0), vec3(1.0));
+    }
+
+    vec3 applySaturation(vec3 color, float saturation) {
+        float luma = dot(color, vec3(0.2126, 0.7152, 0.0722));
+        return mix(vec3(luma), color, saturation);
+    }
+
+    vec3 applyVibrance(vec3 color, float amount) {
+        float maxColor = max(max(color.r, color.g), color.b);
+        float avgColor = (color.r + color.g + color.b) / 3.0;
+        float satGap = maxColor - avgColor;
+        return mix(color, vec3(maxColor), satGap * amount);
+    }
+
+    vec3 applyContrast(vec3 color, float contrast) {
+        return clamp((color - 0.5) * contrast + 0.5, 0.0, 1.0);
+    }
+
+    float saturate(float value) {
+        return clamp(value, 0.0, 1.0);
+    }
+
+    vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+        return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+    }
+
+    vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness) {
+        return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+    }
+
+    float distributionGGX(float NdotH, float roughness) {
+        float a = roughness * roughness;
+        float a2 = a * a;
+        float d = (NdotH * NdotH) * (a2 - 1.0) + 1.0;
+        return a2 / max(PI * d * d, 1e-5);
+    }
+
+    float geometrySchlickGGX(float NdotX, float roughness) {
+        float r = roughness + 1.0;
+        float k = (r * r) / 8.0;
+        return NdotX / max(NdotX * (1.0 - k) + k, 1e-5);
+    }
+
+    float geometrySmith(float NdotV, float NdotL, float roughness) {
+        return geometrySchlickGGX(NdotV, roughness) * geometrySchlickGGX(NdotL, roughness);
+    }
+
+    vec3 readTextureByIndex(int texIdx, vec2 uv) {
+        if (texIdx == 0) {
+            return texture2D(uSampler0, uv).rgb;
+        } else if (texIdx == 1) {
+            return texture2D(uSampler1, uv).rgb;
+        } else if (texIdx == 2) {
+            return texture2D(uSampler2, uv).rgb;
+        } else if (texIdx == 3) {
+            return texture2D(uSampler3, uv).rgb;
+        } else if (texIdx == 4) {
+            return texture2D(uSampler4, uv).rgb;
+        } else if (texIdx == 5) {
+            return texture2D(uSampler5, uv).rgb;
+        } else if (texIdx == 6) {
+            return texture2D(uSampler6, uv).rgb;
+        }
+        return texture2D(uSampler7, uv).rgb;
+    }
+
+    vec3 computeDirectLight(
+        vec3 lightSource,
+        vec3 lightColor,
+        vec3 N,
+        vec3 V,
+        vec3 baseColor,
+        vec3 F0,
+        float roughness,
+        float metalness,
+        float NdotV
+    ) {
+        // Emular DirectionalLight de Three.js: dirección constante, sin caída por distancia.
+        vec3 L = normalize(lightSource);
+
+        // Wrap lighting suave para evitar sombras demasiado duras.
+        float rawNdotL = dot(N, L);
+        float wrap = 0.14;
+        float NdotL = clamp((rawNdotL + wrap) / (1.0 + wrap), 0.0, 1.0);
+        if (NdotL <= 0.0) {
+            return vec3(0.0);
+        }
+
+        vec3 H = normalize(L + V);
+        float NdotH = max(dot(N, H), 0.0);
+        float VdotH = max(dot(V, H), 0.0);
+
+        float D = distributionGGX(NdotH, roughness);
+        float G = geometrySmith(NdotV, NdotL, roughness);
+        vec3 F = fresnelSchlick(VdotH, F0);
+
+        vec3 numerator = D * G * F;
+        float denominator = max(4.0 * NdotV * NdotL, 1e-4);
+        vec3 specularColor = (numerator / denominator) * 1.0;
+        vec3 kd = (1.0 - F) * (1.0 - metalness);
+        vec3 diffuseColor = kd * baseColor / PI;
+
+        return lightColor * NdotL * (vDiffuseIntensity * diffuseColor + vSpecularIntensity * specularColor);
+    }
+
+    void main(void) {
+        vec3 baseColor = fragcolor.rgb;
+        bool sampledFromTexture = false;
+        int texIdx = -1;
+        
+        if (uUseTexture && uTextureCount > 0) {
+            vec2 uv = vTextureCoord;
+            
+            // Si los UVs son todos cero, usar posición del vértice como fallback
+            if (length(uv) < 0.001) {
+                uv = mod(vertexViewPosition.xy * 0.5 + vec2(0.5), vec2(1.0));
+            }
+            
+            // El alpha channel contiene el índice de material
+            float materialIndex = fragcolor.a * 10.0; // Escalar de vuelta (0, 1, 2...)
+            
+            // Seleccionar textura SOLO si realmente tenemos esa textura cargada
+            texIdx = int(floor(materialIndex + 0.5));
+            
+            if (texIdx < uTextureCount) {
+                // Tenemos textura para este material, samplear
+                vec3 sampledColor = readTextureByIndex(texIdx, uv);
+                
+                // GLTF baseColor = textura * color del material (baseColorFactor)
+                baseColor = sampledColor * fragcolor.rgb;
+                sampledFromTexture = true;
+            } else if (uTextureCount == 1 && fragcolor.a > 0.95) {
+                // Caso material único con color buffer RGB (alpha implícito = 1.0):
+                // forzar sampler0 para conservar el comportamiento original de modelos
+                // con una sola textura.
+                baseColor = texture2D(uSampler0, uv).rgb * fragcolor.rgb;
+                sampledFromTexture = true;
+            }
+            // Si NO tenemos textura (texIdx >= uTextureCount), seguir usando fragcolor.rgb
+        }
+        
+        // Texturas baseColor vienen en sRGB, convertirlas a linear para iluminar
+        if (sampledFromTexture) {
+            baseColor = srgbToLinear(baseColor);
+        }
+        baseColor = clamp(baseColor, vec3(0.0), vec3(1.0));
+
+        vec3 N = normalize(vertexViewNormal);
+        vec3 V = normalize(-vertexViewPosition);
+        float NdotV = max(dot(N, V), 0.0001);
+
+        float materialRoughness = clamp(vMaterialProps.x, 0.04, 1.0);
+        float materialMetalness = clamp(vMaterialProps.y, 0.0, 1.0);
+        // Keep manual gloss control while preserving material identity.
+        float sliderRoughness = clamp(sqrt(2.0 / (vSpecularOrder + 2.0)), 0.04, 1.0);
+        float roughness = clamp(mix(materialRoughness, sliderRoughness, 0.55), 0.04, 0.86);
+        float metalness = materialMetalness;
+        vec3 F0 = mix(vec3(0.04), baseColor, metalness);
+
+        // Hemi ambient approximation to avoid flat lighting and improve depth cues.
+        vec3 skyAmbient = vec3(0.34, 0.44, 0.62);
+        vec3 groundAmbient = vec3(0.15, 0.12, 0.10);
+        float hemiFactor = saturate(N.y * 0.5 + 0.5);
+        vec3 hemiAmbient = mix(groundAmbient, skyAmbient, hemiFactor) * mix(vAmbientColor, vec3(1.0), 0.45);
+        vec3 Fambient = fresnelSchlickRoughness(NdotV, F0, roughness);
+        vec3 kdAmbient = (vec3(1.0) - Fambient) * (1.0 - metalness);
+        vec3 ambientDiffuse = kdAmbient * baseColor * hemiAmbient * vAmbientIntensity;
+        // Pequeño lift para evitar objetos excesivamente oscuros en ciertas orientaciones.
+        vec3 ambientLift = baseColor * (0.018 * vAmbientIntensity);
+
+        vec3 R = reflect(-V, N);
+        vec3 envSpecColor = mix(groundAmbient, skyAmbient, saturate(R.y * 0.5 + 0.5));
+        float gloss = 1.0 - roughness;
+        vec3 ambientSpecular = envSpecColor * Fambient * (0.10 + 0.42 * gloss * gloss) * vSpecularIntensity;
+
+        vec3 directLighting = vec3(0.0);
+        directLighting += computeDirectLight(vLightSource1, vLightColor1, N, V, baseColor, F0, roughness, metalness, NdotV);
+        directLighting += computeDirectLight(vLightSource2, vLightColor2, N, V, baseColor, F0, roughness, metalness, NdotV);
+        directLighting += computeDirectLight(vLightSource3, vLightColor3, N, V, baseColor, F0, roughness, metalness, NdotV);
+
+        vec3 litColor = ambientDiffuse + ambientLift + ambientSpecular + directLighting;
+
+        float exposure = 1.1;
+        vec3 mappedColor = toneMapACES(max(litColor * exposure, vec3(0.0)));
+        mappedColor = applyContrast(mappedColor, 1.01);
+        mappedColor = applySaturation(mappedColor, 1.04);
+        mappedColor = applyVibrance(mappedColor, 0.028);
+        mappedColor = pow(mappedColor, vec3(0.99));
+        vec3 finalGamma = linearToSrgb(mappedColor);
+        float dither = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) / 255.0;
+        finalGamma = clamp(finalGamma + vec3(dither), vec3(0.0), vec3(1.0));
+
+        gl_FragColor = vec4(finalGamma, 1.0);
+    }
+</script>
+
+<script id="vertexShaderPhong" type="vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aFrontColor;  // RGBA: alpha = índice de material
+    attribute vec3 aVertexNormal;
+    attribute vec2 aTextureCoord;
+    attribute vec2 aMaterialProps;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+    uniform mat4 uNMatrix;
+
+    uniform vec3 uLightSource1;
+    uniform vec3 uLightSource2;
+    uniform vec3 uLightSource3;
+    
+    uniform vec3 uLightColor1;
+    uniform vec3 uLightColor2;
+    uniform vec3 uLightColor3;
+
+    uniform vec3 uAmbientColor;
+    uniform float uSpecularOrder;
+    uniform float uAmbientIntensity;
+    uniform float uDiffuseIntensity;
+    uniform float uSpecularIntensity;
+
+    varying vec3 vLightSource1;
+    varying vec3 vLightSource2;
+    varying vec3 vLightSource3;
+    
+    varying vec3 vLightColor1;
+    varying vec3 vLightColor2;
+    varying vec3 vLightColor3;
+
+    varying vec3 vAmbientColor;
+    varying float vSpecularOrder;
+    varying float vAmbientIntensity;
+    varying float vDiffuseIntensity;
+    varying float vSpecularIntensity;
+    
+    varying vec3 vertexViewPosition;
+    varying vec3 vertexViewNormal;
+    varying vec4 fragcolor;
+    varying vec2 vTextureCoord;
+    varying vec2 vMaterialProps;
+
+    void main(void) {
+        vertexViewPosition = (uMVMatrix * vec4(aVertexPosition, 1.0)).xyz;
+        vertexViewNormal = normalize((uNMatrix * vec4(aVertexNormal, 0.0)).xyz);
+        fragcolor = aFrontColor;  // Pasar RGBA completo
+        vTextureCoord = aTextureCoord;
+        vMaterialProps = aMaterialProps;
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+
+        vLightColor1 = uLightColor1;
+        vLightColor2 = uLightColor2;
+        vLightColor3 = uLightColor3;
+        vLightSource1 = uLightSource1;
+        vLightSource2 = uLightSource2;
+        vLightSource3 = uLightSource3;
+        vAmbientColor = uAmbientColor;
+        vSpecularOrder = uSpecularOrder;
+        vAmbientIntensity = uAmbientIntensity;
+        vDiffuseIntensity = uDiffuseIntensity;
+        vSpecularIntensity = uSpecularIntensity;
+    }
+</script>
+
+<script id="fragmentShaderAnalyticShadow" type="fragment">
+    precision mediump float;
+
+    varying vec2 vPlaneCoord;
+
+    uniform vec4 uPlaneColor;
+    uniform float uPlaneMode;
+
+    void main(void) {
+        float radial = length(vPlaneCoord);
+
+        if (uPlaneMode < 0.5) {
+            float edgeFade = 1.0 - smoothstep(0.72, 1.0, radial);
+            float centerLift = mix(0.82, 1.08, 1.0 - clamp(radial, 0.0, 1.0));
+            gl_FragColor = vec4(uPlaneColor.rgb * centerLift, uPlaneColor.a * edgeFade);
+            return;
+        }
+
+        float penumbra = 1.0 - smoothstep(0.16, 1.0, radial);
+        float contact = 1.0 - smoothstep(0.0, 0.34, radial);
+        float alpha = clamp((penumbra * 0.74 + contact * 0.26) * uPlaneColor.a, 0.0, 0.72);
+
+        if (alpha <= 0.003) {
+            discard;
+        }
+
+        gl_FragColor = vec4(uPlaneColor.rgb, alpha);
+    }
+</script>
+
+<script id="vertexShaderAnalyticShadow" type="vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec2 aPlaneCoord;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    varying vec2 vPlaneCoord;
+
+    void main(void) {
+        vPlaneCoord = aPlaneCoord;
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+    }
+</script>
+
+<script type="text/javascript">
+    // common variables
+
+    // GL, shaders
+    var gl;
+    var shaderProgram;
+    var analyticShadowProgram;
+
+    // Geometry
+    var mvMatrix;
+    var pMatrix;
+    var nMatrix;
+    var centerPosition;
+    var modelBoundingBox; // Para almacenar el tamaño de cada modelo
+
+    // Lighting
+    var lightSource;
+    var lightColor;
+    var lightValues;
+    var specularOrder;
+    var ambientColor;
+    var ambientIntensity;
+    var diffuseIntensity;
+    var specularIntensity;
+
+    // gl buffers
+    var dataVertexPositionBuffer;
+    var dataVertexNormalBuffer;
+    var dataVertexFrontColorBuffer;
+    var dataVertexTexCoordBuffer;
+    var dataVertexMaterialPropsBuffer;
+    var dataTextureBuffer;
+    var dataUseTexture;
+    var groundVertexPositionBuffer;
+    var groundCoordBuffer;
+    var shadowVertexPositionBuffer;
+    var shadowCoordBuffer;
+    var analyticPlaneInfo;
+    var textureAnisotropyExt;
+    var maxTextureAnisotropy = 1;
+
+    // Animation
+    var animateAngle = 0;
+    var rotatePerSec = 0.0;
+    var lastTime    = 0;
+
+    // Camera orbit controls
+    var cameraZoom = -14;
+    var targetCameraZoom = -14;
+    var minZoom = -42;
+    var maxZoom = -4.9;
+    var zoomDampingFactor = 0.24;
+    var orbitZoomSpeed = 0.65;
+
+    function updateZoomLimits(baseZoom) {
+        // baseZoom es negativo (más negativo = más lejos)
+        var safeBase = (typeof baseZoom === 'number' && baseZoom < 0) ? baseZoom : -14;
+        var zoomInFactor = 0.45;   // igual que Three.js (más cerca)
+        var zoomOutFactor = 1.5;   // igual que Three.js (más lejos)
+        var absoluteMinZoom = -500.0; // tope global para evitar zoom out excesivo
+
+        maxZoom = Math.min(-0.3, safeBase * zoomInFactor);
+        minZoom = Math.max(absoluteMinZoom, safeBase * zoomOutFactor);
+
+        if (minZoom >= maxZoom) {
+            minZoom = safeBase * 1.8;
+            maxZoom = safeBase * 0.5;
+        }
+    }
+
+    // Mouse/pointer controls
+    var isDragging = false;
+    var previousMouseX = 0;
+    var previousMouseY = 0;
+    var mouseRotationX = 12; // Inclinación inicial
+    var mouseRotationY = 0; // Rotación inicial
+    var targetMouseRotationX = 12;
+    var targetMouseRotationY = 0;
+    var orbitRotateSpeed = 0.72;
+    var orbitDragDampingFactor = 0.36;
+    var orbitReleaseDampingFactor = 0.20;
+    var maxPointerDelta = 80;
+    var minOrbitPolarAngle = -85;
+    var maxOrbitPolarAngle = 85;
+
+    var shaderDicts = {
+        "flat": {
+            "vertex": "vertexShaderFlat",
+            "fragment": "fragmentShaderFlat"
+        },
+        "gouraud": {
+            "vertex": "vertexShaderGouraud",
+            "fragment": "fragmentShaderGouraud"
+        },
+        "phong": {
+            "vertex": "vertexShaderPhong",
+            "fragment": "fragmentShaderPhong"
+        },
+    };
+    var modelNames;
+
+    // Initial values for reset
+    var initialCameraZoom = -14;
+    var initialMouseRotationX = 12;
+    var initialMouseRotationY = 0;
+
+    updateZoomLimits(initialCameraZoom);
+
+    function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    function syncOrbitTargets() {
+        targetCameraZoom = cameraZoom;
+        targetMouseRotationX = mouseRotationX;
+        targetMouseRotationY = mouseRotationY;
+    }
+
+    function dampValue(current, target, dampingFactor, elapsed) {
+        var frameScale = elapsed > 0 ? Math.min(elapsed / 16.6667, 4.0) : 1.0;
+        var alpha = 1.0 - Math.pow(1.0 - dampingFactor, frameScale);
+        var next = current + (target - current) * alpha;
+        return Math.abs(target - next) < 0.0001 ? target : next;
+    }
+
+    function updateOrbitDamping(elapsed) {
+        var rotateDamping = isDragging ? orbitDragDampingFactor : orbitReleaseDampingFactor;
+        mouseRotationX = dampValue(mouseRotationX, targetMouseRotationX, rotateDamping, elapsed);
+        mouseRotationY = dampValue(mouseRotationY, targetMouseRotationY, rotateDamping, elapsed);
+        cameraZoom = dampValue(cameraZoom, targetCameraZoom, zoomDampingFactor, elapsed);
+    }
+
+    function setupOrbitViewMatrix(matrix) {
+        var distance = Math.max(0.001, Math.abs(cameraZoom));
+        var yaw = degToRad(mouseRotationY);
+        var pitch = degToRad(clamp(mouseRotationX, minOrbitPolarAngle, maxOrbitPolarAngle));
+        var cosPitch = Math.cos(pitch);
+
+        var eye = [
+            distance * Math.sin(yaw) * cosPitch,
+            distance * Math.sin(pitch),
+            distance * Math.cos(yaw) * cosPitch
+        ];
+
+        mat4.lookAt(eye, [0, 0, 0], [0, 1, 0], matrix);
+    }
+
+    function rotateOrbit(deltaX, deltaY, canvas) {
+        deltaX = clamp(deltaX, -maxPointerDelta, maxPointerDelta);
+        deltaY = clamp(deltaY, -maxPointerDelta, maxPointerDelta);
+
+        var referenceSize = Math.max(1, Math.min(canvas.clientWidth || 1, canvas.clientHeight || 1));
+        var degreesPerPixel = 360.0 / referenceSize;
+
+        targetMouseRotationY -= deltaX * degreesPerPixel * orbitRotateSpeed;
+        targetMouseRotationX = clamp(
+            targetMouseRotationX + deltaY * degreesPerPixel * orbitRotateSpeed,
+            minOrbitPolarAngle,
+            maxOrbitPolarAngle
+        );
+    }
+
+    function dollyOrbit(deltaY) {
+        var normalizedDelta = clamp(deltaY, -120, 120);
+        var scale = Math.pow(0.95, Math.abs(normalizedDelta) * orbitZoomSpeed / 40.0);
+        if (normalizedDelta > 0) {
+            targetCameraZoom /= scale;
+        } else {
+            targetCameraZoom *= scale;
+        }
+        targetCameraZoom = clamp(targetCameraZoom, minZoom, maxZoom);
+    }
+
+    function resetView() {
+        // Resetear zoom y rotación de la cámara
+        cameraZoom = initialCameraZoom;
+        targetCameraZoom = initialCameraZoom;
+        updateZoomLimits(initialCameraZoom);
+        mouseRotationX = initialMouseRotationX;
+        mouseRotationY = initialMouseRotationY;
+        targetMouseRotationX = initialMouseRotationX;
+        targetMouseRotationY = initialMouseRotationY;
+        
+        // Resetear sliders de intensidad de luz
+        var currentModelIndex = document.getElementById('model-selector').selectedIndex;
+        
+        // Resetear ambient intensity (preset realista)
+        var ambientSlider = document.getElementById('ambient intensity');
+        if (ambientSlider) {
+            ambientSlider.value = 6.1;
+            transformValues[currentModelIndex]['ambient intensity'] = 0.61;
+            transformValueDivs[currentModelIndex]['ambient intensity'].innerHTML = 'ambient intensity: 0.61';
+        }
+        
+        // Resetear diffuse intensity (igual a Three.js)
+        var diffuseSlider = document.getElementById('diffuse intensity');
+        if (diffuseSlider) {
+            diffuseSlider.value = 10;
+            transformValues[currentModelIndex]['diffuse intensity'] = 1.0;
+            transformValueDivs[currentModelIndex]['diffuse intensity'].innerHTML = 'diffuse intensity: 1.00';
+        }
+        
+        // Resetear specular intensity (preset realista)
+        var specularSlider = document.getElementById('specular intensity');
+        if (specularSlider) {
+            specularSlider.value = 7.8;
+            transformValues[currentModelIndex]['specular intensity'] = 0.78;
+            transformValueDivs[currentModelIndex]['specular intensity'].innerHTML = 'specular intensity: 0.78';
+        }
+        // Resetear specular order (más enfoque)
+        var specularOrderSlider = document.getElementById('specular order');
+        if (specularOrderSlider) {
+            specularOrderSlider.value = 88;
+            transformValues[currentModelIndex]['specular order'] = 88.0;
+            transformValueDivs[currentModelIndex]['specular order'].innerHTML = 'specular order: 88.00';
+        }
+        
+        // Resetear transformaciones
+        ['translateX', 'translateY', 'translateZ'].forEach(function(axis) {
+            var slider = document.getElementById(axis);
+            if (slider) {
+                slider.value = 0;
+                transformValues[currentModelIndex][axis] = 0;
+                transformValueDivs[currentModelIndex][axis].innerHTML = axis + ': 0.00';
+            }
+        });
+        
+        ['rotateX', 'rotateY', 'rotateZ'].forEach(function(axis) {
+            var slider = document.getElementById(axis);
+            if (slider) {
+                slider.value = 0;
+                transformValues[currentModelIndex][axis] = 0;
+                transformValueDivs[currentModelIndex][axis].innerHTML = axis + ': 0.00';
+            }
+        });
+        
+        ['scaleX', 'scaleY', 'scaleZ'].forEach(function(axis) {
+            var slider = document.getElementById(axis);
+            if (slider) {
+                slider.value = 1;
+                transformValues[currentModelIndex][axis] = 1;
+                transformValueDivs[currentModelIndex][axis].innerHTML = axis + ': 1.00';
+            }
+        });
+        
+    }
+
+    function initGL(canvas) {
+        // Ajustar dimensiones del canvas al contenedor con soporte para alta resolución
+        const container = canvas.parentElement;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2.5); // Limitar a 2.5x máximo
+        canvas.width = container.clientWidth * pixelRatio;
+        canvas.height = container.clientHeight * pixelRatio;
+        canvas.style.width = container.clientWidth + 'px';
+        canvas.style.height = container.clientHeight + 'px';
+        
+        try {
+            // Opciones de contexto WebGL para mejor calidad
+            const contextOptions = {
+                antialias: true,
+                alpha: true,
+                depth: true,
+                stencil: false,
+                premultipliedAlpha: false,
+                preserveDrawingBuffer: false,
+                powerPreference: 'high-performance'
+            };
+            gl = canvas.getContext("webgl", contextOptions) || canvas.getContext("experimental-webgl", contextOptions);
+            gl.viewportWidth  = canvas.width;
+            gl.viewportHeight = canvas.height;
+        } 
+        catch (e) {
+        }
+
+        if (!gl) {
+            alert("Could not initialise WebGL, sorry :-(");
+        }
+
+        // No derivative support
+        if(!gl.getExtension('OES_standard_derivatives')) {
+            throw 'extension not support'; 
+        }
+
+        textureAnisotropyExt =
+            gl.getExtension('EXT_texture_filter_anisotropic') ||
+            gl.getExtension('MOZ_EXT_texture_filter_anisotropic') ||
+            gl.getExtension('WEBKIT_EXT_texture_filter_anisotropic');
+        if (textureAnisotropyExt) {
+            maxTextureAnisotropy =
+                gl.getParameter(textureAnisotropyExt.MAX_TEXTURE_MAX_ANISOTROPY_EXT) || 1;
+        } else {
+            maxTextureAnisotropy = 1;
+        }
+        if (typeof gl.UNPACK_COLORSPACE_CONVERSION_WEBGL !== 'undefined') {
+            gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+        }
+        if (typeof gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL !== 'undefined') {
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+        }
+        gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+        if (typeof gl.GENERATE_MIPMAP_HINT !== 'undefined') {
+            gl.hint(gl.GENERATE_MIPMAP_HINT, gl.NICEST);
+        }
+    }
+
+    function getShader(gl, id) {
+        var shaderScript = document.getElementById(id);
+        if (!shaderScript) {
+            return null;
+        }
+
+        var shaderSource = "";
+        var k = shaderScript.firstChild;
+        while (k) {
+            if (k.nodeType == 3) {
+                shaderSource += k.textContent;
+            }
+
+            k = k.nextSibling;
+        }
+
+        var shader;
+        if (shaderScript.type == "fragment") {
+            shader = gl.createShader(gl.FRAGMENT_SHADER);
+        } 
+        else if (shaderScript.type == "vertex") {
+            shader = gl.createShader(gl.VERTEX_SHADER);
+        } 
+        else {
+            return null;
+        }
+
+        gl.shaderSource(shader, shaderSource);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            alert(gl.getShaderInfoLog(shader));
+            return null;
+        }
+
+        return shader;
+    }
+
+    function initShaders(mode, i) {
+        // init independent shaders for different model, store in a list.
+        var vertexShader   = getShader(gl, shaderDicts[mode]["vertex"]);
+        var fragmentShader = getShader(gl, shaderDicts[mode]["fragment"]);
+
+        shaderProgram[i] = gl.createProgram();
+        gl.attachShader(shaderProgram[i], vertexShader);
+        gl.attachShader(shaderProgram[i], fragmentShader);
+        gl.linkProgram(shaderProgram[i]);
+
+        if (!gl.getProgramParameter(shaderProgram[i], gl.LINK_STATUS)) {
+            alert("Could not initialise shaders");
+        }
+
+        gl.useProgram(shaderProgram[i]);
+
+        shaderProgram[i].vertexPositionAttribute = gl.getAttribLocation(shaderProgram[i], "aVertexPosition");
+        gl.enableVertexAttribArray(shaderProgram[i].vertexPositionAttribute);
+        shaderProgram[i].vertexFrontColorAttribute = gl.getAttribLocation(shaderProgram[i], "aFrontColor");
+        gl.enableVertexAttribArray(shaderProgram[i].vertexFrontColorAttribute);
+        shaderProgram[i].vertexNormalAttribute = gl.getAttribLocation(shaderProgram[i], "aVertexNormal");
+        if (shaderProgram[i].vertexNormalAttribute >= 0) gl.enableVertexAttribArray(shaderProgram[i].vertexNormalAttribute);
+        shaderProgram[i].vertexTextureCoordAttribute = gl.getAttribLocation(shaderProgram[i], "aTextureCoord");
+        if (shaderProgram[i].vertexTextureCoordAttribute >= 0) gl.enableVertexAttribArray(shaderProgram[i].vertexTextureCoordAttribute);
+        shaderProgram[i].vertexMaterialPropsAttribute = gl.getAttribLocation(shaderProgram[i], "aMaterialProps");
+        if (shaderProgram[i].vertexMaterialPropsAttribute >= 0) gl.enableVertexAttribArray(shaderProgram[i].vertexMaterialPropsAttribute);
+
+        shaderProgram[i].pMatrixUniform  = gl.getUniformLocation(shaderProgram[i], "uPMatrix");
+        shaderProgram[i].mvMatrixUniform = gl.getUniformLocation(shaderProgram[i], "uMVMatrix");
+        shaderProgram[i].nMatrixUniform = gl.getUniformLocation(shaderProgram[i], "uNMatrix");
+
+        shaderProgram[i].lightColor1Uniform = gl.getUniformLocation(shaderProgram[i], "uLightColor1");
+        shaderProgram[i].lightColor2Uniform = gl.getUniformLocation(shaderProgram[i], "uLightColor2");
+        shaderProgram[i].lightColor3Uniform = gl.getUniformLocation(shaderProgram[i], "uLightColor3");
+
+        shaderProgram[i].lightSource1Uniform = gl.getUniformLocation(shaderProgram[i], "uLightSource1");
+        shaderProgram[i].lightSource2Uniform = gl.getUniformLocation(shaderProgram[i], "uLightSource2");
+        shaderProgram[i].lightSource3Uniform = gl.getUniformLocation(shaderProgram[i], "uLightSource3");
+
+        shaderProgram[i].ambientColorUniform = gl.getUniformLocation(shaderProgram[i], "uAmbientColor");
+        shaderProgram[i].specularOrderUniform = gl.getUniformLocation(shaderProgram[i], "uSpecularOrder");
+
+        shaderProgram[i].ambientIntensityUniform = gl.getUniformLocation(shaderProgram[i], "uAmbientIntensity");
+        shaderProgram[i].diffuseIntensityUniform = gl.getUniformLocation(shaderProgram[i], "uDiffuseIntensity");
+        shaderProgram[i].specularIntensityUniform = gl.getUniformLocation(shaderProgram[i], "uSpecularIntensity");
+        
+        // Multi-texture uniforms (soporta hasta 8 texturas)
+        shaderProgram[i].samplerUniform = gl.getUniformLocation(shaderProgram[i], "uSampler");
+        shaderProgram[i].sampler0Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler0");
+        shaderProgram[i].sampler1Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler1");
+        shaderProgram[i].sampler2Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler2");
+        shaderProgram[i].sampler3Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler3");
+        shaderProgram[i].sampler4Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler4");
+        shaderProgram[i].sampler5Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler5");
+        shaderProgram[i].sampler6Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler6");
+        shaderProgram[i].sampler7Uniform = gl.getUniformLocation(shaderProgram[i], "uSampler7");
+        shaderProgram[i].textureCountUniform = gl.getUniformLocation(shaderProgram[i], "uTextureCount");
+        shaderProgram[i].useTextureUniform = gl.getUniformLocation(shaderProgram[i], "uUseTexture");
+
+    }
+
+    function initAnalyticShadowShader() {
+        var vertexShader = getShader(gl, "vertexShaderAnalyticShadow");
+        var fragmentShader = getShader(gl, "fragmentShaderAnalyticShadow");
+
+        analyticShadowProgram = gl.createProgram();
+        gl.attachShader(analyticShadowProgram, vertexShader);
+        gl.attachShader(analyticShadowProgram, fragmentShader);
+        gl.linkProgram(analyticShadowProgram);
+
+        if (!gl.getProgramParameter(analyticShadowProgram, gl.LINK_STATUS)) {
+            alert("Could not initialise analytic shadow shader");
+        }
+
+        analyticShadowProgram.vertexPositionAttribute = gl.getAttribLocation(analyticShadowProgram, "aVertexPosition");
+        analyticShadowProgram.planeCoordAttribute = gl.getAttribLocation(analyticShadowProgram, "aPlaneCoord");
+        analyticShadowProgram.pMatrixUniform = gl.getUniformLocation(analyticShadowProgram, "uPMatrix");
+        analyticShadowProgram.mvMatrixUniform = gl.getUniformLocation(analyticShadowProgram, "uMVMatrix");
+        analyticShadowProgram.planeColorUniform = gl.getUniformLocation(analyticShadowProgram, "uPlaneColor");
+        analyticShadowProgram.planeModeUniform = gl.getUniformLocation(analyticShadowProgram, "uPlaneMode");
+    }
+
+    function initGlobalVariables() {
+        shaderProgram = new Array(modelNames.length);
+        mvMatrix = new Array(modelNames.length);
+        pMatrix  = new Array(modelNames.length);
+        nMatrix = new Array(modelNames.length);
+        centerPosition = new Array(modelNames.length);
+        modelBoundingBox = new Array(modelNames.length);
+
+        // Lighting. 3 light sources
+        lightSource = new Array(3);
+        lightColor = new Array(3);
+        lightValues = new Array(3);
+
+        for(let i = 0; i < 3; i++) {
+            lightSource[i] = vec3.create();
+            lightColor[i] = vec3.create();
+            lightValues[i] = [0.6, 0.6, 0.6];
+        }
+
+        for(let i = 0; i < modelNames.length; i++) {
+            mvMatrix[i] = mat4.create();
+            pMatrix[i] = mat4.create();
+            nMatrix[i] = mat4.create();
+        }
+
+        specularOrder = new Array(modelNames.length);
+        ambientIntensity = new Array(modelNames.length);
+        diffuseIntensity = new Array(modelNames.length);
+        specularIntensity = new Array(modelNames.length);
+        ambientColor = vec3.create();
+
+        dataVertexPositionBuffer = new Array(modelNames.length);
+        dataVertexNormalBuffer = new Array(modelNames.length);
+        dataVertexFrontColorBuffer = new Array(modelNames.length);
+        dataVertexTexCoordBuffer = new Array(modelNames.length);
+        dataVertexMaterialPropsBuffer = new Array(modelNames.length);
+        dataTextureBuffer = new Array(modelNames.length);
+        dataUseTexture = new Array(modelNames.length);
+        groundVertexPositionBuffer = new Array(modelNames.length);
+        groundCoordBuffer = new Array(modelNames.length);
+        shadowVertexPositionBuffer = new Array(modelNames.length);
+        shadowCoordBuffer = new Array(modelNames.length);
+        analyticPlaneInfo = new Array(modelNames.length);
+    }
+
+    function isPowerOf2(value) {
+        if (!Number.isFinite(value) || value <= 0) return false;
+        return (value & (value - 1)) === 0;
+    }
+
+    function updateShader(i) {
+        var newShaderMode = document.getElementById(`shader-selector-${i}`).value;
+        // init every shader
+        initShaders(newShaderMode, i);
+
+        gl.clearColor(0.031, 0.043, 0.075, 1.0);
+        gl.enable(gl.DEPTH_TEST);
+        gl.disable(gl.CULL_FACE);
+
+        tick();
+    }
+
+    function updateRotate() {
+        var rotateButton = document.getElementById("rotate-button");
+        if(rotateButton.innerHTML == "On") {
+            rotateButton.innerHTML = "Off";
+            rotatePerSec = 0.03;
+        }
+        else {
+            rotateButton.innerHTML = "On";
+            rotatePerSec = 0.0;
+        }
+    }
+
+    function updateLighting(obj, i) {
+        var colorHex = obj.value.slice(1);
+        var r = parseInt("0x".concat(colorHex.slice(0, 2))) * 1.0 / 255;
+        var g = parseInt("0x".concat(colorHex.slice(2, 4))) * 1.0 / 255;
+        var b = parseInt("0x".concat(colorHex.slice(4, 6))) * 1.0 / 255;
+        lightValues[i] = [r, g, b];
+    }
+
+    function updateAmbient(obj) {
+        ambientIntensity = obj.value;
+    }
+    
+    function updateDiffuse(obj) {
+        diffuseIntensity = obj.value;
+    }
+    
+    function updateSpecular(obj) {
+        specularIntensity = obj.value;
+    }
+
+    function updateControl(obj) {
+        var name = obj.value;
+        var modelId = modelNames.indexOf(name);
+         (modelId);
+        var display;
+        for(let i = 0; i < modelNames.length; i++) {
+            display = "none";
+            if(i === modelId) display = "block";
+            document.getElementById(`controls-${i}`).style.display = display;
+        }
+    }
+
+    function setMatrixUniforms(i) {
+        gl.uniformMatrix4fv(shaderProgram[i].pMatrixUniform, false, pMatrix[i]);
+        gl.uniformMatrix4fv(shaderProgram[i].mvMatrixUniform, false, mvMatrix[i]);
+        gl.uniformMatrix4fv(shaderProgram[i].nMatrixUniform, false, nMatrix[i]);
+    }
+
+    function setVectorUniforms(i) {
+        gl.uniform3fv(shaderProgram[i].lightSource1Uniform, lightSource[0]);
+        gl.uniform3fv(shaderProgram[i].lightSource2Uniform, lightSource[1]);
+        gl.uniform3fv(shaderProgram[i].lightSource3Uniform, lightSource[2]);
+
+        gl.uniform3fv(shaderProgram[i].lightColor1Uniform, lightColor[0]);
+        gl.uniform3fv(shaderProgram[i].lightColor2Uniform, lightColor[1]);
+        gl.uniform3fv(shaderProgram[i].lightColor3Uniform, lightColor[2]);
+        gl.uniform3fv(shaderProgram[i].ambientColorUniform, ambientColor);
+
+        gl.uniform1f(shaderProgram[i].specularOrderUniform, specularOrder[i]);
+
+        gl.uniform1f(shaderProgram[i].ambientIntensityUniform, ambientIntensity[i]);
+        gl.uniform1f(shaderProgram[i].diffuseIntensityUniform, diffuseIntensity[i]);
+        gl.uniform1f(shaderProgram[i].specularIntensityUniform, specularIntensity[i]);
+    }
+
+    function degToRad(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+    function getCenterPosition(positionData) {
+        var minX = 1e8, maxX = -1e8;
+        var minY = 1e8, maxY = -1e8;
+        var minZ = 1e8, maxZ = -1e8;
+        var centerX, centerY, centerZ;
+
+        for(var i = 0; i < Math.floor(positionData.length / 3); i++) {
+            minX = Math.min(positionData[3 * i], minX);
+            minY = Math.min(positionData[3 * i + 1], minY);
+            minZ = Math.min(positionData[3 * i + 2], minZ);
+
+            maxX = Math.max(positionData[3 * i], maxX);
+            maxY = Math.max(positionData[3 * i + 1], maxY);
+            maxZ = Math.max(positionData[3 * i + 2], maxZ);
+        }
+        centerX = (minX + maxX) / 2;
+        centerY = (minY + maxY) / 2;
+        centerZ = (minZ + maxZ) / 2;
+        
+        // También devolver el tamaño del bounding box
+        var sizeX = maxX - minX;
+        var sizeY = maxY - minY;
+        var sizeZ = maxZ - minZ;
+        
+        return {
+            center: [-centerX, -centerY, -centerZ],
+            centerPoint: [centerX, centerY, centerZ],
+            min: [minX, minY, minZ],
+            max: [maxX, maxY, maxZ],
+            size: [sizeX, sizeY, sizeZ],
+            maxDim: Math.max(sizeX, sizeY, sizeZ),
+            radius: Math.sqrt(sizeX * sizeX + sizeY * sizeY + sizeZ * sizeZ) / 2
+        };
+    }
+
+    function createAnalyticDiscData(centerX, y, centerZ, radiusX, radiusZ, segments, offsetX, offsetZ) {
+        var positions = [];
+        var coords = [];
+        var cx = centerX + (offsetX || 0);
+        var cz = centerZ + (offsetZ || 0);
+
+        for (var s = 0; s < segments; s++) {
+            var a0 = (s / segments) * Math.PI * 2.0;
+            var a1 = ((s + 1) / segments) * Math.PI * 2.0;
+            var c0 = Math.cos(a0);
+            var s0 = Math.sin(a0);
+            var c1 = Math.cos(a1);
+            var s1 = Math.sin(a1);
+
+            positions.push(cx, y, cz);
+            coords.push(0, 0);
+
+            positions.push(cx + c0 * radiusX, y, cz + s0 * radiusZ);
+            coords.push(c0, s0);
+
+            positions.push(cx + c1 * radiusX, y, cz + s1 * radiusZ);
+            coords.push(c1, s1);
+        }
+
+        return {
+            positions: new Float32Array(positions),
+            coords: new Float32Array(coords),
+            vertexCount: positions.length / 3
+        };
+    }
+
+    function createStaticArrayBuffer(data, itemSize) {
+        var buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+        buffer.itemSize = itemSize;
+        buffer.numItems = data.length / itemSize;
+        return buffer;
+    }
+
+    function disableAllVertexAttribArrays() {
+        var maxAttribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS) || 16;
+        for (var attr = 0; attr < maxAttribs; attr++) {
+            gl.disableVertexAttribArray(attr);
+        }
+    }
+
+    function transformPointByMat4(matrix, point) {
+        var x = point[0];
+        var y = point[1];
+        var z = point[2];
+        var w = matrix[3] * x + matrix[7] * y + matrix[11] * z + matrix[15];
+        if (Math.abs(w) < 1e-6) w = 1.0;
+
+        return [
+            (matrix[0] * x + matrix[4] * y + matrix[8] * z + matrix[12]) / w,
+            (matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13]) / w,
+            (matrix[2] * x + matrix[6] * y + matrix[10] * z + matrix[14]) / w
+        ];
+    }
+
+    function smoothstep(edge0, edge1, value) {
+        if (Math.abs(edge1 - edge0) < 1e-6) return value >= edge1 ? 1.0 : 0.0;
+        var t = clamp((value - edge0) / (edge1 - edge0), 0.0, 1.0);
+        return t * t * (3.0 - 2.0 * t);
+    }
+
+    function setupAnalyticGroundAndShadow(i, boundingInfo) {
+        if (!boundingInfo || !boundingInfo.min || !boundingInfo.max) return;
+
+        var min = boundingInfo.min;
+        var max = boundingInfo.max;
+        var center = boundingInfo.centerPoint || [
+            (min[0] + max[0]) * 0.5,
+            (min[1] + max[1]) * 0.5,
+            (min[2] + max[2]) * 0.5
+        ];
+        var size = boundingInfo.size || [max[0] - min[0], max[1] - min[1], max[2] - min[2]];
+        var maxDim = Math.max(boundingInfo.maxDim || 0, 0.001);
+        var horizontalSpan = Math.max(size[0], size[2], maxDim * 0.34, 0.001);
+        var groundY = min[1] - Math.max(maxDim * 0.018, 0.01);
+        var shadowY = groundY + Math.max(maxDim * 0.0025, 0.001);
+
+        var groundRadius = horizontalSpan * 1.35;
+        var shadowRadiusX = Math.max(horizontalSpan * 0.52, maxDim * 0.17);
+        var shadowRadiusZ = shadowRadiusX * 1.18;
+        var shadowOffsetX = -horizontalSpan * 0.05;
+        var shadowOffsetZ = -horizontalSpan * 0.34;
+
+        var ground = createAnalyticDiscData(center[0], groundY, center[2], groundRadius, groundRadius, 56, 0, 0);
+        var shadow = createAnalyticDiscData(
+            center[0],
+            shadowY,
+            center[2],
+            shadowRadiusX,
+            shadowRadiusZ,
+            48,
+            shadowOffsetX,
+            shadowOffsetZ
+        );
+
+        groundVertexPositionBuffer[i] = createStaticArrayBuffer(ground.positions, 3);
+        groundCoordBuffer[i] = createStaticArrayBuffer(ground.coords, 2);
+        shadowVertexPositionBuffer[i] = createStaticArrayBuffer(shadow.positions, 3);
+        shadowCoordBuffer[i] = createStaticArrayBuffer(shadow.coords, 2);
+        analyticPlaneInfo[i] = {
+            center: [center[0], groundY, center[2]],
+            normalPoint: [center[0], groundY + 1.0, center[2]],
+            fadeStart: maxDim * 0.03,
+            fadeEnd: maxDim * 0.18
+        };
+    }
+
+    function calculateOptimalZoom(boundingInfo) {
+        // Calcular zoom óptimo replicando la lógica de Three.js (fitCameraToObject)
+        var radius = boundingInfo && typeof boundingInfo.radius === 'number' ? boundingInfo.radius : 0;
+        if (!radius || radius <= 0 || isNaN(radius)) {
+            console.warn('[WebGL Viewer] radio inválido, usando zoom por defecto');
+            return -14;
+        }
+        
+        // FOV de 45 grados y ajuste por aspecto del viewport
+        var vFov = 45 * (Math.PI / 180);
+        var aspect = 1;
+        if (gl && gl.viewportWidth && gl.viewportHeight) {
+            aspect = gl.viewportWidth / Math.max(gl.viewportHeight, 1);
+        }
+        var hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
+        var minHalfFov = Math.max(Math.min(vFov, hFov) * 0.5, 0.001);
+        
+        // Misma distancia que Three.js: (radius / sin(minHalfFov)) * padding
+        var distance = (radius / Math.sin(minHalfFov)) * 1.4;
+        
+        // Negar porque en WebGL valores negativos alejan la cámara
+        var zoom = -distance;
+        
+        // Limitar valores extremos ampliados
+        zoom = Math.max(-500, Math.min(-0.3, zoom));
+        
+        return zoom;
+    }
+
+    function handleLoadedData(data, i) {
+        dataVertexPositionBuffer[i] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexPositionBuffer[i]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertexPositions), gl.STATIC_DRAW);
+        dataVertexPositionBuffer[i].itemSize = 3;
+        dataVertexPositionBuffer[i].numItems = data.vertexPositions.length / 3;
+        
+        // Calcular center y bounding box
+        var boundingInfo = getCenterPosition(new Float32Array(data.vertexPositions));
+        centerPosition[i] = boundingInfo.center;
+        modelBoundingBox[i] = boundingInfo;
+        setupAnalyticGroundAndShadow(i, boundingInfo);
+
+        // Ajustar zoom automáticamente para TODOS los modelos
+        if (i === 0 && boundingInfo.maxDim > 0) {
+            var modelName = (modelNames[i] || '').toLowerCase();
+            var fileName = modelName.split('/').pop().split('\\').pop().split('.')[0];
+            var hasSpecificConfig = ['kangaroo', 'bunny', 'suzanne', 'buddha', 'teapot'].includes(fileName);
+            
+            // Aplicar auto-zoom para modelos personalizados
+            if (!hasSpecificConfig) {
+                var optimalZoom = calculateOptimalZoom(boundingInfo);
+                updateZoomLimits(optimalZoom);
+                cameraZoom = Math.max(minZoom, Math.min(maxZoom, optimalZoom));
+                targetCameraZoom = cameraZoom;
+                initialCameraZoom = cameraZoom;
+            }
+        }
+
+        dataVertexNormalBuffer[i] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexNormalBuffer[i]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertexNormals), gl.STATIC_DRAW);
+        dataVertexNormalBuffer[i].itemSize = 3;
+        dataVertexNormalBuffer[i].numItems = data.vertexNormals.length / 3;
+
+        dataVertexFrontColorBuffer[i] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexFrontColorBuffer[i]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertexFrontcolors || []), gl.STATIC_DRAW);
+        
+        // Detectar si es RGBA (múltiples materiales) o RGB (single material)
+        const hasMultipleMaterials = data.hasMultipleMaterials;
+        const colorComponents = hasMultipleMaterials ? 4 : 3;
+        dataVertexFrontColorBuffer[i].itemSize = colorComponents;
+        dataVertexFrontColorBuffer[i].numItems = data.vertexFrontcolors ? (data.vertexFrontcolors.length / colorComponents) : 0;
+
+        const vertexCount = dataVertexPositionBuffer[i].numItems;
+        let materialPropsData = data.vertexMaterialProps || [];
+        if (!materialPropsData.length || materialPropsData.length !== vertexCount * 2) {
+            materialPropsData = new Array(vertexCount * 2);
+            for (let j = 0; j < vertexCount; j++) {
+                materialPropsData[j * 2] = 0.58;
+                materialPropsData[j * 2 + 1] = 0.05;
+            }
+        }
+        dataVertexMaterialPropsBuffer[i] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexMaterialPropsBuffer[i]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(materialPropsData), gl.STATIC_DRAW);
+        dataVertexMaterialPropsBuffer[i].itemSize = 2;
+        dataVertexMaterialPropsBuffer[i].numItems = materialPropsData.length / 2;
+
+        dataUseTexture[i] = !!data.useTexture && (!!data.textureImage || (data.textureImages && data.textureImages.length > 0));
+        
+        if (dataUseTexture[i]) {
+            if (!dataVertexTexCoordBuffer[i] && (!data.vertexTexCoords || data.vertexTexCoords.length === 0)) {
+                // Sin coordenadas UV - crear fallback
+                dataVertexTexCoordBuffer[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexTexCoordBuffer[i]);
+                const fallbackUVs = new Float32Array(Math.max(dataVertexFrontColorBuffer[i].numItems * 2, 0));
+                for (let j = 0; j < fallbackUVs.length; j += 2) {
+                    fallbackUVs[j] = 0.5;
+                    fallbackUVs[j + 1] = 0.5;
+                }
+                gl.bufferData(gl.ARRAY_BUFFER, fallbackUVs, gl.STATIC_DRAW);
+                dataVertexTexCoordBuffer[i].itemSize = 2;
+                dataVertexTexCoordBuffer[i].numItems = fallbackUVs.length / 2;
+            } else if (!dataVertexTexCoordBuffer[i] && data.vertexTexCoords && data.vertexTexCoords.length > 0) {
+                dataVertexTexCoordBuffer[i] = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexTexCoordBuffer[i]);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data.vertexTexCoords), gl.STATIC_DRAW);
+                dataVertexTexCoordBuffer[i].itemSize = 2;
+                dataVertexTexCoordBuffer[i].numItems = data.vertexTexCoords.length / 2;
+            }
+
+            // Cargar textura(s)
+            const texturesToLoad = hasMultipleMaterials && data.textureImages ? data.textureImages : [data.textureImage || data.textureImages?.[0]];
+            const loadedTextures = [];
+            
+            for (let texIdx = 0; texIdx < Math.min(texturesToLoad.length, 8); texIdx++) {
+                const textureImage = texturesToLoad[texIdx];
+                if (!textureImage) continue;
+                
+                try {
+                    const texture = gl.createTexture();
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+                    
+                    // Upload de imagen directa
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureImage);
+                    
+                    // Configurar filtrado de textura con soporte correcto para NPOT.
+                    const isPotTexture = isPowerOf2(textureImage.width) && isPowerOf2(textureImage.height);
+                    if (isPotTexture) {
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+                        gl.generateMipmap(gl.TEXTURE_2D);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+                    } else {
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    }
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+                    if (textureAnisotropyExt && maxTextureAnisotropy > 1) {
+                        const anisotropyLevel = Math.min(16, maxTextureAnisotropy);
+                        gl.texParameterf(
+                            gl.TEXTURE_2D,
+                            textureAnisotropyExt.TEXTURE_MAX_ANISOTROPY_EXT,
+                            anisotropyLevel
+                        );
+                    }
+                    
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                    loadedTextures.push(texture);
+                } catch (textureError) {
+                    console.warn(`[WebGL] Error cargando textura ${texIdx} para modelo ${i}:`, textureError);
+                }
+            }
+            
+            if (loadedTextures.length > 0) {
+                dataTextureBuffer[i] = loadedTextures; // Array de texturas
+            } else {
+                dataUseTexture[i] = false;
+            }
+        }
+    }
+
+    function loadData(name, i) {
+        // Construir ruta del modelo
+        let modelPath;
+        
+        // Detectar si es una ruta absoluta o URL completa
+        if (name.startsWith('/') || name.startsWith('http://') || name.startsWith('https://')) {
+            // Si es una ruta absoluta, convertir a URL completa
+            if (name.startsWith('/')) {
+                modelPath = window.location.origin + name;
+            } else {
+                // Usar URL directamente
+                modelPath = name;
+            }
+        } else {
+            // Usar mapeo de nombres predefinidos
+            const modelMap = {
+                "teapot": "./model/Teapot.json",
+                "kangaroo": "./model/Kangaroo.json",
+                "bunny": "./model/Bunny.json",
+                "suzanne": "./model/Suzanne.json",
+                "buddha": "./model/Buddha.json",
+                "own": "./model/Own.json"
+            };
+            modelPath = modelMap[name] || "./model/Own.json";
+        }
+        
+        // Usar el nuevo loader universal
+        window.globalModelLoader.loadModel(modelPath)
+            .then(data => {
+                // Convertir formato del loader al formato esperado por handleLoadedData
+                const convertedData = {
+                    vertexPositions: data.vertices || [],
+                    vertexNormals: data.normals || data.vertexNormals || [],
+                    vertexFrontcolors: data.colors || [],
+                    vertexTexCoords: data.texCoords || data.uvs || [],
+                    vertexMaterialProps: data.materialProps || [],
+                    textureImage: data.textureImage || null,
+                    textureImages: data.textureImages || [],
+                    hasMultipleMaterials: data.hasMultipleMaterials || false,
+                    textureCount: data.textureCount || 0,
+                    useTexture: !!data.useTexture && (!!data.textureImage || (data.textureImages && data.textureImages.length > 0))
+                };
+
+                handleLoadedData(convertedData, i);
+            })
+            .catch(error => {
+                console.error(`[WebGL Viewer] Error cargando modelo ${name}:`, error);
+                alert(`Error cargando modelo: ${error.message}`);
+            });
+    }
+
+    /*
+        TODO HERE:
+        add two or more objects showing on the canvas
+        (it needs at least three objects showing at the same time)
+    */
+
+    function setupGeometry(i) {
+        // Setup matrices
+        var shearMatrix = mat4.create();
+        mat4.identity(shearMatrix);
+        shearMatrix[1] = transformValues[i]["shearXY"];
+        shearMatrix[2] = transformValues[i]["shearXZ"];
+        shearMatrix[4] = transformValues[i]["shearYX"];
+        shearMatrix[6] = transformValues[i]["shearYZ"];
+        shearMatrix[8] = transformValues[i]["shearZX"];
+        shearMatrix[9] = transformValues[i]["shearZY"];
+        // (shearMatrix);
+        /*
+            0  1  2  3
+            4  5  6  7
+            8  9 10 11
+            12 13 14 15
+        */
+
+
+        // Setup Projection Matrix
+        mat4.perspective(transformValues[i]["fov"], gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0, pMatrix[i]); // 45 is view angle
+
+        // Setup Model-View Matrix
+        mat4.identity(mvMatrix[i]);
+        setupOrbitViewMatrix(mvMatrix[i]);
+        if(modelNames[i] === "kangaroo") {
+            mat4.translate(mvMatrix[i], [-25, -10, 0]);
+        } else if(modelNames[i] === "bunny") {
+            mat4.translate(mvMatrix[i], [60, 0, 0]);
+        } else if(modelNames[i] === "teapot") {
+            mat4.translate(mvMatrix[i], [10, -20, 0]);
+        } else if(modelNames[i] === "suzanne") {
+            mat4.translate(mvMatrix[i], [10, 20, 0]);
+        } else if(modelNames[i] === "buddha") {
+            mat4.translate(mvMatrix[i], [-60, 0, 0]);
+        }
+        //mat4.translate(mvMatrix, centerPosition);
+        mat4.translate(mvMatrix[i], [
+            transformValues[i]["translateX"], 
+            transformValues[i]["translateY"], 
+            transformValues[i]["translateZ"]]
+        );
+
+        // Rotaciones de controles
+        mat4.rotateX(mvMatrix[i], degToRad(transformValues[i]["rotateX"]));
+        mat4.rotateY(mvMatrix[i], degToRad(transformValues[i]["rotateY"]));
+        mat4.rotateY(mvMatrix[i], degToRad(animateAngle));
+        mat4.rotateZ(mvMatrix[i], degToRad(transformValues[i]["rotateZ"]));
+        mat4.multiply(mvMatrix[i], shearMatrix);
+        mat4.scale(mvMatrix[i], [
+            transformValues[i]["scaleX"],
+            transformValues[i]["scaleY"],
+            transformValues[i]["scaleZ"]
+        ]);
+        if(modelNames[i] === "kangaroo") {
+            mat4.rotateX(mvMatrix[i], degToRad(270));
+            mat4.scale(mvMatrix[i], [25, 25, 25]);
+        } else if(modelNames[i] === "bunny") { 
+            mat4.rotateX(mvMatrix[i], degToRad(0));
+            mat4.scale(mvMatrix[i], [300, 300, 300]);
+        } else if(modelNames[i] === "suzanne") { 
+            mat4.rotateX(mvMatrix[i], degToRad(0));
+            mat4.scale(mvMatrix[i], [20, 20, 20]);
+        } else if(modelNames[i] === "buddha") { 
+            mat4.rotateX(mvMatrix[i], degToRad(270));
+            mat4.scale(mvMatrix[i], [0.25, 0.25, 0.25]);
+        }
+        // No aplicar transformaciones especiales para modelos personalizados
+        // Dejar que se muestren en su orientación y escala natural
+        mat4.translate(mvMatrix[i], centerPosition[i] || [0, 0, 0]); // translate to center
+        
+        // Setup Normal Matrix
+        for(var j = 0; j < mvMatrix[i].length; j++) nMatrix[i][j] = mvMatrix[i][j];
+        mat4.transpose(mat4.inverse(nMatrix[i]));
+    }
+
+    function setupLightings(i) {
+        // Aproximación al setup del visor Three.js (ambient + key + rim).
+        vec3.set([1.0, 1.0, 1.0], ambientColor);
+        const uiAmbient = parseFloat(transformValues[i]["ambient intensity"]);
+        const uiDiffuse = parseFloat(transformValues[i]["diffuse intensity"]);
+        const uiSpecular = parseFloat(transformValues[i]["specular intensity"]);
+        const uiSpecularOrder = parseFloat(transformValues[i]["specular order"]);
+
+        ambientIntensity[i] = Number.isFinite(uiAmbient) ? uiAmbient : 0.61;
+        diffuseIntensity[i] = Number.isFinite(uiDiffuse) ? uiDiffuse : 1.0;
+        specularIntensity[i] = Number.isFinite(uiSpecular) ? uiSpecular : 0.78;
+        specularOrder[i] = Number.isFinite(uiSpecularOrder) ? uiSpecularOrder : 88.0;
+
+        // Luz principal más frontal y baja para que la sombra analítica lea como proyectada hacia atrás.
+        vec3.set([1.0, 1.0, 1.0], lightColor[0]);
+        vec3.set([0.291, 0.393, 0.55], lightColor[1]);
+        vec3.set([0.24, 0.24, 0.26], lightColor[2]); // fill suave para abrir sombras
+
+        // Direcciones (normalizadas en shader, magnitud irrelevante).
+        vec3.set([72.0, 34.0, 185.0], lightSource[0]);
+        vec3.set([-80.0, 44.0, -115.0], lightSource[1]);
+        vec3.set([-35.0, 18.0, 64.0], lightSource[2]);
+    }
+
+    function drawAnalyticPlane(i, positionBuffer, coordBuffer, color, mode) {
+        if (!analyticShadowProgram || !positionBuffer || !coordBuffer) return;
+
+        gl.useProgram(analyticShadowProgram);
+        disableAllVertexAttribArrays();
+        gl.uniformMatrix4fv(analyticShadowProgram.pMatrixUniform, false, pMatrix[i]);
+        gl.uniformMatrix4fv(analyticShadowProgram.mvMatrixUniform, false, mvMatrix[i]);
+        gl.uniform4f(analyticShadowProgram.planeColorUniform, color[0], color[1], color[2], color[3]);
+        gl.uniform1f(analyticShadowProgram.planeModeUniform, mode);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.enableVertexAttribArray(analyticShadowProgram.vertexPositionAttribute);
+        gl.vertexAttribPointer(
+            analyticShadowProgram.vertexPositionAttribute,
+            positionBuffer.itemSize,
+            gl.FLOAT,
+            false,
+            0,
+            0
+        );
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, coordBuffer);
+        gl.enableVertexAttribArray(analyticShadowProgram.planeCoordAttribute);
+        gl.vertexAttribPointer(
+            analyticShadowProgram.planeCoordAttribute,
+            coordBuffer.itemSize,
+            gl.FLOAT,
+            false,
+            0,
+            0
+        );
+
+        gl.drawArrays(gl.TRIANGLES, 0, positionBuffer.numItems);
+    }
+
+    function drawAnalyticGroundAndShadow(i) {
+        if (!groundVertexPositionBuffer[i] || !shadowVertexPositionBuffer[i]) return;
+
+        var planeVisibility = getAnalyticPlaneVisibility(i);
+        if (planeVisibility <= 0.003) return;
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.depthMask(false);
+
+        drawAnalyticPlane(
+            i,
+            groundVertexPositionBuffer[i],
+            groundCoordBuffer[i],
+            [0.30, 0.34, 0.39, 0.58 * planeVisibility],
+            0.0
+        );
+        drawAnalyticPlane(
+            i,
+            shadowVertexPositionBuffer[i],
+            shadowCoordBuffer[i],
+            [0.0, 0.0, 0.0, 0.50 * planeVisibility],
+            1.0
+        );
+
+        gl.depthMask(true);
+        gl.disable(gl.BLEND);
+    }
+
+    function getAnalyticPlaneVisibility(i) {
+        var info = analyticPlaneInfo && analyticPlaneInfo[i];
+        if (!info || !mvMatrix[i]) return 1.0;
+
+        var planeCenterView = transformPointByMat4(mvMatrix[i], info.center);
+        var normalPointView = transformPointByMat4(mvMatrix[i], info.normalPoint);
+        var normalView = [
+            normalPointView[0] - planeCenterView[0],
+            normalPointView[1] - planeCenterView[1],
+            normalPointView[2] - planeCenterView[2]
+        ];
+        var normalLength = Math.sqrt(
+            normalView[0] * normalView[0] +
+            normalView[1] * normalView[1] +
+            normalView[2] * normalView[2]
+        );
+        if (normalLength <= 1e-6) return 1.0;
+
+        normalView[0] /= normalLength;
+        normalView[1] /= normalLength;
+        normalView[2] /= normalLength;
+
+        // En espacio de vista, la cámara está en el origen. Si queda al lado
+        // inferior del plano de apoyo, ocultamos suelo y sombra para que no se
+        // atraviesen al inspeccionar el objeto desde abajo.
+        var cameraSideDistance =
+            normalView[0] * -planeCenterView[0] +
+            normalView[1] * -planeCenterView[1] +
+            normalView[2] * -planeCenterView[2];
+        var fadeStart = info.fadeStart * normalLength;
+        var fadeEnd = info.fadeEnd * normalLength;
+
+        return smoothstep(fadeStart, fadeEnd, cameraSideDistance);
+    }
+
+    function drawScene() {
+        
+        if (dataVertexPositionBuffer[0]   == null || 
+            dataVertexNormalBuffer[0]     == null || 
+            dataVertexFrontColorBuffer[0] == null) {
+            
+            return;
+        }
+
+        for(let i = 0; i < modelNames.length; i++) {
+            if (!dataVertexPositionBuffer[i] || !dataVertexNormalBuffer[i] || !dataVertexFrontColorBuffer[i]) {
+                continue;
+            }
+
+            // Use ith shader
+            gl.useProgram(shaderProgram[i]);
+
+            // Setup matrix transformations
+            setupGeometry(i);
+            setupLightings(i);
+
+            // Setup unforms to pass to vertex shader
+            setMatrixUniforms(i);
+            setVectorUniforms(i);
+
+            drawAnalyticGroundAndShadow(i);
+            gl.useProgram(shaderProgram[i]);
+            disableAllVertexAttribArrays();
+
+            // Setup position data
+            if (shaderProgram[i].vertexPositionAttribute >= 0) {
+                gl.enableVertexAttribArray(shaderProgram[i].vertexPositionAttribute);
+                gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexPositionBuffer[i]);
+                gl.vertexAttribPointer(shaderProgram[i].vertexPositionAttribute, 
+                                    dataVertexPositionBuffer[i].itemSize, 
+                                    gl.FLOAT, 
+                                    false, 
+                                    0, 
+                                    0);
+            }
+
+            // Setup front color data
+            if (shaderProgram[i].vertexFrontColorAttribute >= 0) {
+                gl.enableVertexAttribArray(shaderProgram[i].vertexFrontColorAttribute);
+                gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexFrontColorBuffer[i]);
+                gl.vertexAttribPointer(shaderProgram[i].vertexFrontColorAttribute, 
+                                    dataVertexFrontColorBuffer[i].itemSize, 
+                                    gl.FLOAT, 
+                                    false, 
+                                    0, 
+                                    0);
+            }
+
+            // Setup front normal data
+            if (shaderProgram[i].vertexNormalAttribute >= 0) {
+                gl.enableVertexAttribArray(shaderProgram[i].vertexNormalAttribute);
+                gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexNormalBuffer[i]);
+                gl.vertexAttribPointer(shaderProgram[i].vertexNormalAttribute, 
+                                    dataVertexNormalBuffer[i].itemSize, 
+                                    gl.FLOAT, 
+                                    false, 
+                                    0, 
+                                    0);
+            }
+
+            if (shaderProgram[i].vertexMaterialPropsAttribute >= 0) {
+                if (dataVertexMaterialPropsBuffer[i]) {
+                    gl.enableVertexAttribArray(shaderProgram[i].vertexMaterialPropsAttribute);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexMaterialPropsBuffer[i]);
+                    gl.vertexAttribPointer(shaderProgram[i].vertexMaterialPropsAttribute,
+                                        dataVertexMaterialPropsBuffer[i].itemSize,
+                                        gl.FLOAT,
+                                        false,
+                                        0,
+                                        0);
+                } else {
+                    gl.disableVertexAttribArray(shaderProgram[i].vertexMaterialPropsAttribute);
+                    gl.vertexAttrib2f(shaderProgram[i].vertexMaterialPropsAttribute, 0.58, 0.05);
+                }
+            }
+
+            // Setup texture coords + texture sampler (Phong shader)
+            if (shaderProgram[i].vertexTextureCoordAttribute >= 0 && dataUseTexture[i] && dataVertexTexCoordBuffer[i]) {
+                gl.enableVertexAttribArray(shaderProgram[i].vertexTextureCoordAttribute);
+                gl.bindBuffer(gl.ARRAY_BUFFER, dataVertexTexCoordBuffer[i]);
+                gl.vertexAttribPointer(shaderProgram[i].vertexTextureCoordAttribute,
+                                    dataVertexTexCoordBuffer[i].itemSize,
+                                    gl.FLOAT,
+                                    false,
+                                    0,
+                                    0);
+                
+                // Ligar múltiples texturas si es array (soporta hasta 8)
+                const textures = Array.isArray(dataTextureBuffer[i]) ? dataTextureBuffer[i] : [dataTextureBuffer[i]];
+                const textureCount = textures.length;
+                
+                for (let texIdx = 0; texIdx < Math.min(textureCount, 8); texIdx++) {
+                    gl.activeTexture(gl.TEXTURE0 + texIdx);
+                    gl.bindTexture(gl.TEXTURE_2D, textures[texIdx]);
+                }
+                
+                // Pasar uniforms al shader (soporta hasta 8 texturas)
+                if (shaderProgram[i].sampler0Uniform && textureCount > 0) gl.uniform1i(shaderProgram[i].sampler0Uniform, 0);
+                if (shaderProgram[i].sampler1Uniform && textureCount > 1) gl.uniform1i(shaderProgram[i].sampler1Uniform, 1);
+                if (shaderProgram[i].sampler2Uniform && textureCount > 2) gl.uniform1i(shaderProgram[i].sampler2Uniform, 2);
+                if (shaderProgram[i].sampler3Uniform && textureCount > 3) gl.uniform1i(shaderProgram[i].sampler3Uniform, 3);
+                if (shaderProgram[i].sampler4Uniform && textureCount > 4) gl.uniform1i(shaderProgram[i].sampler4Uniform, 4);
+                if (shaderProgram[i].sampler5Uniform && textureCount > 5) gl.uniform1i(shaderProgram[i].sampler5Uniform, 5);
+                if (shaderProgram[i].sampler6Uniform && textureCount > 6) gl.uniform1i(shaderProgram[i].sampler6Uniform, 6);
+                if (shaderProgram[i].sampler7Uniform && textureCount > 7) gl.uniform1i(shaderProgram[i].sampler7Uniform, 7);
+                if (shaderProgram[i].textureCountUniform) gl.uniform1i(shaderProgram[i].textureCountUniform, textureCount);
+                if (shaderProgram[i].useTextureUniform) gl.uniform1i(shaderProgram[i].useTextureUniform, 1);
+
+            } else {
+                if (shaderProgram[i].vertexTextureCoordAttribute >= 0) {
+                    gl.disableVertexAttribArray(shaderProgram[i].vertexTextureCoordAttribute);
+                }
+                if (shaderProgram[i].useTextureUniform) gl.uniform1i(shaderProgram[i].useTextureUniform, 0);
+            }
+
+            gl.drawArrays(gl.TRIANGLES, 0, dataVertexPositionBuffer[i].numItems);
+        }
+    }
+
+    function clearBuffer() {
+        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    }
+
+    function animate() {
+        var timeNow = new Date().getTime();
+        if (lastTime != 0) {
+            var elapsed = timeNow - lastTime;
+            animateAngle += rotatePerSec * elapsed;
+            updateOrbitDamping(elapsed);
+            //if(animateAngle > 180) animateAngle = 360 - animateAngle;
+        }
+        
+        lastTime = timeNow;
+    }
+
+    function tick() {
+        requestAnimFrame(tick);
+        clearBuffer();
+        drawScene();
+        animate();
+    }
+
+    function webGLStart() {
+        // Inicializar el loader de modelos
+        window.globalModelLoader = new ModelLoader();
+        
+        // Detectar parámetro URL para cargar modelo personalizado
+        const params = new URLSearchParams(window.location.search);
+        const customModel = params.get('model');
+        
+        if (customModel) {
+            // Si viene con ruta personalizada (ej: ?model=/assets/jarron.glb)
+            modelNames = [customModel];
+        } else {
+            modelNames = ["own"];
+            //modelNames = ["buddha", "teapot", "bunny", "suzanne"];
+        }
+        initGlobalVariables();
+
+        var canvas = document.getElementById("ICG-canvas");
+        initGL(canvas);
+
+        syncOrbitTargets();
+
+        // Control de zoom tipo OrbitControls con amortiguación.
+        canvas.addEventListener('wheel', function(event) {
+            event.preventDefault();
+            var normalizedDelta = event.deltaY;
+            if (event.deltaMode === 1) {
+                normalizedDelta *= 16;
+            } else if (event.deltaMode === 2) {
+                normalizedDelta *= canvas.clientHeight || 800;
+            }
+            dollyOrbit(normalizedDelta);
+        }, { passive: false });
+
+        // Controles de puntero para rotar el modelo con suavizado.
+        canvas.addEventListener('pointerdown', function(event) {
+            if (event.button !== 0) return;
+            event.preventDefault();
+            isDragging = true;
+            previousMouseX = event.clientX;
+            previousMouseY = event.clientY;
+            if (canvas.setPointerCapture) {
+                canvas.setPointerCapture(event.pointerId);
+            }
+            canvas.style.cursor = 'grabbing';
+        });
+
+        canvas.addEventListener('pointermove', function(event) {
+            if (!isDragging) return;
+            event.preventDefault();
+
+            var pointerEvents = typeof event.getCoalescedEvents === 'function'
+                ? event.getCoalescedEvents()
+                : [event];
+
+            for (var eventIndex = 0; eventIndex < pointerEvents.length; eventIndex++) {
+                var pointerEvent = pointerEvents[eventIndex];
+                var deltaX = pointerEvent.clientX - previousMouseX;
+                var deltaY = pointerEvent.clientY - previousMouseY;
+
+                rotateOrbit(deltaX, deltaY, canvas);
+
+                previousMouseX = pointerEvent.clientX;
+                previousMouseY = pointerEvent.clientY;
+            }
+        });
+
+        canvas.addEventListener('pointerup', function(event) {
+            isDragging = false;
+            if (canvas.releasePointerCapture && (!canvas.hasPointerCapture || canvas.hasPointerCapture(event.pointerId))) {
+                canvas.releasePointerCapture(event.pointerId);
+            }
+            canvas.style.cursor = 'grab';
+        });
+
+        canvas.addEventListener('pointercancel', function(event) {
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+        });
+
+        canvas.style.cursor = 'grab';
+
+        for(let i = 0; i < modelNames.length; i++) initControls(i);
+        initAnalyticShadowShader();
+        for(let i = 0; i < modelNames.length; i++) initShaders("phong", i);
+        for(let i = 0; i < modelNames.length; i++) loadData(modelNames[i], i);
+
+        gl.clearColor(0.031, 0.043, 0.075, 1.0);
+        gl.enable(gl.DEPTH_TEST);
+        gl.disable(gl.CULL_FACE);
+        //gl.cullFace(gl.FRONT_AND_BACK);
+
+        // Listener para mensajes desde el componente padre
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.action === 'resetView') {
+                resetView();
+            }
+        });
+
+        // Listener para resize del contenedor
+        window.addEventListener('resize', function() {
+            const container = canvas.parentElement;
+            const pixelRatio = Math.min(window.devicePixelRatio || 1, 2.5); // Limitar a 2.5x máximo
+            canvas.width = container.clientWidth * pixelRatio;
+            canvas.height = container.clientHeight * pixelRatio;
+            canvas.style.width = container.clientWidth + 'px';
+            canvas.style.height = container.clientHeight + 'px';
+            gl.viewportWidth = canvas.width;
+            gl.viewportHeight = canvas.height;
+            gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        });
+
+        tick();
+    }
+</script>
+</head>
+
+<body onload="webGLStart();">
+    <div id="flex-container">
+        <canvas id="ICG-canvas"></canvas>
+        <div id="control-container"></div>
+        <div id="selector-container">
+            <div class="select-title">Toggle rotation</div>
+            <div id="rotate-button" onclick="updateRotate()">On</div>
+            <div class="select-title">Select model</div>
+            <select 
+                name="model-selector" 
+                id="model-selector" 
+                class="model-selector"
+                onchange="updateControl(this)"
+                autocomplete="off"
+            >
+            </select>
+            <div class="select-title">Light colors</div>
+            <div id="color-selector-container">
+                <input 
+                    class="color-selector" 
+                    type="color" 
+                    id="light-color1" 
+                    name="light-color1" 
+                    value="#ffffff"
+                    onchange="updateLighting(this, 0)"
+                    autocomplete="off"
+                > 
+                <input 
+                    class="color-selector" 
+                    type="color" 
+                    id="light-color2" 
+                    name="light-color2" 
+                    value="#ffffff"
+                    onchange="updateLighting(this, 1)"
+                    autocomplete="off"
+                > 
+                <input 
+                    class="color-selector" 
+                    type="color" 
+                    id="light-color3"
+                    name="light-color3" 
+                    value="#ffffff"
+                    onchange="updateLighting(this, 2)"
+                    autocomplete="off"
+                > 
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="./js/ui.js"></script>
+</html>

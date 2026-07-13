@@ -1,0 +1,90 @@
+<div class="instructions-overlay" [ngClass]="{'spotlight-mode': isSpotlightMode, 'pines-mode': currentStep === 4, 'no-bg': shouldHideBackground, 'search-underlay': currentStep === 3}" (click)="onOverlayClick()">
+    <!-- Modo Spotlight (para elementos específicos como chatbot) -->
+    <ng-container *ngIf="isSpotlightMode">
+        <div class="spotlight-highlight" *ngIf="currentStepData.highlightCircle !== false" [ngStyle]="currentSpotlightPosition"></div>
+        <!-- Animación pin para paso de pines -->
+        <!-- Removido: los pins reales del mapa son clicables -->
+        <div class="spotlight-popup" [ngStyle]="currentPopupPosition" (click)="$event.stopPropagation()">
+            <button class="popup-close" aria-label="Cerrar" [customTooltip]="'Cerrar'" (click)="closeModal()">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="spotlight-step-icon">{{ currentStepData.icon }}</div>
+            <h3>{{ currentStepData.title }}</h3>
+            <p>{{ currentStepData.description }}</p>
+            <!-- Chips de categorías solo en el paso de barra de búsqueda y filtros (modo spotlight) -->
+            <div *ngIf="currentStepData.title && currentStepData.title.trim().toLowerCase() === 'barra de búsqueda y filtros'" class="demo-chips-row">
+                <span *ngFor="let key of categoryKeys" class="chip demo-chip">
+                    <span class="chip-color-dot" [style.background]="categoryColors[key]"></span>
+                    {{ categoryLabels[key] }}
+                </span>
+            </div>
+            <div class="spotlight-nav">
+                <button 
+                    *ngIf="!isFirstStep"
+                    class="btn-nav btn-prev"
+                    (click)="prevStep()">
+                    <span class="material-icons">arrow_back</span> Atrás
+                </button>
+                <button 
+                    class="btn-nav btn-next"
+                    (click)="nextStep()"
+                    [disabled]="isLastStep">
+                    Siguiente <span class="material-icons">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- Modo Modal Normal -->
+    <ng-container *ngIf="!isSpotlightMode">
+        <div class="instructions-modal" [class.hide-background]="shouldHideBackground" (click)="$event.stopPropagation()">
+            <!-- Barra de progreso -->
+            <!-- REMOVIDA: progress-bar -->
+
+            <!-- Cabecera con botón cerrar -->
+            <div class="modal-header">
+                <div class="step-counter" *ngIf="!shouldHideBackground">
+                    Paso {{ currentStep + 1 }} de {{ steps.length }}
+                </div>
+                <button class="popup-close" aria-label="Cerrar" [customTooltip]="'Cerrar'" (click)="closeModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Contenido del paso -->
+            <div class="modal-content">
+                <div class="step-icon">{{ currentStepData.icon }}</div>
+                <h2>{{ currentStepData.title }}</h2>
+                <p>{{ currentStepData.description }}</p>
+            </div>
+
+            <!-- Indicadores de pasos -->
+            <!-- REMOVIDA: step-indicators -->
+
+            <!-- Botones de navegación -->
+            <div class="modal-footer">
+                <button 
+                    *ngIf="!isFirstStep"
+                    class="btn-nav btn-prev"
+                    (click)="prevStep()"
+                    title="Paso anterior">
+                    <span class="material-icons">arrow_back</span> Atrás
+                </button>
+
+                <button 
+                    *ngIf="!isLastStep"
+                    class="btn-nav btn-next"
+                    (click)="nextStep()">
+                    Siguiente <span class="material-icons">arrow_forward</span>
+                </button>
+
+                <button 
+                    *ngIf="isLastStep"
+                    class="btn-nav btn-finish"
+                    (click)="closeModal()">
+                    Finalizar
+                </button>
+            </div>
+        </div>
+    </ng-container>
+</div>

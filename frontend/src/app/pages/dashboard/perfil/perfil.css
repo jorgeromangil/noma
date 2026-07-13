@@ -1,0 +1,1364 @@
+.remove-badge {
+    /* ...existing code... */
+    color: transparent;
+    font-size: 0;
+}
+.nav-wrapper-perfil .logo {
+    margin-top: -.43em;
+    margin-left: -1.25em;
+}
+.nav-wrapper-perfil .navbar {
+    display: flex !important;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    box-sizing: border-box;
+}
+/* Asegura que la navbar esté por encima del fondo del perfil */
+
+.nav-wrapper-perfil {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0) + 0.75em);
+    left: 0;
+    right: 0;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    padding: 0 clamp(0.75em, 3vw, 1.5em);
+    z-index: 200;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+.nav-wrapper-perfil app-navbar {
+    width: 100%;
+    max-width: 100vw;
+    pointer-events: auto;
+}
+.estadisticas-periodo {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+}
+.estadisticas-periodo label {
+    margin-bottom: 0;
+    min-width: 60px;
+    color: #bfbfbf;
+    font-size: 1em;
+}
+/* Solución: evitar que .ng-placeholder comparta espacio con el valor seleccionado */
+.ngselect-glass .ng-select-container .ng-placeholder:not(:empty):not([style*="display: none"]) {
+    display: flex;
+}
+.ngselect-glass .ng-select-container .ng-placeholder:empty,
+.ngselect-glass .ng-select-container .ng-has-value .ng-placeholder {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+/* Quitar hueco del input de búsqueda en ng-select cuando searchable=false */
+.ngselect-glass .ng-select-container .ng-input {
+    display: none !important;
+}
+.ngselect-glass .ng-select-container {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 10em;
+    min-height: 2.6em;
+    padding-left: 1em !important;
+    padding-right: 2.4em !important;
+    box-sizing: border-box;
+}
+
+.ngselect-glass .ng-select-container .ng-value-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 2.2em;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ngselect-glass .ng-select-container .ng-placeholder {
+    color: #ffb7a6;
+    opacity: 0.85;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ngselect-glass .ng-select-container .ng-value {
+    color: #fff;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Icono SVG de flecha usando ::after para máxima compatibilidad */
+.ngselect-glass .ng-select-container {
+    position: relative;
+}
+.ngselect-glass .ng-select-container::after {
+    content: '';
+    display: block;
+    position: absolute;
+    right: 0.7em;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    width: 1.1em;
+    height: 1.1em;
+    pointer-events: none;
+    background: url('data:image/svg+xml;utf8,<svg fill="white" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat center center;
+    background-size: 1.1em 1.1em;
+    opacity: 0.85;
+    z-index: 2;
+    transition: transform 0.2s;
+}
+.ngselect-glass.ng-select-opened .ng-select-container::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.ngselect-glass .ng-arrow-wrapper,
+.ngselect-glass .ng-select-container .ng-arrow {
+    display: none !important;
+}
+/* === ng-select glass style === */
+.ngselect-glass .ng-select-container {
+    background: rgba(39, 39, 39, 0.45) !important;
+    border: 0.0625em solid rgba(255,255,255,0.13) !important;
+    border-radius: 0.9em !important;
+    color: #fff !important;
+    min-height: 2.3em;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    font-family: inherit;
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.ngselect-glass .ng-select-container.ng-has-value {
+    background: rgba(39, 39, 39, 0.55) !important;
+}
+
+.ngselect-glass .ng-select-container:focus-within,
+.ngselect-glass .ng-select-container.ng-select-focused {
+    border-color: #eb4021 !important;
+    box-shadow: 0 0 0 3px rgba(235, 64, 33, 0.10);
+}
+
+.ngselect-glass .ng-dropdown-panel {
+    background: rgba(39, 39, 39, 0.92) !important;
+    border-radius: 1em !important;
+    border: 0.0625em solid rgba(255,255,255,0.10) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    margin-top: 0.3em;
+    padding: 0.2em 0;
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+    max-height: 300px !important;
+    overflow-y: auto !important;
+}
+
+.ngselect-glass .ng-dropdown-panel::-webkit-scrollbar {
+    width: 0;
+}
+
+.ngselect-glass .ng-dropdown-panel .ng-dropdown-panel-items {
+    max-height: none !important;
+}
+
+.ngselect-glass .ng-dropdown-panel .ng-option {
+    color: #fff;
+    border-radius: 0.7em;
+    margin: 0.1em 0.4em;
+    padding: 0.6em 0.3em;
+    background: transparent;
+    transition: background 0.15s;
+}
+.ngselect-glass .ng-dropdown-panel .ng-option-selected,
+.ngselect-glass .ng-dropdown-panel .ng-option-marked {
+    background: rgba(61, 61, 61, 0.92) !important;
+    border: 0.0625em solid rgba(255,255,255,0.10);
+}
+.ngselect-glass .ng-dropdown-panel .ng-option:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff;
+}
+.ngselect-glass .ng-select-container .ng-arrow {
+    color: #fff;
+}
+a.nav-action.logout-btn-perfil .item-icon {
+    margin-right: 10px;
+}
+
+/*css comun*/
+
+
+
+/* Botón cerrar sesión en perfil*/
+a.nav-action.logout-btn-perfil {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    color: #fff;
+    text-decoration: none !important;
+    position: absolute;
+    top: 24px;
+    right: 32px;
+    z-index: 30;
+    overflow: hidden;
+    white-space: nowrap;
+    background: linear-gradient(90deg, var(--grad-1) 0%, var(--grad-2) 50%, var(--grad-3) 100%);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    background-repeat: no-repeat;
+    will-change: background-position;
+    border-radius: 15px;
+    background-clip: padding-box;
+    -webkit-tap-highlight-color: transparent;
+    isolation: isolate;
+    transition: background-position var(--grad-duration, 0.22s) ease, transform 0.22s cubic-bezier(.2, .9, .2, 1);
+}
+
+a.nav-action.logout-btn-perfil:hover {
+    background-position: 100% 50%;
+    filter: brightness(1.05);
+    transform: scale(1.015);
+    font-weight: 600;
+}
+
+a.nav-action.logout-btn-perfil:active {
+    transform: scale(0.997);
+}
+
+
+/* El botón de cerrar sesión en perfil ahora usa .nav-action y .item-icon igual que la navbar. No necesita reglas extra. */
+.editar-popup .popup-close .material-symbols-outlined {
+    font-size: 20px;
+}
+
+
+.editar-popup .acciones {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.editar-popup .acciones .syncro-btn,
+.editar-popup .acciones .btn-secondary {
+    flex: 1 1 0;
+    height: 48px;
+    min-width: 140px;
+    max-width: 100%;
+}
+
+@media (max-width: 800px) {
+    .editar-popup {
+        max-width: 99vw;
+        padding: 10px 2vw 10px 2vw;
+    }
+    .editar-popup .form-scroll-container {
+        max-height: 45vh;
+        padding-right: 0;
+    }
+    .editar-popup .producto-form-grid {
+        grid-template-columns: 1fr;
+        gap: 14px 0;
+    }
+}
+
+
+
+@keyframes fadeInMenu {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.perfil {
+    position: relative;
+    display: flex;
+    min-height: 100vh;
+    background: #000;
+    color: #fff;
+}
+
+
+/* Esto anula el body de styles.css solo cuando estés en esta página */
+
+#modulo-perfil {
+    background:
+    radial-gradient(68em 48em at 18% 12%, rgba(235, 64, 33, 0.18) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%),
+    radial-gradient(60em 40em at 80% 18%, rgba(147, 44, 141, 0.16) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%),
+    radial-gradient(60em 40em at 50% 80%, rgba(55, 66, 154, 0.16) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%),
+    #121212;
+    /* Fuerza el negro */
+    position: fixed;
+    /* O absolute, para que tape el body gris de abajo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100vh;
+    z-index: 100;
+    /* Se pone por encima de cualquier otro layout previo */
+}
+
+
+/* 2. EL BOTÓN: Usamos el ID para asegurar que cargue bien al navegar */
+
+
+
+
+/* 5. DISABLED: Botón desactivado */
+
+#modulo-perfil .syncro-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.logo-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.logo {
+    height: 60px;
+    width: auto;
+    display: block;
+}
+
+.lateral {
+    flex: 0 0 330px;
+    width: 330px;
+    min-width: 330px;
+    max-width: 330px;
+    box-sizing: border-box;
+    padding: 30px;
+    margin-top: 90px;
+}
+
+.usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    margin-bottom: 40px;
+    gap: 10px;
+}
+
+.rol-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.avatar-icon {
+    font-size: 40px;
+    background: linear-gradient( 90deg, var(--grad-1) 0%, var(--grad-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.rol {
+    position: relative;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    background: transparent;
+    z-index: 1;
+    display: inline-block;
+}
+
+.rol::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    padding: 2px;
+    background: linear-gradient( 90deg, var(--grad-2) 0%, var(--grad-3) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+}
+
+.usuario h3,
+.usuario p {
+    text-align: center;
+    margin: 0;
+}
+
+
+
+/*menu de opciones, detalles favoritos...*/
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #888;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+/* Quitamos el fondo blanco de los botones normales */
+.menu a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border-radius: 10px;
+    z-index: 0;
+    transition: background 0.3s ease;
+}
+
+/* Estilo del texto e icono para los NO seleccionados */
+.menu a .gradiente {
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    color: #888;
+    background: none;
+    -webkit-text-fill-color: initial;
+    margin-left: -10px;
+}
+
+.menu a .item-icon {
+    font-size: 30px;
+    margin-right: 10px;
+    color: #888;
+    background: none;
+    -webkit-text-fill-color: initial;
+}
+
+.menu a.activo::before {
+    background: white;
+}
+
+
+/* Color degradado para texto e icono solo cuando es activo */
+.menu a.activo .gradiente,
+.menu a.activo .item-icon {
+    background: linear-gradient(90deg, var(--grad-1), var(--grad-2), var(--grad-3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.zona-perfil {
+    flex: 1;
+    min-width: 0;
+    padding: 40px;
+    margin-top: 25px;
+}
+
+.ruta {
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.ruta span {
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Tarjeta principal del perfil, se reutiliza para varias secciones */
+.tarjeta {
+    height: calc(100vh - 8.75em);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    background: rgba(26, 26, 26, 0.6);
+    border: 0.0625em solid rgba(255, 255, 255, 0.06);
+    border-radius: 1em;
+    box-sizing: border-box;
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+    padding: 2em 1.5em;
+}
+
+.tarjeta.perfil-card {
+    height: calc(100vh - 140px);
+    margin: 0;
+    padding: 28px 40px;
+    box-sizing: border-box;
+}
+
+.tarjeta.perfil-card form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tarjeta.perfil-card .form-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -2em;
+    padding-right: 2em;
+    padding-bottom: 1.25em;
+}
+
+
+.tarjeta.subir-producto {
+    height: calc(100vh - 8.75em);
+    margin: 0;
+    padding: 1.75em 2.5em;
+    box-sizing: border-box;
+}
+
+.tarjeta.subir-producto form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tarjeta.subir-producto .form-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -2em;
+    padding-right: 2em;
+    padding-bottom: 1.25em;
+}
+
+/* grid de productos */
+.producto-form-grid {
+    display: grid;
+    gap: 1.125em 1.625em;
+    align-items: start;
+}
+
+.producto-form-grid .campo.ancho,
+.producto-form-grid .fila {
+    grid-column: 1 / -1;
+}
+
+.producto-form-grid .fila {
+    margin-bottom: 0;
+}
+
+.tarjeta.subir-producto .acciones {
+    justify-content: center;
+}
+
+/* Estilos para el formulario de perfil */
+.tarjeta form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.form-scroll-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-right: -60px;
+    padding-right: 60px;
+    padding-bottom: 40px;
+    position: relative;
+}
+
+/* Nuevos estilos de scrollbar unificados */
+.form-scroll-container::-webkit-scrollbar {
+    width: 4px;
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 2px;
+}
+
+.form-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+.form-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Efecto de sombra para contenedores con scroll */
+.form-scroll-container.show-resize-shadow {
+    box-shadow: 0.5em 0 0.75em rgba(255, 255, 255, 0.08), 0.25em 0 0.5em rgba(255, 255, 255, 0.06);
+}
+
+.form-scroll-container .resize-handle {
+    position: absolute;
+    top: 0;
+    right: -0.25em;
+    width: 0.75em;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 100;
+    background: transparent;
+    pointer-events: none;
+}
+
+.form-scroll-container .resize-handle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.375em;
+    height: 100%;
+    pointer-events: auto;
+}
+
+
+/* Clase para desactivar el scroll en roles que no lo necesitan */
+
+.no-scroll {
+    overflow-y: hidden !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+
+
+.fila {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.campo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.campo.ancho {
+    width: 100%;
+}
+
+label {
+    font-size: 15px;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+input {
+    padding: 0.75em 0.875em;
+    font-size: 15px;
+    background: rgba(39, 39, 39, 0.45);
+    border: 0.0625em solid rgba(255,255,255,0.13);
+    border-radius: 0.9em;
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+input:focus {
+    outline: none;
+    background: #333;
+}
+
+.acciones {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.ruta-header {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1100px;
+    min-height: 35px;
+    margin: 0 0 12px;
+}
+
+textarea {
+    padding: 12px;
+    font-size: 15px;
+    background: rgba(39, 39, 39, 0.45);
+    border: 0.0625em solid rgba(255,255,255,0.13);
+    border-radius: 0.9em;
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    resize: none;
+}
+
+textarea:focus {
+    outline: none;
+    background: #333;
+}
+
+/* Scrollbar pequeño para textarea */
+textarea::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+textarea:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.perfil-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 25000;
+}
+
+/* Estilos para el popup de confirmación de eliminación de cuenta */
+.perfil-popup {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: popup-appear 0.2s ease-out;
+}
+
+@keyframes popup-appear {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-title {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.popup-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+}
+
+
+/* Contenedor de botones */
+
+.popup-acciones {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+
+/* Usamos el ID del contenedor padre para asegurar prioridad sobre el CSS de la landing */
+#modulo-perfil .perfil-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 25000 !important;
+    /* Debe estar por encima del popup de edición (15000) */
+}
+
+#modulo-perfil .perfil-popup {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: popup-appear 0.2s ease-out;
+}
+
+
+/* Forzamos el color para que no lo ponga gris el estilo de la landing */
+
+#modulo-perfil .perfil-popup .popup-title {
+    color: #ffffff !important;
+    /* Blanco para contraste con fondo glass-morphism */
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    max-width: none;
+}
+
+#modulo-perfil .perfil-popup .popup-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+    /* Blanco translúcido legible */
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    max-width: none;
+}
+
+
+/* Contenedor para alinear botones en confirmación */
+
+.popup-acciones-flex {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+/* Contenedor de botones */
+
+.popup-acciones-flex {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+#modulo-perfil .perfil-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    /* Fondo oscuro detrás del popup */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 25000 !important;
+    /* Debe ser mayor que el popup de edición (15000) */
+}
+
+#modulo-perfil .perfil-popup {
+    background: rgba(26, 26, 26, 0.6) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: popup-appear 0.2s ease-out;
+}
+
+
+/* Forzamos el color para que no lo ponga gris el estilo de la landing */
+
+#modulo-perfil .perfil-popup .popup-title {
+    color: #ffffff !important;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 15px;
+    max-width: none;
+}
+
+#modulo-perfil .perfil-popup .popup-text {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    max-width: none;
+}
+
+.perfil-unsaved-exit-overlay {
+    z-index: 26500 !important;
+}
+
+.perfil-unsaved-exit-popup {
+    max-width: 520px !important;
+}
+
+.perfil-unsaved-exit-actions {
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.perfil-unsaved-exit-actions .btn-secondary,
+.perfil-unsaved-exit-actions .btn-primary {
+    min-width: 220px;
+}
+
+/* Contenedor de botones */
+.popup-acciones-flex {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+
+.perfil .campo ancho input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+
+/*lo de las fotos*/
+.upload-container {
+    background: #1a1a1a;
+    border: 2px dashed #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.upload-btn {
+    text-align: center;
+    cursor: pointer;
+    color: #888;
+}
+
+.upload-btn:hover {
+    color: white;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.preview-item {
+    position: relative;
+    height: 80px;
+}
+
+.preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.remove-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: rgb(51, 51, 51);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+}
+.remove-badge::before {
+    content: '';
+    display: block;
+    width: 7px;
+    height: 7px;
+    background: url('data:image/svg+xml;utf8,<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2L10 10M10 2L2 10" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>') center center no-repeat;
+    background-size: 12px 12px;
+}
+
+
+/* Contenedor principal de la sección */
+
+.seccion-inventario {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 9.375em);
+    margin-right: 0;
+}
+
+/* Ajustar el scroll para la sección de inventario */
+.seccion-inventario .form-scroll-container {
+    flex: 1;
+    margin-right: 0;
+    padding-right: 0.75em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.seccion-inventario .form-scroll-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+.seccion-inventario .form-scroll-container::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 2px;
+}
+
+.seccion-inventario .form-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+.seccion-inventario .form-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Estilos para contenedores con scroll - efecto de sombra y resize */
+.seccion-inventario .form-scroll-container.show-resize-shadow {
+    box-shadow: 0.5em 0 0.75em rgba(255, 255, 255, 0.08), 0.25em 0 0.5em rgba(255, 255, 255, 0.06);
+}
+
+.seccion-inventario .resize-handle {
+    position: absolute;
+    top: 0;
+    right: -0.25em;
+    width: 0.75em;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 100;
+    background: transparent;
+    pointer-events: none;
+}
+
+.seccion-inventario .resize-handle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.375em;
+    height: 100%;
+    pointer-events: auto;
+}
+
+/* Estilos para la sección de favoritos */
+.seccion-favoritos {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 9.375em);
+    margin-right: 0;
+}
+
+.seccion-favoritos .form-scroll-container {
+    flex: 1;
+    margin-right: 0;
+    padding-right: 0.75em;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scrollbar-gutter: stable;
+}
+
+.seccion-favoritos .form-scroll-container::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+.seccion-favoritos .form-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.seccion-favoritos .form-scroll-container::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+.seccion-favoritos:hover .form-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.buscador-wrapper {
+    width: 100%;
+    max-width: 28.125em;
+    margin-bottom: 1.5625em;
+    flex-shrink: 0;
+}
+
+.buscador-inner {
+    display: flex;
+    align-items: center;
+    background: rgba(39, 39, 39, 0.45);
+    border-radius: 2em;
+    padding: 6px 22px;
+    border: 0.0625em solid rgba(255,255,255,0.13);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+}
+
+.search-icon {
+    color: #888;
+    font-size: 25px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+.buscador-input {
+    background: transparent !important;
+    border: none !important;
+    color: #ccc;
+    font-size: 15px;
+    width: 100%;
+    outline: none !important;
+    padding: 5px 0;
+    box-shadow: none !important;
+}
+
+
+.buscador-input:-webkit-autofill,
+.buscador-input:-webkit-autofill:hover,
+.buscador-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ccc;
+    -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.buscador-input::placeholder {
+    color: #666;
+}
+
+
+/* Contenedor Grid */
+.productos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15em, 15em));
+    gap: 0.8em;
+    margin-top: 2em;
+    align-items: stretch;
+    width: 100%;
+    max-width: calc(100vw - 420px);
+    box-sizing: border-box;
+    overflow-x: auto;
+    padding: 0 0.8em 0 0;
+    margin: 0;
+}
+
+
+/* Tarjeta de Producto */
+.producto-card {
+    position: relative;
+    width: 100%;
+    max-width: 15em;
+    min-width: 13em;
+    height: 15em;
+    border-radius: 1.25em;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #181818;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: relative;
+}
+
+
+.producto-card:hover img {
+    transform: scale(1.08);
+}
+
+/* Imagen del recuadro de producto */
+.producto-card img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 1.25em 1.25em 0 0;
+    transition: transform 0.3s;
+    z-index: 1;
+}
+
+
+/* tooltip */
+.producto-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 10px 15px;
+    border-radius: 15px;
+    color: white;
+    font-size: 0.9em;
+    text-align: center;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(5px);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Mostrar al hacer hover */
+.producto-card:hover .producto-tag {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* Mensaje si está vacío */
+.vacio-msg {
+        grid-column: 1 / -1;
+        text-align: center;
+        color: #555;
+        padding: 2.5em 1em 2.5em 1em;
+        font-size: 1.08rem;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+}
+
+@media (max-width: 600px) {
+    .vacio-msg {
+        padding: 1.5em 0.5em 1.5em 0.5em;
+        font-size: 1rem;
+    }
+}
+
+.meta-lista p {
+    margin: 6px 0;
+    color: #dcdcdc;
+}
+
+.meta-acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.meta-info {
+    margin-top: 10px;
+    color: #b6b6b6;
+}
+
+.meta-info.error {
+    color: #ff8a80;
+}
+
+.subtit {
+    margin: 6px 0 0;
+    color: #bfbfbf;
+    font-size: 14px;
+}
+
+.meta-acciones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.chip {
+    background: #222;
+    color: #d3d3d3;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.error-text {
+    color: #fca5a5;
+    font-size: 13px;
+    margin-top: 4px;
+    display: block;
+}
+
+.error-text span {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.error-text span:last-child {
+    margin-bottom: 0;
+}
+
+input {
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+input.ng-invalid.ng-touched,
+input.ng-invalid.ng-dirty {
+    border-color: #ef4444;
+}
+
+textarea {
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+textarea.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-dirty {
+    border-color: #ef4444;
+}
+
+.popup-close {
+    border: none;
+    background: linear-gradient(90deg, #eb4022 0%, #37429b 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+

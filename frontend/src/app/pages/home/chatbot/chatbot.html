@@ -1,0 +1,109 @@
+<div class="chatbot-container" [style.font-family]="'Plus Jakarta Sans, sans-serif'" (click)="$event.stopPropagation()">
+    <div class="chat-window" [class.show-chat]="isOpen" [class.hide-chat]="!isOpen">
+        <div class="chat-header">
+        </div>
+        <button class="popup-close" aria-label="Cerrar" (click)="toggleChat($event)">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <div class="chat-body" #scrollMe>
+            <div *ngFor="let m of messages" [ngClass]="m.type === 'user' ? 'user-msg' : 'bot-msg'">
+                <div class="bot-avatar" *ngIf="m.type === 'bot'">
+                    <span>N</span>
+                </div>
+
+                <div class="bubble">
+                    {{ m.text }}
+                </div>
+
+                <div *ngIf="m.products && m.products.length > 0" class="product-list-vertical">
+                    <div *ngFor="let prod of m.products" class="list-card" (click)="onProductCardClick(prod, $event)">
+                        <div class="card-img-mini">
+                            <img [src]="currentImage" *ngIf="getCardImage(prod) as currentImage" [alt]="prod.title" [class.is-fading]="prod.isFading === true">
+                        </div>
+                        <div class="card-content">
+                            <p class="prod-title-small">{{ prod.title }}</p>
+
+                            <ng-container [ngSwitch]="prod.cardType">
+                                <ng-container *ngSwitchCase="'product'">
+                                    <p class="prod-meta-small" *ngIf="prod.province">
+                                        <span class="meta-label">Provincia</span>
+                                        <span class="meta-value">{{ prod.province }}</span>
+                                    </p>
+                                    <p class="prod-meta-small" *ngIf="prod.category">
+                                        <span class="meta-label">Categoría</span>
+                                        <span class="meta-value">{{ prod.category }}</span>
+                                    </p>
+                                    <p class="prod-meta-small" *ngIf="prod.certification">
+                                        <span class="meta-label">Certificación</span>
+                                        <span class="meta-value">{{ prod.certification }}</span>
+                                    </p>
+                                    <p class="prod-meta-small" *ngIf="prod.artisanName">
+                                        <span class="meta-label">Artesano</span>
+                                        <span class="meta-value">{{ prod.artisanName }}</span>
+                                    </p>
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'artisan'">
+                                    <p class="prod-meta-small" *ngIf="prod.province">
+                                        <span class="meta-label">Provincia</span>
+                                        <span class="meta-value">{{ prod.province }}</span>
+                                    </p>
+                                    <p class="prod-meta-small" *ngIf="prod.specialty">
+                                        <span class="meta-label">Especialidad</span>
+                                        <span class="meta-value">{{ prod.specialty }}</span>
+                                    </p>
+                                </ng-container>
+
+                                <ng-container *ngSwitchDefault>
+                                    <p class="prod-region-small" *ngIf="prod.subtitle">{{ prod.subtitle }}</p>
+                                </ng-container>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="m.chips && m.chips.length > 0" class="chips">
+                    <button *ngFor="let c of m.chips" type="button" class="chip" (click)="sendText(c.text)">
+                        {{ c.text }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-footer">
+            <div class="input-wrapper">
+                <input type="text" #userInputField [(ngModel)]="userInput" (keyup.enter)="sendText()" (click)="$event.stopPropagation()" placeholder="Escribe un mensaje...">
+                <button class="reset-btn" type="button" aria-label="Reiniciar chat" customTooltip="Reiniciar chat" (click)="openHardResetDialog($event)">
+                    <span class="material-symbols-outlined">autorenew</span>
+                </button>
+                <button class="send-btn" (click)="sendText()">
+                    <span class="material-icons">near_me</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="subir-producto-exit-overlay" *ngIf="showHardResetDialog" (click)="cancelHardResetDialog($event)">
+            <div class="subir-producto-exit-popup" role="dialog" aria-modal="true" aria-labelledby="chat-reset-title" (click)="$event.stopPropagation()">
+                <p id="chat-reset-title" class="popup-title">¿Quieres borrar la conversación?</p>
+                <p class="popup-text">Se borrarán mensajes, contexto y filtros del chat para volver al estado inicial.</p>
+
+                <div class="popup-acciones-flex subir-producto-exit-actions">
+                    <button type="button" class="btn-secondary" (click)="cancelHardResetDialog($event)">Mantener conversación</button>
+                    <button type="button" class="btn-primary" (click)="confirmHardResetDialog($event)">Borrar todo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="welcome-preview" *ngIf="!isOpen && welcomePreviewVisible" (click)="toggleChat($event)" role="button" tabindex="0">
+        <div class="welcome-bubble">
+            <button class="welcome-close" type="button" (click)="dismissWelcome($event)">✖</button>
+            <div class="welcome-text">{{ welcomeText }}</div>
+        </div>
+    </div>
+
+    <button class="launcher-btn" (click)="toggleChat($event)" *ngIf="!isOpen">
+        <span class="material-icons">chat_bubble</span>
+    </button>
+</div>

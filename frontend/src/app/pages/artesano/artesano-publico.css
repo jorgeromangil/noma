@@ -1,0 +1,681 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+/* Paginación: que siempre ocupe toda la fila y esté alineada */
+.pagination-controls {
+  grid-column: 1/-1;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5em;
+  margin: 1.5em 0;
+}
+.artesano-gallery-card-title[title]:hover::after {
+  /* El tooltip nativo ya no se usa, solo el personalizado */
+  display: none !important;
+}
+/* --- PRODUCT TITLE ELLIPSIS & TOOLTIP --- */
+.artesano-gallery-card-title {
+  position: relative;
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  overflow: hidden;
+  width: 230px;
+  max-width: 230px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  text-decoration: none;
+}
+.artesano-title-ellipsis {
+  display: inline-block;
+  vertical-align: bottom;
+  white-space: nowrap;
+  width: 100%;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+.artesano-gallery-card-title:hover .artesano-title-ellipsis {
+  color: var(--primary);
+}
+.artesano-gallery-card-title[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 0;
+  top: 120%;
+  z-index: 10;
+  background: #222;
+  color: #fff;
+  padding: 0.4em 0.8em;
+  border-radius: 0.4em;
+  font-size: 0.98em;
+  white-space: pre-line;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+.artesano-gallery-card-title[title]:hover::after {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.share-msg{
+  color: rgba(116, 116, 116, 0.658);
+}
+.btn-primary .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-size: 1.2em;
+  vertical-align: middle;
+}
+/* Navbar styles removed as requested */
+body.artesano-publico-bg {
+  position: relative;
+  min-height: 100vh;
+  background: #121212;
+}
+body.artesano-publico-bg::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background: #121212;
+
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  }
+.btn-secondary .material-icons-outlined {
+  color: rgba(255, 255, 255, 0.8);
+}
+:root {
+  --primary: #EB4021;
+  --accent-purple: #932C8D;
+  --accent-blue: #37429F;
+  --background-light: #F9FAFB;
+  --background-dark: #121212;
+  --glass: rgba(255,255,255,0.05);
+}
+
+/* Back button (same look as product-detail) */
+.product-detail-back-btn {
+  position: fixed;
+  top: 1.25em;
+  left: 1.25em;
+  z-index: 1001;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 999px;
+  border: 0.0625em solid rgba(255, 255, 255, 0.18);
+  background: rgba(12, 12, 12, 0.45);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.product-detail-back-btn .material-icons {
+  font-size: 1.3em;
+}
+
+.product-detail-back-btn:hover,
+.product-detail-back-btn:focus-visible {
+  transform: translateY(-0.06em);
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(22, 22, 22, 0.62);
+  outline: none;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background:
+    radial-gradient(68em 48em at 18% 12%, rgba(235, 64, 33, 0.18) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%),
+    radial-gradient(60em 40em at 80% 18%, rgba(147, 44, 141, 0.16) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%),
+    radial-gradient(60em 40em at 50% 80%, rgba(55, 66, 154, 0.16) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%),
+    #121212;
+  color: #f1f5f9;
+}
+
+.font-display {
+  font-family: 'Playfair Display', serif;
+}
+
+/* NAV */
+.artesano-nav {
+  position: sticky;
+  gap: 1em;
+}
+
+/* BOTONES */
+
+/* MAIN GRID */
+.artesano-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2em 1em;
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  height: 100%;
+}
+.artesano-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: stretch;
+  gap: 3em;
+  margin-bottom: 3em;
+  height: 100%;
+}
+@media (max-width: 900px) {
+  .artesano-profile-grid {
+    grid-template-columns: 1fr;
+    gap: 2em;
+  }
+}
+
+/* LEFT PROFILE */
+.artesano-profile-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+  height: 100%;
+  justify-content: flex-start;
+}
+.artesano-avatar-group {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+.artesano-avatar-gradient {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent-purple), var(--accent-blue));
+  filter: blur(18px);
+  opacity: 0.25;
+}
+.artesano-avatar {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.artesano-profile-title {
+  text-align: center;
+}
+.artesano-company {
+  font-size: 2.2em;
+  font-weight: 700;
+  margin-bottom: 0.2em;
+  margin-top: 0.2em;
+  color: #fff;
+}
+.artesano-location {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1em;
+}
+.artesano-location-icon {
+  color: var(--primary);
+  font-size: 1.2em;
+}
+.artesano-location-text {
+  font-weight: 400;
+}
+.artesano-profile-actions {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+/* RIGHT PROFILE */
+.artesano-profile-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+  height: 100%;
+  justify-content: stretch;
+}
+.artesano-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+}
+@media (max-width: 700px) {
+  .artesano-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.artesano-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+.artesano-info-label {
+  font-size: 0.85em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2em;
+}
+.artesano-info-label-primary {
+  color: var(--primary);
+}
+.artesano-info-label-purple {
+  color: var(--accent-purple);
+}
+.artesano-info-label-blue {
+  color: var(--accent-blue);
+}
+.artesano-info-value {
+  font-size: 1.1em;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Email y dirección en rojo */
+.artesano-info-label-purple,
+.artesano-info-label-blue {
+  color: var(--primary) !important;
+}
+
+.artesano-description-block {
+  position: relative;
+  background: rgba(26, 26, 26, 0.4);
+  border-radius: 1.5em;
+  padding: 2em 1.5em;
+  border: 0.0625em solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+.artesano-description-icon {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  font-size: 2.5em;
+  opacity: 0.12;
+}
+.artesano-description-label {
+  display: block;
+  font-size: 0.8em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.7em;
+}
+.artesano-description-text {
+  font-size: 1.2em;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* GALLERY HEADER */
+.artesano-gallery-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2em;
+  margin-bottom: 2em;
+  border-top: 0.0625em solid rgba(255,255,255,0.06);
+  padding-top: 2em;
+}
+.artesano-gallery-title {
+  font-size: 1.4em;
+  color: #fff;
+}
+.artesano-gallery-search {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+}
+.artesano-gallery-search-icon {
+  position: absolute;
+  left: 1em;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.2em;
+}
+.artesano-gallery-search-input {
+  width: 100%;
+  padding: 0.7em 1em 0.7em 2.5em;
+  border-radius: 2em;
+  border: 0.0625em solid rgba(255,255,255,0.13);
+  background: rgba(39, 39, 39, 0.45);
+  color: #fff;
+  font-size: 1em;
+  outline: none;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.artesano-gallery-search-input:focus {
+  border-color: var(--primary);
+}
+
+/* GALLERY GRID */
+.artesano-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2em;
+}
+@media (max-width: 1100px) {
+  .artesano-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .artesano-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.artesano-gallery-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 1.5em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.25s, border-color 0.25s;
+}
+.artesano-gallery-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(235, 64, 33, 0.25);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(235, 64, 33, 0.1);
+}
+.artesano-gallery-img-container {
+  position: relative;
+  aspect-ratio: 1/1;
+  border-radius: 1.5em 1.5em 0 0;
+  overflow: hidden;
+  margin-bottom: 0;
+  width: 100%;
+  flex-shrink: 0;
+}
+.artesano-gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.5em 1.5em 0 0;
+  transition: transform 0.3s;
+}
+.artesano-gallery-card:hover .artesano-gallery-img {
+  transform: scale(1.08);
+}
+.artesano-gallery-img-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  background: rgba(0,0,0,0.25);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.artesano-gallery-card:hover .artesano-gallery-img-overlay {
+  opacity: 1;
+}
+.artesano-gallery-overlay-icon {
+  background: #fff;
+  color: var(--primary);
+  padding: 0.5em;
+  border-radius: 50%;
+  font-size: 1.2em;
+  box-shadow: 0 2px 8px rgba(235,64,33,0.12);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.artesano-gallery-card-info {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5em;
+  padding: 1.1em 1.2em 0.9em 1.2em;
+  margin-top: 0.5em;
+}
+.artesano-gallery-card-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.2em;
+}
+.artesano-gallery-card-subtitle {
+  font-size: 0.95em;
+  color: rgba(255, 255, 255, 0.8);
+}
+.artesano-gallery-card-price {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--primary);
+}
+.artesano-gallery-empty {
+  grid-column: 1/-1;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.2em;
+  padding: 2em 0;
+}
+
+/* PEDIDO PERSONALIZADO */
+.artesano-pedido-block {
+  margin-top: 4em;
+  padding: 3em 2em;
+  border-radius: 1em;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple), var(--primary));
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.artesano-pedido-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2em;
+  margin-bottom: 0.7em;
+}
+.artesano-pedido-text {
+  font-size: 1.2em;
+  opacity: 0.92;
+  margin-bottom: 2em;
+}
+
+/* FOOTER */
+.artesano-footer {
+  padding: 2em 0;
+  border-top: 0.0625em solid rgba(255,255,255,0.06);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1em;
+  margin-top: 3em;
+}
+.artesano-footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+  margin-top: 1em;
+}
+/* SHARE POPUP STYLES */
+.share-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 25000;
+  padding: 1.5em;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.share-popup {
+  position: relative;
+  background: rgba(26, 26, 26, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  max-width: 450px;
+  width: min(92vw, 450px);
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: popup-appear 0.2s ease-out;
+}
+
+.share-popup-title {
+  color: #fff;
+  font-size: 1.35em;
+  font-weight: 800;
+  margin: 0 0 0.6em;
+  text-align: center;
+}
+
+.share-popup-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95em;
+  margin: 0 0 1.2em;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.share-url-container {
+  display: flex;
+  gap: 0.75em;
+  margin-bottom: 0;
+}
+
+.share-url-input {
+  flex: 1;
+  background: rgba(39, 39, 39, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75em 1em;
+  color: #fff;
+  font-size: 0.9em;
+  font-family: inherit;
+  word-break: break-all;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.share-url-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 0 2px rgba(235, 64, 33, 0.1);
+}
+
+.share-popup-copy-btn {
+  padding: 0.625em 1.125em !important;
+}
+
+.share-popup-copy-btn .material-icons-outlined {
+  font-size: 1.1em;
+}
+
+.share-copy-text {
+  display: inline;
+}
+
+.share-popup-close {
+  position: absolute;
+  top: 0.875em;
+  right: 1.125em;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(0.25em);
+  -webkit-backdrop-filter: blur(0.25em);
+  border: 0.0625em solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  width: 2em;
+  height: 2em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+  border-radius: 1em;
+  z-index: 101;
+  padding: 0;
+}
+
+.share-popup-close:hover {
+  color: rgba(255, 255, 255, 1);
+  background: rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+.share-popup-close .material-icons-outlined {
+  font-size: 1.25em;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popup-appear {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.artesano-footer-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.artesano-footer-link:hover {
+  color: var(--primary);
+}
+
+/* Loader y error */
+.artesano-loader, .artesano-error {
+  font-size: 1.2em;
+  color: var(--primary);
+  text-align: center;
+  padding: 2em 0;
+}

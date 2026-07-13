@@ -1,0 +1,422 @@
+:host {
+    display: block;
+    width: 100%;
+    --hero-scale: 1;
+    --hero-offset: clamp(9em, 24vh, 19em);
+    --hero-gap: 0.75em;
+    --hero-backdrop: rgba(6, 6, 10, 0.55);
+}
+
+.hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75em;
+    width: 100%;
+}
+
+.hero-glow {
+    position: absolute;
+    border-radius: 62.4375em;
+    filter: blur(5.625em);
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+.glow-primary {
+    top: -70;
+    right: -12.5em;
+    width: 22.5em;
+    height: 22.5em;
+    background: rgba(235, 66, 36, 0.28);
+}
+
+.glow-secondary {
+    bottom: -90;
+    left: -90;
+    width: 20em;
+    height: 20em;
+    background: rgba(55, 66, 154, 0.22);
+}
+
+.hero-slider {
+    position: relative;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100svh;
+    min-height: 100svh;
+    border-radius: 0;
+    overflow: hidden;
+    background: #11121a;
+    isolation: isolate;
+}
+
+.slider-nav {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(0.75em, 2vw, 1.125em);
+    pointer-events: auto;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.hero-slider:hover .slider-nav {
+    opacity: 1;
+    visibility: visible;
+}
+/* Botón estilo product-modal */
+.nav-btn {
+    position: relative;
+    width: 2em;
+    height: 2em;
+    border-radius: 1em;
+    border: 0.0625em solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.185);
+    backdrop-filter: blur(0.25em);
+    -webkit-backdrop-filter: blur(0.25em);
+    color: rgba(255, 255, 255, 0.7);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 1;
+    visibility: visible;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    box-shadow: none;
+}
+
+.nav-btn .material-symbols-outlined {
+    font-size: 1em;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s ease;
+}
+
+.nav-btn:hover,
+.nav-btn:focus-visible {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(0, 0, 0, 0.39);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    outline: none;
+}
+
+.nav-btn:active {
+    transform: translateY(0) scale(0.99);
+}
+
+/* Mostrar flechas sólo al acercar el cursor a los laterales o sobre la flecha */
+.hover-left:hover ~ .slider-nav .nav-prev,
+.hover-right:hover ~ .slider-nav .nav-next,
+.nav-btn:hover,
+.nav-btn:focus-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-0.02em);
+}
+
+.hover-zone {
+    display: none;
+}
+
+.hover-zone:hover {
+    background: transparent;
+}
+
+.hover-left {
+    left: 0;
+    cursor: w-resize;
+}
+
+.hover-right {
+    right: 0;
+    cursor: e-resize;
+}
+
+.hover-zone:focus-visible {
+    outline: 0.1em solid rgba(255, 255, 255, 0.35);
+    outline-offset: 0;
+}
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.01);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.hero-slide:first-child:last-child {
+    /* Si solo hay una imagen, mostrarla siempre */
+    opacity: 1;
+    transform: scale(1);
+    z-index: 1;
+}
+
+.hero-slide.active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 1;
+}
+
+.hero-slide.prev {
+    transform: scale(1.01);
+    opacity: 0;
+    z-index: 0;
+}
+
+.hero-slide.next {
+    transform: scale(1.01);
+    opacity: 0;
+    z-index: 0;
+}
+
+.slide-overlay {
+    position: absolute;
+    inset: 0;
+    background: none !important;
+    z-index: 1;
+}
+
+.slide-content {
+    position: absolute;
+    left: clamp(2.25em, 10vw, 8em);
+    right: clamp(1.75em, 10vw, 6em);
+    top: auto;
+    bottom: var(--hero-offset);
+    max-width: clamp(26em, 48vw, 46em);
+    z-index: 20;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--hero-gap);
+    padding: 0;
+    background: transparent;
+    isolation: isolate;
+    border-radius: 1.25em;
+    overflow: visible;
+}
+
+.slide-content::before {
+    content: '';
+    position: absolute;
+    inset: -3em -3.25em -2.5em -3.25em;
+    background:
+        radial-gradient(140% 190% at 18% 44%, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0) 68%),
+        radial-gradient(170% 190% at 70% 52%, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0) 70%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.12) 88%);
+    filter: blur(26px);
+    opacity: 0.55;
+    z-index: -1;
+    border-radius: 2em;
+    pointer-events: none;
+}
+
+.hero-heading {
+    margin: 0;
+    font-size: calc(clamp(2.3rem, 5.8vw, 3.5rem) * var(--hero-scale));
+    line-height: 1.05;
+    text-transform: none;
+    max-width: clamp(20em, 38vw, 32em);
+    text-shadow: 0 0.4em 1.35em rgba(0, 0, 0, 0.65);
+}
+
+.hero-subtitle {
+    margin: 0;
+    color: var(--muted, #b1b5c5);
+    font-size: calc(clamp(0.98rem, 2.1vw, 1.18rem) * var(--hero-scale));
+    line-height: 1.55;
+    max-width: 38em;
+    text-shadow: 0 0.28em 1em rgba(0, 0, 0, 0.55);
+}
+
+.slide-content .hero-note {
+    margin: 0;
+    color: #f7f8fb;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-size: calc(clamp(1.08rem, 2.6vw, 1.4rem) * var(--hero-scale));
+    line-height: 1.35;
+    text-shadow: 0 0.28em 1em rgba(0, 0, 0, 0.6);
+}
+
+.slide-content p {
+    margin: 0;
+    color: var(--muted, #b1b5c5);
+    font-size: calc(clamp(0.98rem, 1.95vw, 1.12rem) * var(--hero-scale));
+    line-height: 1.55;
+}
+
+.hero-break {
+    line-height: 1.2;
+}
+
+
+.slide-content .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(0.9em * var(--hero-scale)) calc(1.65em * var(--hero-scale));
+    font-size: calc(1.22rem * var(--hero-scale));
+    gap: 0.4em;
+    min-width: calc(11.5em * var(--hero-scale));
+    /* No box-shadow aquí, para heredar el de .syncro-btn:hover */
+    backdrop-filter: blur(4px);
+}
+
+.slide-content .hero-cta:hover, .slide-content .hero-cta:focus-visible {
+    /* Hereda el box-shadow de .syncro-btn:hover (rojo) */
+    box-shadow: 0 1em 2.25em rgba(235, 64, 33, 0.28), 0 0.625em 1.75em rgba(147, 44, 141, 0.22), 0 0.5em 1.125em rgba(0, 0, 0, 0.35);
+}
+
+.slide-content .hero-cta:active {
+    transform: translateY(0);
+}
+
+.slider-dots {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: clamp(0.75em, 3vw, 1.125em);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625em;
+    padding: 0 clamp(0.75em, 4vw, 1.5em);
+    z-index: 3;
+}
+
+.dot {
+    position: relative;
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 62.4375em;
+    background: rgba(255, 255, 255, 0.16);
+    border: 0.0625em solid rgba(255, 255, 255, 0.16);
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.dot.active {
+    width: 6em;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.32);
+    padding: 0.125em;
+}
+
+.dot-fill {
+    position: absolute;
+    left: 0.125em;
+    top: 0.125em;
+    bottom: 0.125em;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 62.4375em;
+    width: 0;
+    transition: width 0.12s linear;
+}
+
+/* --- Ajustes responsivos: anchura --- */
+@media (max-width: 72em) {
+    :host {
+        --hero-scale: 0.92;
+        --hero-offset: clamp(8em, 24vh, 16em);
+        --hero-gap: 0.65em;
+    }
+    .slide-content {
+        max-width: clamp(26em, 58vw, 44em);
+    }
+}
+
+@media (max-width: 62em) {
+    :host {
+        --hero-scale: 0.84;
+        --hero-offset: clamp(7em, 22vh, 13.5em);
+        --hero-gap: 0.55em;
+    }
+    .slide-content {
+        left: clamp(1.75em, 8vw, 6em);
+        right: clamp(1.5em, 8vw, 5.5em);
+        max-width: clamp(24em, 72vw, 40em);
+    }
+}
+
+@media (max-width: 52em) {
+    :host {
+        --hero-scale: 0.76;
+        --hero-offset: clamp(5.5em, 20vh, 11em);
+        --hero-gap: 0.5em;
+    }
+    .slide-content {
+        max-width: clamp(22em, 84vw, 36em);
+    }
+    .hero-slider {
+        height: 100svh;
+        min-height: 90svh;
+    }
+}
+
+@media (max-width: 44em) {
+    :host {
+        --hero-scale: 0.68;
+        --hero-offset: clamp(4.25em, 18vh, 9em);
+        --hero-gap: 0.45em;
+    }
+    .slide-content {
+        left: clamp(1.5em, 10vw, 5em);
+        right: clamp(1.5em, 10vw, 5em);
+    }
+    .nav-btn {
+        width: 2.8em;
+        height: 2.8em;
+    }
+    .nav-btn .material-symbols-outlined {
+        font-size: 2.1em;
+    }
+}
+
+/* --- Ajustes responsivos: altura --- */
+@media (max-height: 48em) {
+    :host {
+        --hero-scale: 0.8;
+        --hero-offset: clamp(5em, 18vh, 10.5em);
+    }
+    .hero-slider {
+        min-height: 94svh;
+    }
+}
+
+@media (max-height: 42em) {
+    :host {
+        --hero-scale: 0.72;
+        --hero-offset: clamp(4.25em, 17vh, 9em);
+    }
+    .slide-content::before {
+        opacity: 0.68;
+    }
+}
+
+@media (max-height: 38em) {
+    :host {
+        --hero-scale: 0.64;
+        --hero-offset: clamp(3.4em, 16vh, 8em);
+        --hero-gap: 0.4em;
+    }
+    .slide-content {
+        max-width: clamp(22em, 82vw, 34em);
+    }
+    .slide-content::before {
+        opacity: 0.62;
+    }
+}

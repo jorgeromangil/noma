@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /perfil
+Disallow: /api/
+
+Sitemap: https://noma.ovh/sitemap.xml

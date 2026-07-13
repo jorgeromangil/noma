@@ -1,0 +1,117 @@
+<div class="nav-wrapper">
+    <app-navbar></app-navbar>
+</div>
+
+<div class="ambient-glow-layer" aria-hidden="true"></div>
+
+<div class="legal-content">
+    <h1>Política de Cookies</h1>
+
+    <p class="last-update">Última actualización: Febrero 2026</p>
+
+    <div class="legal-disclaimer">
+        <p><strong>Disclaimer:</strong> Este sitio web ha sido desarrollado únicamente con fines académicos y de aprendizaje. No representa un servicio real ni tiene carácter comercial.</p>
+    </div>
+
+    <section>
+        <h2>1. ¿Qué Son las Cookies?</h2>
+        <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Se utilizan para recordar información sobre ti, como preferencias, sesiones de usuario e historial de navegación.</p>
+    </section>
+
+    <section>
+        <h2>2. Tipos de Cookies</h2>
+
+        <h3>Cookies Esenciales</h3>
+        <p class="badge-required">Sin consentimiento previo</p>
+        <ul>
+            <li><strong>Token JWT:</strong> Autenticación y sesión (24h, LocalStorage)</li>
+            <li><strong>Preferencias:</strong> Configuración de interfaz y filtros (Persistente)</li>
+        </ul>
+
+        <h3>Cookies de Analítica</h3>
+        <p class="badge-optional">Requieren consentimiento</p>
+        <ul>
+            <li><strong>Google Analytics (G-L3MXV1E86D):</strong> Análisis de uso para mejorar el servicio (2 años) - <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Google</a></li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>3. Tabla Resumen de Cookies</h2>
+        <div class="table-container">
+            <table class="cookies-table">
+                <thead>
+                    <tr>
+                        <th>Cookie</th>
+                        <th>Tipo</th>
+                        <th>Duración</th>
+                        <th>Proveedor</th>
+                        <th>Propósito</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>token</code></td>
+                        <td><span class="badge-essential">localStorage (Esencial)</span></td>
+                        <td>24 horas</td>
+                        <td>Noma</td>
+                        <td>Token JWT para autenticación de usuario</td>
+                    </tr>
+                    <tr>
+                        <td><code>usuario_cache</code></td>
+                        <td><span class="badge-essential">localStorage (Esencial)</span></td>
+                        <td>Persistente</td>
+                        <td>Noma</td>
+                        <td>Caché de información de usuario para mejor rendimiento</td>
+                    </tr>
+                    <tr>
+                        <td><code>_ga</code></td>
+                        <td><span class="badge-analytics">Analítica</span></td>
+                        <td>2 años</td>
+                        <td>Google</td>
+                        <td>Identificador universal de Google Analytics</td>
+                    </tr>
+                    <tr>
+                        <td><code>_ga_*</code></td>
+                        <td><span class="badge-analytics">Analítica</span></td>
+                        <td>2 años</td>
+                        <td>Google</td>
+                        <td>Sesión y conteo de visitantes en Google Analytics 4</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. Consentimiento</h2>
+        <p>Las cookies esenciales se usan sin consentimiento (necesarias para el funcionamiento). Las cookies de analítica requieren tu consentimiento explícito.</p>
+        <div style="margin: 20px 0;">
+            <button type="button" class="btn-primary" (click)="resetConsent()">
+                Gestionar Consentimiento
+            </button>
+        </div>
+    </section>
+
+    <section>
+        <h2>5. Control de Cookies</h2>
+        <p>Puedes configurar tu navegador para gestionar cookies desde <strong>Configuración > Privacidad y seguridad > Cookies</strong> (disponible en Chrome, Firefox, Safari y Edge).</p>
+        <p class="warning"><strong>Nota:</strong> Bloquear cookies esenciales puede limitar el funcionamiento de la plataforma (inicio de sesión, etc.).</p>
+    </section>
+
+    <section>
+        <h2>6. LocalStorage y SessionStorage</h2>
+        <p>Usamos LocalStorage (tokens JWT, preferencias) y SessionStorage (datos temporales). Estos datos permanecen en tu dispositivo y no se envían al servidor automáticamente.</p>
+    </section>
+
+    <section>
+        <h2>7. Cambios y Contacto</h2>
+        <p>Nos reservamos el derecho de actualizar esta política en cualquier momento. Los cambios se publicarán en esta página.</p>
+        <p><strong>Contacto:</strong> Ver <a routerLink="/legal-notice">Aviso Legal</a>.</p>
+    </section>
+
+    <div class="back-link">
+        <a routerLink="/">← Volver al inicio</a>
+    </div>
+</div>
+
+<app-footer></app-footer>

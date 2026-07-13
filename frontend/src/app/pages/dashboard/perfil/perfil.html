@@ -1,0 +1,194 @@
+
+<div class="nav-wrapper nav-wrapper-perfil">
+    <app-navbar [logoToHome]="true"></app-navbar>
+</div>
+
+<div id="modulo-perfil" class="perfil">
+
+    <aside class="lateral">
+        <div class="usuario" *ngIf="usuario">
+            <div class="rol-row">
+                <span class="material-icons avatar-icon">account_circle</span>
+                <span class="rol">
+                    {{ roleNames[usuario.role] || usuario.role }}
+                </span>
+            </div>
+
+            <h3>{{ usuario.name }} {{ usuario.surname }}</h3>
+            <p>{{ usuario.email }}</p>
+        </div>
+
+        <nav class="menu">
+            <a (click)="setSeccionActiva('perfil')" [class.activo]="seccionActiva === 'perfil'">
+                <span class="gradiente">
+                    <span class="material-symbols-outlined item-icon">user_attributes</span> Detalles del perfil
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'artisan'" (click)="setSeccionActiva('mis-productos')" [class.activo]="seccionActiva === 'mis-productos'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">inventory_2</span> Mis productos
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'artisan'" (click)="setSeccionActiva('estadisticas')" [class.activo]="seccionActiva === 'estadisticas'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">query_stats</span> Estadísticas
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'admin'" (click)="setSeccionActiva('estadisticas-admin')" [class.activo]="seccionActiva === 'estadisticas-admin'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">insights</span> Estadísticas globales
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'admin'" (click)="setSeccionActiva('productos-admin')" [class.activo]="seccionActiva === 'productos-admin'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">inventory_2</span> Productos
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'admin'" (click)="setSeccionActiva('reportes')" [class.activo]="seccionActiva === 'reportes'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">report</span> Productos reportados
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'admin'" (click)="setSeccionActiva('reportes-aceptados')" [class.activo]="seccionActiva === 'reportes-aceptados'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">verified_user</span> Reportes aceptados
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'admin'" (click)="setSeccionActiva('usuarios')" [class.activo]="seccionActiva === 'usuarios'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">group</span> Usuarios
+                </span>
+            </a>
+
+            <a (click)="setSeccionActiva('favoritos')" [class.activo]="seccionActiva === 'favoritos'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">favorite</span> Favoritos
+                </span>
+            </a>
+
+            <a *ngIf="usuario?.role === 'artisan'" (click)="setSeccionActiva('producto')" [class.activo]="seccionActiva === 'producto'">
+                <span class="gradiente">
+                    <span class="material-icons item-icon">add_circle</span> Subir producto
+                </span>
+            </a>
+        </nav>
+
+    </aside>
+
+    <div class="zona-perfil">
+        <div class="bloque-perfil">
+            <div class="ruta-header">
+                <div class="ruta" *ngIf="usuario">
+                    {{ usuario.name }} {{ usuario.surname }} /
+                    <span>{{ tituloSeccion }}</span>
+                </div>
+            </div>
+
+                        <!-- Perfil -->
+                        <ng-container *ngIf="seccionActiva === 'perfil' && !loading && usuario">
+                            <app-perfil-detalles 
+                                [usuario]="usuario"
+                                (usuarioActualizado)="onUsuarioActualizado($event)"
+                                (mostrarPopup)="onMostrarPopup($event)"
+                            ></app-perfil-detalles>
+                        </ng-container>
+
+            <!-- Mis Productos -->
+            <app-mis-productos 
+                *ngIf="seccionActiva === 'mis-productos' && usuario?.role === 'artisan'"
+                [usuario]="usuario"
+                (mostrarPopup)="onMostrarPopup($event)"
+            ></app-mis-productos>
+
+
+            <!-- Estadisticas Artesano -->
+            <app-estadisticas
+                *ngIf="seccionActiva === 'estadisticas' && usuario?.role === 'artisan'"
+                [usuario]="usuario"
+            ></app-estadisticas>
+
+            <!-- Estadisticas Admin -->
+            <app-estadisticas-admin
+                *ngIf="seccionActiva === 'estadisticas-admin' && usuario?.role === 'admin'"
+            ></app-estadisticas-admin>
+
+            <app-admin-products
+                *ngIf="seccionActiva === 'productos-admin' && usuario?.role === 'admin'"
+                (mostrarPopup)="onMostrarPopup($event)"
+            ></app-admin-products>
+
+            <!-- Productos Reportados -->
+            <app-reportes
+                *ngIf="seccionActiva === 'reportes' && usuario?.role === 'admin'"
+                [modo]="'reportados'"
+            ></app-reportes>
+
+            <!-- Reportes Aceptados -->
+            <app-reportes
+                *ngIf="seccionActiva === 'reportes-aceptados' && usuario?.role === 'admin'"
+                [modo]="'aceptados'"
+            ></app-reportes>
+
+            <app-admin-users
+                *ngIf="seccionActiva === 'usuarios' && usuario?.role === 'admin'"
+                (mostrarPopup)="onMostrarPopup($event)"
+            ></app-admin-users>
+
+            <!-- Favoritos -->
+            <app-favoritos 
+                *ngIf="seccionActiva === 'favoritos'"
+                (mostrarPopup)="onMostrarPopup($event)"
+            ></app-favoritos>
+
+            <!-- Subir Producto -->
+            <app-subir-producto 
+                *ngIf="seccionActiva === 'producto' && usuario?.role === 'artisan'"
+                [usuario]="usuario"
+                (mostrarPopup)="onMostrarPopup($event)"
+                (productoCreadoExitosamente)="onProductoCreadoExitosamente()"
+            ></app-subir-producto>
+
+        </div>
+    </div>
+
+    <div class="perfil-popup-overlay perfil-unsaved-exit-overlay" *ngIf="showProductExitPrompt" (click)="keepEditingProduct()">
+        <div class="perfil-popup perfil-unsaved-exit-popup" (click)="$event.stopPropagation()">
+            <p class="popup-title">¿Quieres salir sin guardar?</p>
+            <p class="popup-text">
+                Si sales de esta página, se perderán los datos introducidos en el formulario.
+            </p>
+
+            <div class="popup-acciones-flex perfil-unsaved-exit-actions">
+                <button type="button" class="btn-secondary" (click)="keepEditingProduct(); $event.stopPropagation()">
+                    Mantenerme en la página
+                </button>
+                <button type="button" class="btn-secondary" (click)="saveDraftAndLeaveProduct(); $event.stopPropagation()">
+                    Guardar como borrador
+                </button>
+                <button type="button" class="btn-primary" (click)="leaveProductWithoutSaving(); $event.stopPropagation()">
+                    Salir de la página
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="perfil-popup-overlay" *ngIf="showPopup" (click)="closePopup()">
+        <div class="perfil-popup" (click)="$event.stopPropagation()">
+            <p class="popup-title">{{ popupTitle }}</p>
+            <p class="popup-text">{{ popupMessage }}</p>
+
+            <div class="popup-acciones-flex">
+                <button type="button" class="btn-primary" (click)="closePopup(); $event.stopPropagation()">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

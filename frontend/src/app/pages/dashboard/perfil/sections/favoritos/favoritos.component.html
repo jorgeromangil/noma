@@ -1,0 +1,30 @@
+<section class="seccion-favoritos">
+  <div class="buscador-wrapper">
+    <div class="buscador-inner">
+      <span class="material-icons search-icon">search</span>
+      <input type="text" class="buscador-input" placeholder="Buscar en favoritos..." (input)="buscarFavoritos($event)">
+    </div>
+  </div>
+
+  <div class="form-scroll-container">
+    <div class="productos-grid">
+      <div *ngIf="favoritosLoading" class="vacio-msg">Cargando favoritos...</div>
+      <div *ngIf="!favoritosLoading && favoritosError" class="vacio-msg">{{ favoritosError }}</div>
+      <div *ngIf="!favoritosLoading && !favoritosError && favoritosFiltrados.length === 0" class="vacio-msg">
+        Aún no tienes productos guardados.
+      </div>
+
+      <div *ngFor="let fav of favoritosFiltrados" class="producto-card" [routerLink]="['/home']" [queryParams]="{ product: fav._id || fav.uid }" [customTooltip]="'Ver producto en el mapa'">
+        <button type="button" class="favorite-remove-btn" (click)="eliminarFavorito(fav._id || fav.uid, $event)" [customTooltip]="'Quitar de favoritos'">
+          <span class="material-icons">favorite</span>
+        </button>
+        <div class="producto-img-container">
+          <img [src]="fav.media && fav.media.length > 0 ? fav.media[0] : '/default-product.png'" alt="producto">
+          <div class="producto-tag">
+            <span>{{ fav.name || fav.title }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

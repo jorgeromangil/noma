@@ -1,0 +1,567 @@
+/* Los estilos CSS heredarán del perfil.css principal */
+
+.seccion-reportes {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 9.375em);
+  margin-right: 0;
+}
+
+.seccion-reportes .form-scroll-container {
+  flex: 1;
+  margin-right: 0;
+  padding-right: 0.75em;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  scrollbar-gutter: stable;
+}
+
+.seccion-reportes .form-scroll-container::-webkit-scrollbar {
+  width: 0.3125em;
+  background: transparent;
+}
+
+.seccion-reportes .form-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.seccion-reportes .form-scroll-container::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 0.625em;
+  min-height: 1.875em;
+  transition: background 0.2s ease;
+}
+
+.seccion-reportes:hover .form-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Filtros */
+.filtros-wrapper {
+  display: flex;
+  gap: 1em;
+  margin-bottom: 1.5625em;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.filtros-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.filtros-group label {
+  font-size: 0.85em;
+  color: #999;
+  font-weight: 500;
+}
+
+.reporte-select {
+  min-width: 150px;
+}
+
+/* Ajuste local: evita flecha duplicada y centra el icono del ng-select */
+:host ::ng-deep .reporte-select .ng-select-container {
+  padding-right: 2.2em !important;
+}
+
+:host ::ng-deep .reporte-select .ng-select-container::after {
+  display: block !important;
+  right: 0.7em !important;
+}
+
+:host ::ng-deep .reporte-select .ng-arrow-wrapper {
+  display: none !important;
+}
+
+:host ::ng-deep .reporte-select.ng-select-opened .ng-select-container::after {
+  transform: translateY(-50%) rotate(180deg) !important;
+}
+
+.btn-toggle-orden {
+  background: rgba(39, 39, 39, 0.45);
+  border: 0.0625em solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+}
+
+.btn-toggle-orden:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.015);
+}
+
+.btn-toggle-orden .material-icons {
+  font-size: 20px;
+}
+
+/* Reportes List */
+.reportes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+}
+
+.reporte-card {
+  background: rgba(39, 39, 39, 0.45);
+  border: 0.0625em solid rgba(255, 255, 255, 0.13);
+  border-radius: 1em;
+  overflow: hidden;
+  transition: all 0.2s;
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+}
+
+.reporte-card:hover {
+  background: rgba(255, 255, 255, 0.021);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1em 1.5em;
+  cursor: pointer;
+  gap: 1em;
+  background: rgba(255, 255, 255, 0.02);
+  transition: background 0.2s;
+}
+
+.card-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.producto-info {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  flex: 1;
+  min-width: 0;
+}
+
+.producto-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 0.5em;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.0625em solid rgba(255, 255, 255, 0.09);
+}
+
+.producto-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.producto-image.sin-imagen {
+  background: linear-gradient(140deg, rgba(235, 64, 33, 0.22), rgba(255, 255, 255, 0.05));
+}
+
+.placeholder-icon {
+  font-size: 1.4em;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.producto-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.producto-titulo {
+  margin: 0 0 0.25em 0;
+  font-size: 1em;
+  color: #fff;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.producto-artesano {
+  margin: 0;
+  font-size: 0.85em;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5em;
+  flex-shrink: 0;
+}
+
+.report-count {
+  background: rgba(235, 64, 33, 0.2);
+  color: #ffb7a6;
+  padding: 0.4em 0.8em;
+  border-radius: 1em;
+  font-size: 0.85em;
+  font-weight: 600;
+  border: 0.0625em solid rgba(235, 64, 33, 0.3);
+}
+
+.report-date {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.btn-expand {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.274);
+  cursor: pointer;
+  padding: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-expand.expanded {
+  transform: rotate(180deg);
+}
+
+.btn-expand .material-icons {
+  font-size: 24px;
+}
+
+/* Card Details */
+.card-details {
+  padding: 1em 1.5em;
+  border-top: 0.0625em solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.reportes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+
+.reportes-container h5 {
+  margin: 0 0 0.75em 0;
+  color: #ffb7a6;
+  font-size: 0.95em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.reportantes-resumen {
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.0625em solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.5em;
+  padding: 0.75em;
+  color: #ddd;
+}
+
+.reportantes-resumen strong {
+  display: block;
+  color: #fff;
+  margin-bottom: 0.4em;
+}
+
+.reportantes-resumen p {
+  margin: 0;
+  line-height: 1.4;
+  font-size: 0.9em;
+}
+
+.reporte-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.0625em solid rgba(255, 255, 255, 0.06);
+  border-left: 2px solid #eb4021;
+  border-radius: 0.5em;
+  padding: 0.75em;
+  gap: 0.5em;
+}
+
+.reporte-header-info {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin-bottom: 0.5em;
+  flex-wrap: wrap;
+}
+
+.reporte-razon {
+  color: #ffb7a6;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.reporte-estado {
+  padding: 0.4em 0.8em;
+  border-radius: 1em;
+  font-size: 0.85em;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.estado-pending {
+  background: rgba(180, 65, 148, 0.2);
+  color: #d783c0;
+  border: 0.0625em solid rgba(180, 65, 148, 0.35);
+}
+
+.estado-actioned {
+  background: rgba(33, 150, 243, 0.2);
+  color: #64b5f6;
+  border: 0.0625em solid rgba(33, 150, 243, 0.3);
+}
+
+
+.reporte-reporter {
+  color: #ccc;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+}
+
+.reporter-email {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.reporte-fecha {
+  color: #999;
+  font-size: 0.9em;
+  margin-bottom: 0.5em;
+}
+
+.reporte-details {
+  padding: 0.75em;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0.4em;
+  border-left: 2px solid #666;
+  margin-top: 0.5em;
+}
+
+.reporte-details strong {
+  color: #ffb7a6;
+  display: block;
+  margin-bottom: 0.5em;
+  font-size: 0.9em;
+}
+
+.reporte-details p {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.9em;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* Card Actions */
+.card-actions {
+  display: flex;
+  gap: 0.75em;
+  padding-bottom: 0.9em;
+  border-bottom: 0.0625em solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.9em;
+  flex-wrap: wrap;
+}
+
+.syncro-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5em;
+  padding: 1.5em;
+  margin-top: 1em;
+  background: rgba(39, 39, 39, 0.45);
+  border: 0.0625em solid rgba(255, 255, 255, 0.13);
+  border-radius: 1em;
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+  flex-shrink: 0;
+}
+
+.btn-pag {
+  background: none;
+  border: 0.0625em solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-pag:hover:not(:disabled) {
+  border-color: #eb4021;
+  box-shadow: 0 0 0 3px rgba(235, 64, 33, 0.1);
+}
+
+.btn-pag:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-pag .material-icons {
+  font-size: 20px;
+}
+
+.pagination-info {
+  color: #fff;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+/* Estado de carga */
+.vacio-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3em 2em;
+  color: #666;
+  font-size: 1em;
+  text-align: center;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  padding: 2em;
+  background: rgba(235, 64, 33, 0.1);
+  border: 0.0625em solid rgba(235, 64, 33, 0.2);
+  border-radius: 1em;
+  margin-bottom: 1em;
+}
+
+.error-msg {
+  color: #ffb7a6;
+  margin: 0;
+  font-weight: 500;
+}
+
+.btn-retry {
+  padding: 0.6em 1.2em;
+  background: rgba(235, 64, 33, 0.2);
+  border: 0.0625em solid rgba(235, 64, 33, 0.3);
+  border-radius: 0.6em;
+  color: #ffb7a6;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-retry:hover {
+  background: rgba(235, 64, 33, 0.3);
+  border-color: rgba(235, 64, 33, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .seccion-reportes {
+    height: auto;
+  }
+
+  .filtros-wrapper {
+    gap: 0.75em;
+  }
+
+  .reporte-select {
+    min-width: 120px;
+  }
+
+  .card-header {
+    flex-wrap: wrap;
+    padding: 0.75em 1em;
+    gap: 0.75em;
+  }
+
+  .producto-info {
+    flex: 1 0 100%;
+    width: 100%;
+    order: 1;
+  }
+
+  .report-info {
+    flex: 1 0 auto;
+    order: 2;
+    align-items: flex-start;
+    flex-direction: row;
+  }
+
+  .btn-expand {
+    order: 3;
+  }
+
+  .reporte-header-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination-container {
+    flex-direction: column;
+    gap: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .producto-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .producto-titulo {
+    font-size: 0.9em;
+  }
+
+  .card-header {
+    padding: 0.5em 0.75em;
+  }
+
+  .card-details {
+    padding: 0.75em;
+  }
+
+  .reporte-select {
+    min-width: 100%;
+  }
+
+  .btn-toggle-orden {
+    width: 2.2em;
+    height: 2.2em;
+  }
+}

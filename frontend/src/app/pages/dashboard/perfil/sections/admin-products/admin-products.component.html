@@ -1,0 +1,264 @@
+<section class="seccion-inventario admin-products-section">
+  <div class="admin-products-toolbar">
+    <div class="admin-products-top-row">
+      <div class="campo admin-products-search admin-products-search-top">
+        <label>Buscar</label>
+        <div class="buscador-inner">
+          <span class="material-icons search-icon">search</span>
+          <input
+            type="text"
+            class="buscador-input"
+            placeholder="Producto, artesano, categoría o provincia..."
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="applyFiltersFromControls()"
+          >
+        </div>
+      </div>
+
+      <button type="button" class="syncro-btn admin-products-create-cta" (click)="abrirCrearProducto()" [disabled]="loadingArtisans">
+        <span class="material-icons">{{ loadingArtisans ? 'hourglass_top' : 'add_circle' }}</span>
+        {{ loadingArtisans ? 'Cargando artesanos...' : 'Crear producto' }}
+      </button>
+    </div>
+
+    <div class="admin-products-filters-row">
+      <div class="admin-products-filters">
+        <div class="campo admin-products-filter">
+          <label>Estado</label>
+          <ng-select
+            [items]="statusOptions"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="selectedStatus"
+            (ngModelChange)="applyFiltersFromControls()"
+            [clearable]="false"
+            [searchable]="false"
+            class="ngselect-glass admin-products-select"
+          >
+          </ng-select>
+        </div>
+
+        <div class="campo admin-products-filter">
+          <label>Categoría</label>
+          <ng-select
+            [items]="categoriaOptions"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="selectedCategory"
+            (ngModelChange)="applyFiltersFromControls()"
+            [clearable]="false"
+            [searchable]="false"
+            class="ngselect-glass admin-products-select"
+          >
+          </ng-select>
+        </div>
+
+        <div class="campo admin-products-filter">
+          <label>Artesano</label>
+          <ng-select
+            [items]="artesanoFilterOptions"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="selectedArtisan"
+            (ngModelChange)="applyFiltersFromControls()"
+            [clearable]="false"
+            class="ngselect-glass admin-products-select"
+          >
+          </ng-select>
+        </div>
+
+        <div class="campo admin-products-filter">
+          <label>Provincia</label>
+          <ng-select
+            [items]="provinciaOptions"
+            bindLabel="label"
+            bindValue="value"
+            [(ngModel)]="selectedProvince"
+            (ngModelChange)="applyFiltersFromControls()"
+            [clearable]="false"
+            [searchable]="true"
+            class="ngselect-glass admin-products-select"
+          >
+          </ng-select>
+        </div>
+      </div>
+
+      <div class="admin-products-toolbar-actions">
+        <button type="button" class="btn-secondary admin-products-reset" (click)="resetFilters()">
+          Limpiar filtros
+        </button>
+        <button
+          *ngIf="!selectionMode"
+          type="button"
+          class="syncro-btn admin-products-select-mode"
+          (click)="openSelectionMode()"
+          [disabled]="selectionDisabled || productosFiltrados.length === 0"
+        >
+          <span class="material-icons">checklist</span>
+          Seleccionar
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div
+    *ngIf="!loading && selectionMode"
+    class="admin-products-bulk-bar"
+    [class.admin-products-bulk-bar-active]="hasSelection"
+  >
+    <button
+      type="button"
+      class="admin-products-bulk-close"
+      (click)="closeSelectionMode()"
+      [disabled]="selectionDisabled"
+      aria-label="Cerrar selección"
+    >
+      <span class="material-symbols-outlined">close</span>
+    </button>
+
+    <div class="admin-products-bulk-summary">
+      <span class="admin-products-bulk-count">
+        {{ hasSelection ? selectedCount : 'Modo selección' }}
+        {{ hasSelection ? (selectedCount === 1 ? 'producto seleccionado' : 'productos seleccionados') : 'activo' }}
+      </span>
+      <span class="admin-products-bulk-helper">
+        {{ hasSelection
+          ? 'Gestiona los productos seleccionados con acciones en lote.'
+          : 'Marca los productos que quieras incluir en la acción masiva.' }}
+      </span>
+    </div>
+
+    <div class="admin-products-bulk-actions">
+      <button
+        type="button"
+        class="btn-secondary admin-products-bulk-select-all"
+        (click)="selectAllFilteredProducts()"
+        [disabled]="selectionDisabled || productosFiltrados.length === 0 || allFilteredSelected"
+      >
+        Seleccionar todos
+      </button>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="executeBulkVisibility(true)"
+        [disabled]="selectionDisabled || selectedHiddenCount === 0"
+      >
+        Mostrar seleccionados
+      </button>
+
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="executeBulkVisibility(false)"
+        [disabled]="selectionDisabled || selectedVisibleCount === 0"
+      >
+        Ocultar seleccionados
+      </button>
+
+      <button
+        type="button"
+        class="admin-products-bulk-delete"
+        (click)="requestBulkDelete()"
+        [disabled]="selectionDisabled || !hasSelection"
+      >
+        Eliminar seleccionados
+      </button>
+
+      <button
+        type="button"
+        class="btn-secondary admin-products-bulk-clear"
+        (click)="clearSelection()"
+        [disabled]="selectionDisabled || !hasSelection"
+      >
+        Limpiar selección
+      </button>
+    </div>
+  </div>
+
+  <div class="form-scroll-container" #inventoryPagerHost>
+    <app-product-inventory-grid
+      [productosVisibles]="productosVisibles"
+      [productosOcultos]="productosOcultos"
+      [showOwnerInfo]="true"
+      [showViewModeSwitcher]="true"
+      [viewMode]="viewMode"
+      [selectionEnabled]="selectionMode"
+      [selectedProductIds]="selectedProductIds"
+      [selectionDisabled]="selectionDisabled"
+      [visiblePagination]="visiblePagination"
+      [hiddenPagination]="hiddenPagination"
+      [visibleLoading]="loadingVisibleProducts"
+      [hiddenLoading]="loadingHiddenProducts"
+      (viewModeChange)="setViewMode($event)"
+      (sectionPageChange)="setSectionPage($event)"
+      (editProduct)="abrirEditarProducto($event.product, $event.index)"
+      (deleteProduct)="solicitarEliminarProducto($event)"
+      (toggleVisibility)="toggleProductVisibility($event)"
+      (productSelectionChange)="toggleProductSelection($event.product, $event.selected)"
+    ></app-product-inventory-grid>
+
+    <div class="productos-grid">
+      <div *ngIf="!loading && productosVisibles.length === 0 && productosOcultos.length === 0" class="vacio-msg">
+        No se encontraron productos.
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-subir-producto
+  *ngIf="showCreatePopup"
+  [mode]="'admin'"
+  [popupMode]="true"
+  [availableArtisans]="artesanos"
+  (cerrar)="cerrarCrearProducto()"
+  (mostrarPopup)="mostrarPopup.emit($event)"
+  (productoCreadoExitosamente)="onProductoCreadoExitosamente()"
+></app-subir-producto>
+
+<div *ngIf="showEditarPopup" class="admin-products-edit-shell" (click)="cerrarEditarPopup()">
+  <div class="admin-products-edit-content" (click)="$event.stopPropagation()">
+    <app-editar-producto
+      [productoId]="productoEditandoId"
+      [productoIndex]="productoEditandoIndex"
+      [misProductos]="productos"
+      [modoAdmin]="true"
+      (cerrar)="cerrarEditarPopup()"
+      (productoActualizado)="onProductoActualizado($event)"
+      (mostrarPopup)="mostrarPopup.emit($event)"
+    ></app-editar-producto>
+  </div>
+</div>
+
+<div *ngIf="confirmDialog" class="admin-products-modal-overlay" (click)="closeConfirmDialog()">
+  <div class="admin-products-confirm" (click)="$event.stopPropagation()">
+    <p class="popup-title">{{ confirmDialog.title }}</p>
+    <p class="popup-text">{{ confirmDialog.message }}</p>
+    <div class="popup-acciones-flex">
+      <button
+        type="button"
+        class="btn-popup-confirmar-eliminar"
+        *ngIf="confirmDialog.kind === 'primary'"
+        (click)="confirmCurrentAction()"
+        [disabled]="mutationLoading"
+      >
+        {{ mutationLoading ? 'Procesando...' : confirmDialog.actionLabel }}
+      </button>
+
+      <button
+        type="button"
+        class="btn-popup-confirmar-eliminar"
+        *ngIf="confirmDialog.kind === 'danger'"
+        (click)="confirmCurrentAction()"
+        [disabled]="mutationLoading"
+      >
+        {{ mutationLoading ? 'Procesando...' : confirmDialog.actionLabel }}
+      </button>
+
+      <button type="button" class="btn-popup-cancelar" (click)="closeConfirmDialog()" [disabled]="mutationLoading">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

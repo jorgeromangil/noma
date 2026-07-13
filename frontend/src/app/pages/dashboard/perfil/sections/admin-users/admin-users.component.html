@@ -1,0 +1,260 @@
+<section class="admin-users-section">
+  <div class="form-scroll-container">
+    <div class="admin-users-highlight">
+      <div class="admin-users-highlight-copy">
+        <span class="admin-users-highlight-kicker">Acción principal</span>
+        <h3>Crear un nuevo usuario</h3>
+        <p>Da de alta nómadas o artesanos desde aquí.</p>
+      </div>
+
+      <button type="button" class="syncro-btn admin-users-create-cta" (click)="openCreateModal()">
+        <span class="material-icons">person_add</span>
+        Crear usuario
+      </button>
+    </div>
+
+    <div class="admin-users-toolbar">
+      <div class="campo admin-users-search">
+        <label>Buscar</label>
+        <div class="admin-users-search-input">
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="applyFilters()"
+            (keyup.enter)="applyFilters()"
+            placeholder="Nombre, apellidos, email o taller"
+          >
+        </div>
+      </div>
+
+      <div class="campo admin-users-filter">
+        <label>Rol</label>
+        <ng-select
+          [items]="roleFilterOptions"
+          bindLabel="label"
+          bindValue="value"
+          [(ngModel)]="selectedRole"
+          (ngModelChange)="applyFilters()"
+          [clearable]="false"
+          [searchable]="false"
+          class="ngselect-glass admin-users-select"
+        >
+        </ng-select>
+      </div>
+
+      <div class="campo admin-users-filter">
+        <label>Estado</label>
+        <ng-select
+          [items]="statusFilterOptions"
+          bindLabel="label"
+          bindValue="value"
+          [(ngModel)]="selectedStatus"
+          (ngModelChange)="applyFilters()"
+          [clearable]="false"
+          [searchable]="false"
+          class="ngselect-glass admin-users-select"
+        >
+        </ng-select>
+      </div>
+
+      <div class="campo admin-users-filter">
+        <label>Ordenar</label>
+        <ng-select
+          [items]="sortOptions"
+          bindLabel="label"
+          bindValue="value"
+          [(ngModel)]="selectedSort"
+          (ngModelChange)="applyFilters()"
+          [clearable]="false"
+          [searchable]="false"
+          class="ngselect-glass admin-users-select"
+        >
+        </ng-select>
+      </div>
+
+      <div class="admin-users-toolbar-actions">
+        <button type="button" class="btn-secondary" (click)="resetFilters()">Limpiar</button>
+      </div>
+    </div>
+
+    <div *ngIf="error" class="auth-alert auth-alert-error" role="alert">
+      {{ error }}
+    </div>
+
+    <div *ngIf="loading" class="auth-alert auth-alert-info" role="status">
+      Cargando usuarios...
+    </div>
+
+    <div *ngIf="!loading && !users.length" class="admin-users-empty">
+      No hay usuarios para los filtros seleccionados.
+    </div>
+
+    <div *ngIf="!loading && users.length" class="admin-users-list">
+      <article *ngFor="let user of users; trackBy: trackByUser" class="admin-user-row">
+        <div class="admin-user-main">
+          <div class="admin-user-meta">
+            <h4>{{ user.name }} {{ user.surname }}</h4>
+            <p>{{ user.email }}</p>
+          </div>
+
+          <div class="admin-user-badges">
+            <span class="badge role-badge">{{ getRoleLabel(user.role) }}</span>
+            <span class="badge" [class.badge-inactive]="!isUserActive(user)">{{ getStatusLabel(user) }}</span>
+          </div>
+        </div>
+
+        <div class="admin-user-extra">
+          <p *ngIf="user.role === 'artisan' && user.company_name"><strong>Taller:</strong> {{ user.company_name }}</p>
+          <p *ngIf="user.role === 'artisan' && user.province"><strong>Provincia:</strong> {{ user.province }}</p>
+          <p *ngIf="user.role === 'admin'" class="admin-user-readonly">Cuenta visible en modo consulta.</p>
+        </div>
+
+        <div class="admin-user-actions" *ngIf="canEdit(user) || canToggleState(user) || canDelete(user)">
+          <button type="button" class="btn-secondary" *ngIf="canEdit(user)" (click)="openEditModal(user)">Editar</button>
+          <button type="button" class="btn-secondary" *ngIf="canToggleState(user)" (click)="requestToggleState(user)">
+            {{ isUserActive(user) ? 'Desactivar' : 'Reactivar' }}
+          </button>
+          <button type="button" class="btn-danger" *ngIf="canDelete(user)" (click)="requestDeleteUser(user)">Eliminar</button>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<div *ngIf="showCreateModal" class="admin-users-modal-overlay" (click)="closeCreateModal()">
+  <div class="admin-users-modal admin-users-create-modal" (click)="$event.stopPropagation()">
+    <div class="admin-users-modal-header">
+      <div>
+        <p class="popup-title">Crear usuario</p>
+        <p class="popup-text">Da de alta un nuevo nómada o artesano desde este mismo apartado.</p>
+      </div>
+      <button type="button" class="admin-users-close" (click)="closeCreateModal()" aria-label="Cerrar creación">x</button>
+    </div>
+
+    <app-admin-user-create
+      [embedded]="true"
+      (mostrarPopup)="mostrarPopup.emit($event)"
+      (usuarioCreado)="onUserCreated()"
+    ></app-admin-user-create>
+  </div>
+</div>
+
+<div *ngIf="showEditModal" class="editar-popup-overlay" (click)="closeEditModal()">
+  <div class="editar-popup admin-users-edit-modal" (click)="$event.stopPropagation()">
+    <button type="button" class="admin-users-close" (click)="closeEditModal(true); $event.preventDefault(); $event.stopPropagation()" aria-label="Cerrar edición">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+
+    <h3>Editar usuario</h3>
+
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()">
+      <div class="form-scroll-container admin-users-edit-scroll">
+        <div *ngIf="editError" class="auth-alert auth-alert-error" role="alert">
+          {{ editError }}
+        </div>
+
+        <div class="admin-user-form-grid producto-form-grid">
+          <div class="campo">
+            <label>Rol</label>
+            <ng-select
+              [items]="editableRoleOptions"
+              bindLabel="label"
+              bindValue="value"
+              formControlName="role"
+              [clearable]="false"
+              [searchable]="false"
+              class="ngselect-glass admin-users-select"
+            >
+            </ng-select>
+          </div>
+
+          <div class="campo">
+            <label>Nombre</label>
+            <input type="text" formControlName="name">
+          </div>
+
+          <div class="campo">
+            <label>Apellidos</label>
+            <input type="text" formControlName="surname">
+          </div>
+
+          <div class="campo">
+            <label>Email</label>
+            <input type="email" formControlName="email">
+          </div>
+
+          <div class="campo">
+            <label>Nueva contraseña</label>
+            <input type="password" formControlName="password" placeholder="Déjala vacía para conservarla">
+          </div>
+
+          <ng-container *ngIf="editForm.get('role')?.value === 'artisan'">
+            <div class="campo">
+              <label>Taller o compañía</label>
+              <input type="text" formControlName="company_name">
+            </div>
+
+            <div class="campo">
+              <label>Contacto</label>
+              <input type="text" formControlName="contact">
+            </div>
+
+            <div class="campo ancho">
+              <label>Dirección</label>
+              <input type="text" formControlName="address_text">
+            </div>
+
+            <div class="campo">
+              <label>Provincia</label>
+              <input type="text" formControlName="province">
+            </div>
+
+            <div class="campo ancho">
+              <label>Descripción</label>
+              <textarea formControlName="description" rows="4"></textarea>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="acciones">
+        <button type="submit" class="syncro-btn" [disabled]="editLoading || editForm.invalid">
+          {{ editLoading ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div *ngIf="confirmDialog" class="admin-products-modal-overlay" (click)="closeConfirmDialog()">
+  <div class="admin-products-confirm" (click)="$event.stopPropagation()">
+    <p class="popup-title">{{ confirmDialog.title }}</p>
+    <p class="popup-text">{{ confirmDialog.message }}</p>
+
+    <div class="popup-acciones-flex">
+      <button
+        type="button"
+        class="btn-popup-confirmar-eliminar"
+        *ngIf="confirmDialog.kind === 'primary'"
+        (click)="confirmCurrentAction()"
+        [disabled]="confirmLoading"
+      >
+        {{ confirmLoading ? 'Procesando...' : confirmDialog.actionLabel }}
+      </button>
+
+      <button
+        type="button"
+        class="btn-popup-confirmar-eliminar"
+        *ngIf="confirmDialog.kind === 'danger'"
+        (click)="confirmCurrentAction()"
+        [disabled]="confirmLoading"
+      >
+        {{ confirmLoading ? 'Procesando...' : confirmDialog.actionLabel }}
+      </button>
+
+      <button type="button" class="btn-popup-cancelar" (click)="closeConfirmDialog()" [disabled]="confirmLoading">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

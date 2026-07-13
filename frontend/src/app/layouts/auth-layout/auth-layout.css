@@ -1,0 +1,657 @@
+/* css para login y registro */
+
+.form-auth {
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: clamp(1em, 4vw, 2em);
+    background: none;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.875em;
+    padding: 1.25em;
+}
+
+.columna-base,
+.columna-artesano {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25em;
+    width: 100%;
+    max-width: 26.875em;
+}
+
+.flex-column-container {
+    display: flex;
+    flex-direction: row;
+    gap: clamp(0.5em, 2vw, 2.5em);
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.logo-form {
+    width: 100%;
+    max-width: 25.625em;
+}
+
+.login-page .login-shell {
+    width: min(67.5em, 100%);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.125em;
+    align-items: stretch;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
+.login-page .login-shell.single {
+    width: min(37.5em, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.125em;
+}
+
+.login-page .login-card {
+    background: rgba(12, 12, 18, 0.92);
+    border: 0.0625em solid rgba(255, 255, 255, 0.08);
+    border-radius: 1em;
+    padding: clamp(1.125em, 4vw, 1.375em);
+    display: grid;
+    gap: 1em;
+    box-shadow: 0 0.625em 1.875em rgba(0, 0, 0, 0.35);
+    width: min(32.5em, 100%);
+    justify-items: center;
+}
+
+.login-page .logo-form {
+    width: 15em;
+}
+
+.login-page form {
+    width: 100%;
+    max-width: 27.5em;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1em;
+    align-items: stretch;
+    justify-items: stretch;
+}
+
+.login-page .form-group {
+    width: 100%;
+}
+
+.login-page input,
+.login-page textarea {
+    width: 100%;
+}
+
+.login-page .boton-gradiente,
+.login-page .boton-google {
+    width: 100%;
+}
+
+
+/* Fuerza mismo ancho para inputs y botones dentro del card */
+
+.login-page .login-card form,
+.login-page .login-card .form-group,
+.login-page .login-card input,
+.login-page .login-card textarea,
+.login-page .login-card .boton-gradiente,
+.login-page .login-card .boton-google {
+    max-width: 27.5em;
+    width: 100%;
+    align-self: stretch;
+    justify-self: stretch;
+    box-sizing: border-box;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    width: 100%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25em;
+}
+
+label {
+    align-self: flex-start;
+    font-size: 1em;
+    margin-left: 0.3125em;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 0.75em 0.875em;
+    border-radius: 0.875em;
+    background-color: #1c1e26;
+    color: #f4f6ff;
+    font-size: 1em;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    border: 0.0625em solid #2b2e3a;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+input.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+    border-color: #ef4444;
+}
+
+.error-text {
+    color: #fca5a5;
+    font-size: 0.8125em;
+    margin-top: -0.25em;
+    margin-left: 0.3125em;
+    display: block;
+    align-self: flex-start;
+}
+
+.error-text span {
+    display: block;
+}
+
+.boton-gradiente {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    width: 100%;
+    padding: 0.75em 0.875em;
+    font-size: 1em;
+    border-radius: 0.9375em;
+    cursor: pointer;
+    margin-top: 0.75em;
+}
+
+.boton-google {
+    background: linear-gradient(135deg, #11121a 0%, #0c0d13 100%);
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    border: 0.0625em solid #2c3040;
+    color: #f3f5ff;
+    width: 100%;
+    padding: 0.75em 0.875em;
+    font-size: 1em;
+    border-radius: 0.9375em;
+    cursor: pointer;
+    margin-top: 0.75em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625em;
+    box-shadow: 0 0.75em 1.875em rgba(0, 0, 0, 0.4), inset 0 0.0625em 0 rgba(255, 255, 255, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease, filter 0.2s ease;
+}
+
+.boton-google-custom {
+    letter-spacing: 0.00625em;
+}
+
+.boton-google img {
+    width: 1.25em;
+    height: 1.25em;
+}
+
+.boton-google:hover,
+.boton-google:focus-visible {
+    box-shadow: 0 0.4em 1em rgba(14, 26, 104, 0.28), 0 0.25em 0.5em rgba(56, 22, 71, 0.22), 0 0.2em 0.4em rgba(0, 0, 0, 0.35);
+    transform: translateY(-0.0625em);
+    filter: brightness(1.06);
+    font-weight: 600;
+}
+
+.boton-google:active {
+    transform: translateY(0);
+    box-shadow: 0 0.625em 1.5em rgba(0, 0, 0, 0.38);
+}
+
+.boton-gradiente:hover::before,
+.boton-gradiente:focus-visible::before {
+    transform: translateX(30%) rotate(12deg);
+    opacity: 1;
+}
+
+.boton-gradiente:focus-visible {
+    outline: 0.1875em solid rgba(147, 44, 141, 0.18);
+    outline-offset: 0.1875em;
+}
+
+.boton-gradiente:active {
+    transform: scale(0.998);
+}
+
+.boton-gradiente:disabled,
+.boton-google:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#google-signin-btn {
+    width: 100%;
+    margin-top: 0.75em;
+    border-radius: 0.875em;
+    overflow: hidden;
+    box-shadow: 0 0.75em 1.875em rgba(0, 0, 0, 0.35);
+}
+
+.google-hidden {
+    position: absolute;
+    opacity: 0;
+    width: 0.0625em;
+    height: 0.0625em;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#google-signin-btn>div {
+    width: 100% !important;
+}
+
+.cerrar-login {
+    align-self: flex-end;
+    justify-self: flex-end;
+    background: transparent;
+    color: rgba(244, 246, 255, 0.85);
+    border: 0.0625em solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75em;
+    padding: 0.5em 0.75em;
+    font-size: 0.875em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.cerrar-login:hover,
+.cerrar-login:focus-visible {
+    background: #EB4021;
+    border-color: #EB4021;
+    color: #fff;
+}
+
+.cerrar-login:focus-visible {
+    outline: 0.1875em solid rgba(147, 44, 141, 0.18);
+    outline-offset: 0.125em;
+}
+
+.cerrar-login:active {
+    background: #d8371c;
+    border-color: #d8371c;
+}
+
+.enlace-gradiente {
+    display: inline;
+    text-decoration: none;
+    background: linear-gradient(90deg, #EB4021 0%, #932C8D 100%);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: background-position 0.3s ease;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.enlace-gradiente:hover,
+.enlace-gradiente:focus-visible {
+    background-position: 100% 50%;
+    font-weight: 800;
+}
+
+.enlace-gradiente:focus-visible {
+    outline: 0.125em solid rgba(147, 44, 141, 0.3);
+    outline-offset: 0.125em;
+}
+
+.registro-texto {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375em;
+    text-align: center;
+}
+
+.contenedor-checkbox-artesano {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.625em;
+    margin-top: 0.9375em;
+}
+
+.checkbox-personalizado {
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+    width: 1.375em;
+    height: 1.375em;
+    border-radius: 0.625em;
+    background-color: #151517;
+    margin: 0;
+    transition: all 0.2s ease-in-out;
+}
+
+.checkbox-personalizado:checked {
+    background: linear-gradient(90deg, rgba(235, 63, 33, 0.288) 0%, rgba(147, 44, 142, 0.212) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.25);
+}
+
+.checkbox-personalizado:checked::before {
+    content: 'done';
+    font-family: 'Material Symbols Outlined';
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.campos-en-fila {
+    display: flex;
+    flex-direction: row;
+    gap: 1.875em;
+    width: 95%;
+}
+
+.campo-mitad {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.campo-mitad input,
+.campo-mitad textarea {
+    width: 100%;
+}
+
+@media (min-width: 56.25em) {
+    .login-page .login-shell.single {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Registro: ampliar y colocar artesano a la derecha */
+
+.registro-page .login-shell.single {
+    width: min(37.5em, 100%);
+    /* igual que login cuando no hay artesano */
+    transition: width 0.4s ease-in-out;
+}
+
+.registro-page .login-shell.single.show-artisan {
+    width: min(60em, 100%);
+}
+
+.registro-page .login-card {
+    width: min(32.5em, 100%);
+    /* igual que login cuando no hay artesano */
+    transition: width 0.4s ease-in-out;
+}
+
+.registro-page .login-card.show-artisan {
+    width: min(57.5em, 100%);
+}
+
+.registro-page form {
+    max-width: 27.5em;
+    /* igual que login cuando no hay artesano */
+    transition: max-width 0.4s ease-in-out, display 0.3s ease-in-out;
+}
+
+.registro-page .login-card.show-artisan form {
+    max-width: 55em;
+}
+
+.registro-page .login-card .boton-gradiente {
+    margin-top: 1em;
+}
+
+.registro-page .login-card form,
+.registro-page .login-card .form-group,
+.registro-page .login-card input,
+.registro-page .login-card textarea,
+.registro-page .login-card .boton-gradiente,
+.registro-page .login-card .boton-google {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.registro-page .login-card .form-group,
+.registro-page .login-card input,
+.registro-page .login-card textarea {
+    max-width: 100%;
+}
+
+.registro-page .login-card.show-artisan form {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.registro-page .login-card.show-artisan .boton-gradiente,
+.registro-page .login-card.show-artisan .boton-google {
+    width: 100%;
+    max-width: 100%;
+}
+
+.registro-page .registro-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1em 1.375em;
+    width: 100%;
+    transition: grid-template-columns 0.4s ease-in-out;
+}
+
+.registro-page .registro-grid.show-artisan {
+    grid-template-columns: 1fr 1fr;
+}
+
+.registro-page .registro-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+    width: 100%;
+}
+
+.registro-page .columna-artesano,
+.registro-page .columna-base {
+    width: 100%;
+}
+
+.registro-page input[type="checkbox"],
+.login-page input[type="checkbox"] {
+    width: 1.375em;
+    height: 1.375em;
+    min-width: 1.375em;
+    min-height: 1.375em;
+    flex: 0 0 auto;
+}
+
+.registro-page .contenedor-checkbox-artesano {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75em;
+    width: auto;
+}
+
+.registro-page .contenedor-checkbox-artesano label {
+    margin: 0;
+}
+
+.registro-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 1.25em;
+}
+
+.registro-popup {
+    background: #ffffff;
+    border-radius: 0.875em;
+    box-shadow: 0 1.125em 3em rgba(0, 0, 0, 0.16);
+    max-width: 26.25em;
+    width: min(26.25em, 100%);
+    padding: 1.5em 1.375em;
+    position: relative;
+    animation: popup-appear 0.2s ease-out;
+}
+
+.popup-title {
+    font-size: 1.125em;
+    font-weight: 700;
+    margin: 0 0 0.625em 0;
+    color: #1f2937;
+}
+
+.popup-text {
+    margin: 0 0 1.125em 0;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.popup-close {
+    border: none;
+    background: linear-gradient(90deg, #eb4022 0%, #37429b 100%);
+    color: #fff;
+    border-radius: 0.625em;
+    padding: 0.625em 0.875em;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+}
+
+.popup-close:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+@keyframes popup-appear {
+    from {
+        transform: translateY(0.75em);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.auth-alert {
+    width: 100%;
+    border-radius: 0.75em;
+    padding: 0.75em 0.875em;
+    font-size: 0.875em;
+    font-weight: 600;
+    box-sizing: border-box;
+}
+
+.auth-alert-error {
+    background: #2f1212;
+    color: #fca5a5;
+    border: 0.0625em solid rgba(252, 165, 165, 0.4);
+}
+
+.auth-alert-success {
+    background: #0f2315;
+    color: #bbf7d0;
+    border: 0.0625em solid rgba(187, 247, 208, 0.4);
+}
+
+
+/* Popup de error en login */
+
+.auth-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 25000;
+}
+
+.auth-popup {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    animation: auth-popup-appear 0.2s ease-out;
+}
+
+.auth-popup .popup-title {
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 15px 0;
+}
+
+.auth-popup .popup-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 25px 0;
+}
+
+.auth-popup .popup-close {
+    width: 100%;
+}
+
+@keyframes auth-popup-appear {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

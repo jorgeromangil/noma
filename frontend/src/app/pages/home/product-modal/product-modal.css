@@ -1,0 +1,890 @@
+/* Modal de Ficha de Producto */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: block;
+    background: transparent;
+    /* no oscurecemos toda la pantalla, sólo el panel */
+    z-index: 18;
+    /* Debe estar encima del mapa pero por debajo de la navbar */
+    pointer-events: none;
+    /* permitimos clicks fuera del panel llegar al mapa */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: none;
+    /* permitir que clics pasen al mapa para permitir navegación 3D con ficha abierta */
+}
+
+.modal-content {
+    position: fixed;
+    left: 1.5em;
+    top: calc(env(safe-area-inset-top, 0) + 0.75em + 5.625em);
+    width: 28.125em;
+    min-width: 21.875em;
+    max-width: 50em;
+    height: calc(100% - (env(safe-area-inset-top, 0) + 0.75em + 5.625em) - 1.5em);
+    overflow: hidden;
+    box-sizing: border-box;
+    border-radius: 1em;
+    background: rgba(26, 26, 26, 0);
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+    border: 0.0625em solid rgba(255, 255, 255, 0.06);
+    color: #fff;
+    pointer-events: auto;
+    transition: background-color 0.3s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.modal-content.show-resize-shadow {
+    box-shadow: 0.5em 0 0.75em rgba(255, 255, 255, 0.08), 0.25em 0 0.5em rgba(255, 255, 255, 0.06);
+}
+
+.resize-handle {
+    position: absolute;
+    top: 0;
+    right: -0.25em;
+    width: 0.75em;
+    height: 100%;
+    cursor: ew-resize;
+    z-index: 100;
+    background: transparent;
+    pointer-events: none;
+}
+
+.resize-handle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.375em;
+    height: 100%;
+    pointer-events: auto;
+}
+
+.modal-overlay.visible .modal-content {
+    background: rgba(26, 26, 26, 0.6);
+}
+
+
+/* Header del modal */
+
+.popup-close {
+    position: absolute;
+    top: 0.875em;
+    right: 1.125em;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(0.25em);
+    -webkit-backdrop-filter: blur(0.25em);
+    border: 0.0625em solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    width: 2em;
+    height: 2em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.2s ease;
+    border-radius: 1em;
+    z-index: 101;
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-close .material-symbols-outlined {
+    font-size: 1.25em;
+}
+
+.popup-close:hover {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.popup-close:focus-visible {
+    outline: 0.125em solid rgba(235, 64, 33, 0.7);
+    outline-offset: 0.125em;
+}
+
+@media (hover: none) {
+    .popup-close {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.875em 0.5625em 0.875em 0.875em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    scrollbar-gutter: stable;
+}
+
+
+/* Estilo del scrollbar personalizado */
+
+.modal-body::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: transparent;
+    margin-top: 21.25em;
+    margin-bottom: 1.25em;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+.modal-content:hover .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+
+/* Imagen principal del producto - Carrusel */
+
+.product-carousel {
+    width: 100%;
+    overflow: visible;
+    border-radius: 0.75em;
+    margin-bottom: 0.5em;
+    flex-shrink: 0;
+}
+
+.product-carousel ::ng-deep .hero {
+    overflow: visible;
+}
+
+.product-carousel ::ng-deep .hero-slider {
+    width: 100%;
+    max-width: 100%;
+    height: 18.75em;
+    min-height: 18.75em;
+    border-radius: 0.75em;
+    overflow: hidden;
+}
+
+.product-carousel ::ng-deep .hero-glow {
+    display: none;
+}
+
+/* Ajustes específicos para el carrusel mini (ficha producto) */
+.product-carousel ::ng-deep .slide-content {
+    display: none;
+}
+
+.product-carousel ::ng-deep .hero-slide {
+    transform: none;
+}
+
+.product-carousel ::ng-deep .slider-dots {
+    bottom: 0.5em;
+    z-index: 10;
+}
+
+
+
+/* Detalles del producto */
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.product-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75em;
+}
+
+.product-header h3 {
+    flex: 1;
+}
+
+.favorite-btn {
+    background: rgba(235, 64, 33, 0.15);
+    border: none;
+    color: #fff;
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(0.25em);
+}
+
+.favorite-btn .material-icons {
+    font-size: 22px;
+}
+
+.favorite-btn:hover {
+    background: rgba(235, 64, 33, 0.3);
+    transform: scale(1.05);
+}
+
+.favorite-btn.active {
+    background: rgba(235, 64, 33, 0.35);
+}
+
+.icon-action-btn {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(0.25em);
+    -webkit-backdrop-filter: blur(0.25em);
+    border: 0.0625em solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    width: 2.5em;
+    height: 2.5em;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.icon-action-btn:hover {
+    color: rgba(255, 255, 255, 1);
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.icon-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.icon-action-btn .material-symbols-outlined,
+.icon-action-btn .material-icons {
+    font-size: 22px;
+    line-height: 1;
+    display: block;
+}
+
+.product-details h3 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 700;
+    background-image: linear-gradient(90deg, #EB4021 0%, #932C8D 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.product-region {
+    font-size: 0.875em;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+
+/* Secciones de información */
+
+.product-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding-bottom: 0.75em;
+    border-bottom: 0.0625em solid rgba(255, 255, 255, 0.1);
+}
+
+.product-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.product-section h4 {
+    margin: 0;
+    font-size: 0.875em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.03125em;
+}
+
+.product-section p {
+    margin: 0;
+    font-size: 0.9375em;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.view-detail-btn {
+    display: block;
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.15) 0%, rgba(147, 44, 141, 0.15) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.25);
+    color: #fff;
+    font-size: 1em;
+    padding: 0.75em 1em;
+    border-radius: 0.75em;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    box-shadow: 0 0.25em 0.75em rgba(235, 64, 33, 0.08);
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+
+.view-detail-btn:hover {
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.25) 0%, rgba(147, 44, 141, 0.25) 100%);
+    border-color: rgba(235, 64, 33, 0.4);
+    color: #fff;
+}
+
+.product-info {
+    white-space: pre-wrap;
+}
+
+.product-address {
+    font-style: italic;
+}
+
+.report-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 25000;
+    pointer-events: auto;
+}
+
+.report-popup {
+    background: rgba(26, 26, 26, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 0.0625em solid rgba(255, 255, 255, 0.06);
+    border-radius: 1em;
+    width: min(92vw, 28em);
+    padding: 1.5em;
+    box-shadow: 0 0.5em 2em rgba(0, 0, 0, 0.4);
+}
+
+.report-popup .popup-title {
+    color: #fff;
+    font-size: 1.35em;
+    font-weight: 800;
+    margin: 0 0 0.6em;
+    text-align: center;
+}
+
+.report-popup .popup-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95em;
+    line-height: 1.45;
+    margin: 0 0 1em;
+    text-align: center;
+}
+
+.report-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45em;
+    margin-bottom: 0.9em;
+}
+
+.report-form-group label {
+    font-size: 15px;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+.report-form-group select,
+.report-form-group textarea {
+    width: 100%;
+    padding: 0.75em 0.875em;
+    font-size: 15px;
+    background: rgba(39, 39, 39, 0.45);
+    border: 0.0625em solid rgba(255, 255, 255, 0.13);
+    border-radius: 0.9em;
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-sizing: border-box;
+}
+
+.report-form-group textarea {
+    padding: 12px;
+    resize: vertical;
+    min-height: 6.5em;
+}
+
+.report-form-group select:focus,
+.report-form-group textarea:focus {
+    outline: none;
+    background: #333;
+}
+
+.report-form-group textarea::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+.report-form-group textarea::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+.report-form-group textarea::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.report-form-group textarea::-webkit-resizer {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+    opacity: 0;
+    background: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+.report-form-group textarea::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.report-form-group textarea:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.report-popup-feedback {
+    margin: 0.2em 0 0.8em;
+    font-size: 0.92em;
+    text-align: center;
+}
+
+.report-popup-feedback.is-error {
+    color: rgba(255, 184, 184, 0.95);
+}
+
+.popup-acciones-flex {
+    display: flex;
+    gap: 0.75em;
+    justify-content: center;
+    margin-top: 1em;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 2.6em;
+    padding-left: 1em !important;
+    padding-right: 1em !important;
+    box-sizing: border-box;
+    position: relative;
+    background: rgba(39, 39, 39, 0.45) !important;
+    border: 0.0625em solid rgba(255, 255, 255, 0.13) !important;
+    border-radius: 0.9em !important;
+    color: #fff !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    font-family: inherit;
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-placeholder:not(:empty):not([style*="display: none"]) {
+    display: flex;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-placeholder:empty,
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-has-value .ng-placeholder {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-input {
+    display: none !important;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container.ng-has-value {
+    background: rgba(39, 39, 39, 0.55) !important;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container:focus-within,
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container.ng-select-focused {
+    border-color: #eb4021 !important;
+    box-shadow: 0 0 0 3px rgba(235, 64, 33, 0.10);
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-value-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 2.2em;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-placeholder {
+    color: #ffb7a6;
+    opacity: 0.85;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container .ng-value {
+    color: #fff;
+    text-align: left;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-select-container::after {
+    content: '';
+    display: block;
+    position: absolute;
+    right: 1.1em;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    width: 1.1em;
+    height: 1.1em;
+    pointer-events: none;
+    background: url('data:image/svg+xml;utf8,<svg fill="white" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat center center;
+    background-size: 1.1em 1.1em;
+    opacity: 0.85;
+    z-index: 2;
+    transition: transform 0.2s;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass.ng-select-opened .ng-select-container::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel {
+    background: rgba(39, 39, 39, 0.92) !important;
+    border-radius: 1em !important;
+    border: 0.0625em solid rgba(255,255,255,0.10) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    margin-top: 0.3em;
+    padding: 0.2em 0;
+    backdrop-filter: blur(0.5em);
+    -webkit-backdrop-filter: blur(0.5em);
+    max-height: 300px !important;
+    overflow-y: auto !important;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel::-webkit-scrollbar {
+    width: 0;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel .ng-dropdown-panel-items {
+    max-height: none !important;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel .ng-option {
+    color: #fff;
+    border-radius: 0.7em;
+    margin: 0.1em 0.4em;
+    padding: 0.6em 0.3em;
+    background: transparent;
+    transition: background 0.15s;
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel .ng-option-selected,
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel .ng-option-marked {
+    background: rgba(61, 61, 61, 0.92) !important;
+    border: 0.0625em solid rgba(255,255,255,0.10);
+}
+
+:host ::ng-deep .report-popup .ngselect-glass .ng-dropdown-panel .ng-option:hover {
+    background: rgba(255,255,255,0.08) !important;
+    color: #fff;
+}
+
+
+/* Tarjeta del Artesano */
+
+.artisan-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    padding: 0.875em;
+    background: linear-gradient(135deg, rgba(235, 64, 33, 0.08) 0%, rgba(147, 44, 141, 0.08) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.2);
+    border-radius: 0.75em;
+    position: relative;
+    overflow: hidden;
+}
+
+.artisan-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625em;
+    width: 100%;
+}
+
+.artisan-icon {
+    width: 2.5em;
+    height: 2.5em;
+    min-width: 2.5em;
+    background: linear-gradient(135deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.artisan-icon.has-image {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(235, 64, 33, 0.4);
+}
+
+.artisan-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.artisan-icon .material-symbols-outlined {
+    font-size: 1.125em;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.artisan-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.artisan-name {
+    margin: 0;
+    font-size: 0.9375em;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.3;
+}
+
+.artisan-profile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.375em;
+    padding: 0.375em 0.625em;
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.15) 0%, rgba(147, 44, 141, 0.15) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.3);
+    border-radius: 0.5em;
+    color: #fff;
+    font-size: 0.75em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+.artisan-profile-btn:hover {
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.25) 0%, rgba(147, 44, 141, 0.25) 100%);
+    border-color: rgba(235, 64, 33, 0.5);
+    transform: translateY(-0.0625em);
+    box-shadow: 0 0.25em 0.5em rgba(235, 64, 33, 0.15);
+}
+
+.artisan-profile-btn .material-symbols-outlined {
+    font-size: 1.125em;
+    transition: transform 0.3s ease;
+}
+
+.artisan-profile-btn:hover .material-symbols-outlined {
+    transform: translateX(0.25em);
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+/* ===== SISTEMA DE PESTAÑAS ===== */
+
+.tabs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    background: transparent;
+}
+
+.tabs-header {
+    display: flex;
+    gap: 0;
+    background: transparent;
+    margin-bottom: 1em;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tabs-header::-webkit-scrollbar {
+    display: none;
+}
+
+.tab-button {
+    flex: 0.8;
+    min-width: 0;
+    padding: 0.75em 0.75em;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    font-size: 0.875em;
+    font-weight: 600;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border-radius: 0.5em;
+    margin: 0.25em;
+    text-transform: uppercase;
+    letter-spacing: 0.03125em;
+}
+
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.tab-button.active {
+    flex: 1.5;
+    justify-content: flex-start;
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.4);
+    color: rgba(255, 255, 255, 1);
+}
+
+.tab-icon {
+    display: none;
+}
+
+.tab-label {
+    display: inline;
+    font-size: 0.875em;
+}
+
+@media (min-width: 32em) {
+    .tab-button {
+        flex-direction: row;
+        min-width: auto;
+        gap: 0.5em;
+    }
+    
+    .tab-label {
+        display: inline;
+    }
+    
+    .tab-icon {
+        display: none;
+    }
+}
+
+.tabs-content {
+    position: relative;
+    min-height: 10em;
+    padding: 0;
+}
+
+.tab-pane {
+        opacity: 1;
+        transition: opacity 0.15s ease-in;
+    position: relative;
+}
+
+.tab-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.tab-pane .product-section {
+    padding-bottom: 0.75em;
+    border-bottom: 0.0625em solid rgba(255, 255, 255, 0.05);
+}
+
+.tab-pane .product-section:last-child {
+    border-bottom: none;
+}
+
+.tab-pane h5 {
+    margin: 0;
+    font-size: 0.875em;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.03125em;
+}
+
+.no-content {
+    text-align: center;
+    padding: 2em 1em;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9375em;
+}
+
+@keyframes fadeInOut {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

@@ -1,0 +1,60 @@
+<nav class="navbar">
+
+    <a [routerLink]="['/landing']" class="logo-link" (click)="handleLogoClick($event)">
+        <img src="/Logo_Noma.png" alt="Logo de la aplicación" class="logo">
+    </a>
+
+    <div class="nav-search">
+        <ng-content select="[navbar-slot='search']"></ng-content>
+    </div>
+
+    <div class="nav-buttons-right">
+
+        <ng-content select="[navbar-slot='actions']"></ng-content>
+
+        <ng-container *ngIf="isLoggedIn$ | async; else notLoggedIn">
+
+            <div class="user-menu-container">
+
+                <div class="user-avatar-circle" (click)="toggleMenu()" [customTooltip]="'Perfil'">
+                    <span class="material-icons">
+                    person
+                    </span>
+                </div>
+
+                <div class="dropdown-menu" *ngIf="showMenu">
+
+
+                    <ng-container *ngIf="router.url !== '/perfil'">
+                        <a [routerLink]="['/perfil']" (click)="showMenu = false" class="nav-action">
+                            <span class="material-icons">
+                                person
+                            </span> Mi perfil
+                        </a>
+                        <div class="divider"></div>
+                    </ng-container>
+
+                    <a href="#" (click)="logOut(); showMenu = false" class="nav-action">
+                        <span class="material-icons item-icon">logout</span>
+                        Cerrar sesión
+                    </a>
+
+                </div>
+
+                <div *ngIf="showMenu" class="overlay-click" (click)="showMenu = false"></div>
+
+            </div>
+
+        </ng-container>
+
+        <ng-template #notLoggedIn>
+            <a [routerLink]="['/login']" class="nav-action">
+                Iniciar sesión
+            </a>
+            <a [routerLink]="['/registro']" class="nav-action">
+                Registrarse
+            </a>
+        </ng-template>
+
+    </div>
+</nav>

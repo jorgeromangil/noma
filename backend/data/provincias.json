@@ -1,0 +1,264 @@
+{
+  "provincias": [
+    {
+      "code": "01",
+      "nombre": "Álava",
+      "comunidad_autonoma": "País Vasco"
+    },
+    {
+      "code": "02",
+      "nombre": "Albacete",
+      "comunidad_autonoma": "Castilla-La Mancha"
+    },
+    {
+      "code": "03",
+      "nombre": "Alicante",
+      "comunidad_autonoma": "Comunidad Valenciana"
+    },
+    {
+      "code": "04",
+      "nombre": "Almería",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "05",
+      "nombre": "Ávila",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "06",
+      "nombre": "Badajoz",
+      "comunidad_autonoma": "Extremadura"
+    },
+    {
+      "code": "07",
+      "nombre": "Baleares",
+      "comunidad_autonoma": "Islas Baleares"
+    },
+    {
+      "code": "08",
+      "nombre": "Barcelona",
+      "comunidad_autonoma": "Cataluña"
+    },
+    {
+      "code": "09",
+      "nombre": "Burgos",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "10",
+      "nombre": "Cáceres",
+      "comunidad_autonoma": "Extremadura"
+    },
+    {
+      "code": "11",
+      "nombre": "Cádiz",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "12",
+      "nombre": "Castellón",
+      "comunidad_autonoma": "Comunidad Valenciana"
+    },
+    {
+      "code": "13",
+      "nombre": "Ciudad Real",
+      "comunidad_autonoma": "Castilla-La Mancha"
+    },
+    {
+      "code": "14",
+      "nombre": "Córdoba",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "15",
+      "nombre": "A Coruña",
+      "comunidad_autonoma": "Galicia"
+    },
+    {
+      "code": "16",
+      "nombre": "Cuenca",
+      "comunidad_autonoma": "Castilla-La Mancha"
+    },
+    {
+      "code": "17",
+      "nombre": "Girona",
+      "comunidad_autonoma": "Cataluña"
+    },
+    {
+      "code": "18",
+      "nombre": "Granada",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "19",
+      "nombre": "Guadalajara",
+      "comunidad_autonoma": "Castilla-La Mancha"
+    },
+    {
+      "code": "20",
+      "nombre": "Guipúzcoa",
+      "comunidad_autonoma": "País Vasco"
+    },
+    {
+      "code": "21",
+      "nombre": "Huelva",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "22",
+      "nombre": "Huesca",
+      "comunidad_autonoma": "Aragón"
+    },
+    {
+      "code": "23",
+      "nombre": "Jaén",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "24",
+      "nombre": "León",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "25",
+      "nombre": "Lleida",
+      "comunidad_autonoma": "Cataluña"
+    },
+    {
+      "code": "26",
+      "nombre": "La Rioja",
+      "comunidad_autonoma": "La Rioja"
+    },
+    {
+      "code": "27",
+      "nombre": "Lugo",
+      "comunidad_autonoma": "Galicia"
+    },
+    {
+      "code": "28",
+      "nombre": "Madrid",
+      "comunidad_autonoma": "Comunidad de Madrid"
+    },
+    {
+      "code": "29",
+      "nombre": "Málaga",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "30",
+      "nombre": "Murcia",
+      "comunidad_autonoma": "Región de Murcia"
+    },
+    {
+      "code": "31",
+      "nombre": "Navarra",
+      "comunidad_autonoma": "Comunidad Foral de Navarra"
+    },
+    {
+      "code": "32",
+      "nombre": "Ourense",
+      "comunidad_autonoma": "Galicia"
+    },
+    {
+      "code": "33",
+      "nombre": "Asturias",
+      "comunidad_autonoma": "Principado de Asturias"
+    },
+    {
+      "code": "34",
+      "nombre": "Palencia",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "35",
+      "nombre": "Las Palmas",
+      "comunidad_autonoma": "Canarias"
+    },
+    {
+      "code": "36",
+      "nombre": "Pontevedra",
+      "comunidad_autonoma": "Galicia"
+    },
+    {
+      "code": "37",
+      "nombre": "Salamanca",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "38",
+      "nombre": "Santa Cruz de Tenerife",
+      "comunidad_autonoma": "Canarias"
+    },
+    {
+      "code": "39",
+      "nombre": "Santander",
+      "comunidad_autonoma": "Cantabria"
+    },
+    {
+      "code": "40",
+      "nombre": "Segovia",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "41",
+      "nombre": "Sevilla",
+      "comunidad_autonoma": "Andalucía"
+    },
+    {
+      "code": "42",
+      "nombre": "Soria",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "43",
+      "nombre": "Tarragona",
+      "comunidad_autonoma": "Cataluña"
+    },
+    {
+      "code": "44",
+      "nombre": "Teruel",
+      "comunidad_autonoma": "Aragón"
+    },
+    {
+      "code": "45",
+      "nombre": "Toledo",
+      "comunidad_autonoma": "Castilla-La Mancha"
+    },
+    {
+      "code": "46",
+      "nombre": "Valencia",
+      "comunidad_autonoma": "Comunidad Valenciana"
+    },
+    {
+      "code": "47",
+      "nombre": "Valladolid",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "48",
+      "nombre": "Vizcaya",
+      "comunidad_autonoma": "País Vasco"
+    },
+    {
+      "code": "49",
+      "nombre": "Zamora",
+      "comunidad_autonoma": "Castilla y León"
+    },
+    {
+      "code": "50",
+      "nombre": "Zaragoza",
+      "comunidad_autonoma": "Aragón"
+    },
+    {
+      "code": "51",
+      "nombre": "Ceuta",
+      "comunidad_autonoma": "Ceuta"
+    },
+    {
+      "code": "52",
+      "nombre": "Melilla",
+      "comunidad_autonoma": "Melilla"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+:host {
+  display: block;
+}
+
+.admin-user-card {
+  min-height: 31.25em;
+}
+
+.admin-user-create-embedded {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-user-create-embedded form {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-user-create-scroll {
+  min-width: 0;
+}
+
+.admin-user-create-embedded .admin-user-create-scroll {
+  margin-right: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  overflow: visible;
+}
+
+.admin-user-create-embedded .acciones {
+  margin-top: 1.25rem;
+}
+
+.admin-user-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.125em 1.5em;
+  align-items: start;
+}
+
+.admin-user-form-grid .campo label {
+  font-size: 0.85em;
+  color: #fff;
+  font-weight: 500;
+}
+
+.admin-user-form-grid .campo {
+  min-width: 0;
+}
+
+.admin-user-form-grid input,
+.admin-user-form-grid textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-user-create-select {
+  width: 100%;
+  min-width: 150px;
+}
+
+:host ::ng-deep .admin-user-create-select .ng-select-container {
+  padding-right: 2.2em !important;
+}
+
+:host ::ng-deep .admin-user-create-select .ng-select-container::after {
+  display: block !important;
+  right: 0.7em !important;
+}
+
+:host ::ng-deep .admin-user-create-select .ng-arrow-wrapper {
+  display: none !important;
+}
+
+:host ::ng-deep .admin-user-create-select.ng-select-opened .ng-select-container::after {
+  transform: translateY(-50%) rotate(180deg) !important;
+}
+
+.admin-user-form-grid .campo.ancho {
+  grid-column: 1 / -1;
+}
+
+.admin-user-card textarea {
+  min-height: 8em;
+  resize: vertical;
+}
+
+@media (max-width: 900px) {
+  .admin-user-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

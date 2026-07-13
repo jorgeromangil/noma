@@ -1,0 +1,192 @@
+/* ─── TARJETA HOVER DE CLUSTER ─── */
+:host {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.cluster-preview {
+  position: fixed;
+  z-index: 490;
+  width: 280px;
+  background: rgba(18, 18, 18, 0.92);
+  backdrop-filter: blur(1em);
+  -webkit-backdrop-filter: blur(1em);
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  border-radius: 0.875em;
+  overflow: hidden;
+
+  pointer-events: none;
+  user-select: none;
+
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
+  transition:
+    opacity 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.12s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.18s ease;
+
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.65),
+    0 0 0 0.5px rgba(255, 255, 255, 0.05) inset;
+}
+
+.cluster-preview--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.cluster-preview--visible:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.55),
+    0 0 0 0.5px rgba(255, 255, 255, 0.08) inset;
+}
+
+/* ─── CABECERA ─── */
+.cluster-preview__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.75em 1em;
+  border-bottom: 0.0625em solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cluster-preview__header-icon {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+
+.cluster-preview__title {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+
+.cluster-preview__count {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.2em 0.6em;
+  border-radius: 999px;
+}
+
+/* ─── LISTA DE PRODUCTOS ─── */
+.cluster-preview__list {
+  overflow-y: auto;
+  max-height: 300px;
+  padding: 0.4em 0;
+}
+
+.cluster-preview__list::-webkit-scrollbar {
+  width: 3px;
+}
+.cluster-preview__list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cluster-preview__list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+}
+
+/* ─── ITEM ─── */
+.cluster-preview__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+  padding: 0.55em 1em;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.cluster-preview__item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cluster-preview__item:active {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.cluster-preview__item-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5em;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cluster-preview__item-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5em;
+  flex-shrink: 0;
+  background: rgba(235, 64, 33, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(235, 64, 33, 0.85);
+  letter-spacing: -0.02em;
+}
+
+.cluster-preview__item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.18em;
+  min-width: 0;
+}
+
+.cluster-preview__item-name {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.015em;
+}
+
+.cluster-preview__item-category {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cluster-preview__item-arrow {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.cluster-preview__item:hover .cluster-preview__item-arrow {
+  transform: translateX(3px);
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ─── MÁS PRODUCTOS ─── */
+.cluster-preview__extra {
+  padding: 0.6em 1em 0.75em;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  border-top: 0.0625em solid rgba(255, 255, 255, 0.05);
+  margin-top: 0.25em;
+}

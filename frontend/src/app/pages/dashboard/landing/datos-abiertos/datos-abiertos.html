@@ -1,0 +1,79 @@
+<div class="nav-wrapper">
+    <app-navbar></app-navbar>
+</div>
+
+<div class="ambient-glow-layer" aria-hidden="true"></div>
+
+<div class="legal-content datos-abiertos-content">
+    <h1>Datos Abiertos sobre Artesanía</h1>
+
+    <p class="last-update">Licencia: CC BY 4.0</p>
+
+    <div class="legal-disclaimer datos-abiertos-actions">
+        <div>
+            <p><strong>Open Data de productos</strong></p>
+            <p>Consulta, reutiliza y descarga el dataset de productos artesanos en JSON o CSV.</p>
+        </div>
+        <div class="meta-acciones">
+            <button class="syncro-btn" (click)="solicitarDescarga('csv')" [disabled]="datosAbiertosLoading">
+                <span class="material-icons">download</span> CSV
+            </button>
+            <button class="syncro-btn" (click)="solicitarDescarga('json')" [disabled]="datosAbiertosLoading">
+                <span class="material-icons">download</span> JSON
+            </button>
+        </div>
+    </div>
+
+    <section>
+        <div class="legal-disclaimer datos-abiertos-loading" *ngIf="datosAbiertosLoading || datosAbiertosError">
+            <p class="meta-info" *ngIf="datosAbiertosLoading">Cargando dataset...</p>
+            <p class="meta-info error" *ngIf="datosAbiertosError">{{ datosAbiertosError }}</p>
+        </div>
+
+        <div class="preview-table scrollable" *ngIf="datasetPreview.length > 0">
+            <div class="preview-row preview-head">
+                <span>Nombre</span>
+                <span class="descripcion">Descripción</span>
+                <span>Compañía/Taller</span>
+                <span>Provincia</span>
+            </div>
+            <div class="preview-row" *ngFor="let r of filasPreview">
+                <span>{{ r.name || '' }}</span>
+                <span class="descripcion">{{ r.description || '' }}</span>
+                <span>{{ r.owner?.name || r.owner || '' }}</span>
+                <span>{{ r.province || '' }}</span>
+            </div>
+            <div *ngIf="!mostrarTodasFilas && datasetPreview.length > 4" style="text-align:center; margin:1em 0;">
+                <button class="syncro-btn" (click)="verMasFilas()">Ver más</button>
+            </div>
+        </div>
+
+        <div class="preview-vacio" *ngIf="!datosAbiertosLoading && datasetPreview.length === 0">
+            Aún no hay datos para mostrar.
+        </div>
+    </section>
+
+    <div class="back-link">
+        <a routerLink="/">← Volver al inicio</a>
+    </div>
+</div>
+
+
+
+<div class="perfil-popup-overlay" *ngIf="showLicenseModal" (click)="cancelarDescarga()">
+    <div class="perfil-popup" (click)="$event.stopPropagation()">
+        <button type="button" class="popup-close" (click)="cancelarDescarga()" aria-label="Cerrar">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <p class="popup-title">Aviso de licencia (CC BY 4.0)</p>
+        <p class="popup-text">
+            En Noma ponemos estos datos a disposición como datos abiertos (CC BY 4.0). No nos hacemos responsables del uso posterior; al descargar aceptas atribuir la procedencia y respetar la licencia.
+        </p>
+        <div class="popup-acciones-flex">
+            <button type="button" class="btn-secondary" (click)="cancelarDescarga()">Cancelar</button>
+            <button type="button" class="btn-primary" (click)="confirmarDescarga()">Aceptar y descargar</button>
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>

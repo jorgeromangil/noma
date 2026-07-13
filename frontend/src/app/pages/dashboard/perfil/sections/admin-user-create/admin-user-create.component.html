@@ -1,0 +1,100 @@
+<ng-template #createUserForm>
+  <form [formGroup]="userForm" (ngSubmit)="submit()">
+    <div *ngIf="backendError" class="auth-alert auth-alert-error" role="alert">
+      {{ backendError }}
+    </div>
+
+    <div class="form-scroll-container admin-user-create-scroll">
+      <div class="admin-user-form-grid">
+        <div class="campo">
+          <label>Rol</label>
+          <ng-select
+            [items]="roleOptions"
+            bindLabel="label"
+            bindValue="value"
+            formControlName="role"
+            [clearable]="false"
+            [searchable]="false"
+            class="ngselect-glass admin-user-create-select"
+          >
+          </ng-select>
+        </div>
+
+        <div class="campo">
+          <label>Nombre</label>
+          <input type="text" formControlName="name" placeholder="Nombre del usuario">
+          <small class="error-text" *ngIf="userForm.get('name')?.invalid && (userForm.get('name')?.touched || userForm.get('name')?.dirty)">
+            Introduce un nombre válido.
+          </small>
+        </div>
+
+        <div class="campo">
+          <label>Apellidos</label>
+          <input type="text" formControlName="surname" placeholder="Apellidos del usuario">
+          <small class="error-text" *ngIf="userForm.get('surname')?.invalid && (userForm.get('surname')?.touched || userForm.get('surname')?.dirty)">
+            Introduce unos apellidos válidos.
+          </small>
+        </div>
+
+        <div class="campo">
+          <label>Email</label>
+          <input type="email" formControlName="email" placeholder="ejemplo@correo.com">
+          <small class="error-text" *ngIf="userForm.get('email')?.invalid && (userForm.get('email')?.touched || userForm.get('email')?.dirty)">
+            Introduce un email válido.
+          </small>
+        </div>
+
+        <div class="campo">
+          <label>Contraseña temporal</label>
+          <input type="password" formControlName="password" placeholder="Mínimo 6 caracteres">
+          <small class="error-text" *ngIf="userForm.get('password')?.invalid && (userForm.get('password')?.touched || userForm.get('password')?.dirty)">
+            La contraseña debe tener al menos 6 caracteres.
+          </small>
+        </div>
+
+        <ng-container *ngIf="isArtisan">
+          <div class="campo">
+            <label>Taller o compañía</label>
+            <input type="text" formControlName="company_name" placeholder="Nombre visible del taller">
+          </div>
+
+          <div class="campo">
+            <label>Contacto</label>
+            <input type="text" formControlName="contact" placeholder="Teléfono o contacto directo">
+          </div>
+
+          <div class="campo ancho">
+            <label>Dirección</label>
+            <input type="text" formControlName="address_text" placeholder="Dirección del taller">
+          </div>
+
+          <div class="campo">
+            <label>Provincia</label>
+            <input type="text" formControlName="province" placeholder="Ej: Valencia">
+          </div>
+
+          <div class="campo ancho">
+            <label>Descripción</label>
+            <textarea formControlName="description" rows="4" placeholder="Descripción del perfil artesano"></textarea>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="acciones">
+      <button type="submit" class="syncro-btn" [disabled]="loading || userForm.invalid">
+        {{ loading ? 'Creando...' : 'Crear usuario' }}
+      </button>
+    </div>
+  </form>
+</ng-template>
+
+<section *ngIf="!embedded; else embeddedCreateUserForm" class="tarjeta admin-user-card">
+  <ng-container [ngTemplateOutlet]="createUserForm"></ng-container>
+</section>
+
+<ng-template #embeddedCreateUserForm>
+  <div class="admin-user-create-embedded">
+    <ng-container [ngTemplateOutlet]="createUserForm"></ng-container>
+  </div>
+</ng-template>

@@ -1,0 +1,618 @@
+.chip-color-dot {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  border: none;
+  margin-right: 0.35em;
+  vertical-align: middle;
+  /* box-shadow eliminado para quitar borde blanco */
+}
+:host {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0) + 5.2em);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 17; /* sobre el mapa (z=1) pero por debajo de la ficha (z=18) */
+  pointer-events: auto;
+}
+
+:host.inline {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  z-index: auto;
+  width: 100%;
+}
+
+.search-overlay {
+  width: fit-content;
+  max-width: calc(100vw - 2em);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: inherit;
+}
+
+:host.inline .search-overlay {
+  position: relative;
+  width: min(56em, 100%);
+  max-width: 100%;
+}
+
+/* En modo inline (dentro de navbar) los paneles deben desplegar hacia abajo
+   sin afectar el alto del contenedor (para que la barra no se “suba”). */
+:host.inline .panels {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(100% + 0.55em);
+  z-index: 60;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55em;
+
+  /* El ancho se adapta al contenido (categorías) y se limita por viewport */
+  width: max-content;
+  max-width: calc(100vw - 2em);
+}
+
+:host.inline .chips-row {
+  margin-top: 0;
+  width: max-content;
+  max-width: calc(100vw - 2em);
+}
+
+:host.inline .advanced.dropdown {
+  margin-top: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Forzamos tipografía consistente (Plus Jakarta viene del body global). */
+.search-input,
+.chip,
+.clear-btn,
+.chips-btn,
+.filters-btn,
+.reset-btn,
+.slider-value,
+.section-title,
+.hint,
+.check {
+  font-family: inherit;
+}
+
+.search-input {
+  font: inherit;
+}
+
+/* Controles de formulario (botones/inputs) a veces no heredan "font" completo. */
+.bar button,
+.bar input,
+.chips-row button,
+.advanced button,
+.advanced input {
+  font: inherit;
+}
+
+.glass {
+  background: rgba(26, 26, 26, 0.6);
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+  border: 0.0625em solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0.65em 2.0em rgba(0, 0, 0, 0.38);
+}
+
+.bar {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.28em 0.42em 0.28em 0.65em;
+  border-radius: 999px; /* píldora */
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.55em;
+  flex: 1;
+  min-width: 0;
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.80);
+  font-size: 1em;
+  line-height: 1;
+}
+
+.search-input {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.88rem;
+  line-height: 1;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85em;
+  height: 1.85em;
+  border-radius: 999px;
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.clear-btn:hover {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.clear-btn .material-symbols-outlined {
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+.chips-btn,
+.filters-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85em;
+  height: 1.85em;
+  border-radius: 999px;
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.chips-btn:hover,
+.filters-btn:hover {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+}
+
+.filters-badge {
+  position: absolute;
+  top: -0.35em;
+  right: -0.35em;
+  min-width: 1.45em;
+  height: 1.45em;
+  padding: 0;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: rgba(53, 53, 53, 0.95);
+  background: #dad9d9;
+  border: 0.0625em solid rgba(134, 134, 134, 0.28);
+}
+
+.chips-row {
+  box-sizing: border-box;
+  margin-top: 0.5em;
+  border-radius: 1.1em;
+  padding: 0.45em 0.5em;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.chips-row.is-hidden {
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.chips-scroll {
+  display: flex;
+  gap: 0.5em;
+  overflow-x: auto;
+  max-width: 100%;
+  justify-content: flex-start;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* En navbar (inline), mantenemos una sola fila como antes. */
+:host.inline .chips-scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  justify-content: center;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border-radius: 999px;
+  padding: 0.38em 0.7em;
+  font-size: 0.75rem;
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+}
+
+.chip.active {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  color: rgba(255, 255, 255, 0.96);
+}
+
+/* Dropdown centrado (no se expande hacia la izquierda) */
+.dropdown {
+  box-sizing: border-box;
+  align-self: stretch;
+  width: 100%;
+  margin-top: 0.55em;
+  border-radius: 1.05em;
+  padding: 0.9em 1em;
+  font-size: 0.85rem;
+}
+
+.advanced-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  margin-bottom: 0.75em;
+}
+
+.advanced-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.reset-btn {
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 0.85em;
+  padding: 0.35em 0.75em;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.section {
+  padding-top: 0.9em;
+  margin-top: 0.5em;
+  border-top: 0.0625em solid rgba(255, 255, 255, 0.06);
+}
+
+.section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.55em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.checks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 0.9em;
+  row-gap: 0.15em;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.slider {
+  width: 100%;
+  accent-color: whitesmoke;
+}
+
+.slider-value {
+  min-width: 4.6em;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: whitesmoke;
+}
+
+.hint {
+  margin-top: 0.4em;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.35;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0.35em 0;
+  width: 100%;
+  min-height: 2.15em;
+  padding: 0.42em 0.6em;
+  box-sizing: border-box;
+  border-radius: 0.8em;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.86);
+  user-select: none;
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease;
+  border: 0.0625em solid transparent;
+  background: transparent;
+  text-align: left;
+}
+
+.check:hover,
+.check:focus-within {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(235, 64, 33, 0.12);
+}
+
+.check.active {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(235, 64, 33, 0.18);
+}
+
+.check-box {
+  width: 1.05em;
+  height: 1.05em;
+  border-radius: 0.3em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  flex: 0 0 auto;
+  position: relative;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.check-box.checked {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  box-shadow: 0 0.1em 0.4em rgba(235, 64, 33, 0.3);
+}
+
+.check-box.checked::after {
+  content: '';
+  position: absolute;
+  top: 0.1em;
+  left: 0.28em;
+  width: 0.3em;
+  height: 0.55em;
+  border: solid #fff;
+  border-width: 0 0.13em 0.13em 0;
+  transform: rotate(45deg);
+}
+.check:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 0.125em rgba(235, 64, 33, 0.25);
+}
+
+/* === GEOLOCALIZACIÓN === */
+.geo-activation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 0.6em;
+}
+
+.geo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 0.85em;
+  padding: 0.35em 0.75em;
+  font-size: 0.8rem;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.geo-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.geo-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.geo-btn .material-symbols-outlined {
+  font-size: 1em;
+}
+
+.slider-row.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* === PANEL DE CONFIRMACIÓN GEO (integrado en el dropdown) === */
+/* Switcher: ambos paneles en la misma celda de grid, cruce con opacidad */
+.panel-switcher {
+  display: grid;
+}
+
+.panel-switcher > * {
+  grid-area: 1 / 1;
+  transition: opacity 0.18s ease;
+}
+
+.panel-hidden {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.geo-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.65em;
+  padding: 0.4em 0.25em 0.1em;
+}
+
+.geo-confirm-icon {
+  width: 2.8em;
+  height: 2.8em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(235, 64, 33, 0.25) 0%, rgba(147, 44, 141, 0.25) 100%);
+  border: 0.0625em solid rgba(235, 64, 33, 0.35);
+}
+
+.geo-confirm-icon .material-symbols-outlined {
+  font-size: 1.4em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.geo-confirm-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.01em;
+}
+
+.geo-confirm-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+  max-width: 22em;
+}
+
+.geo-confirm-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  border-top: 0.0625em solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.5em;
+  width: 100%;
+  justify-content: center;
+}
+
+.geo-confirm-note .material-symbols-outlined {
+  font-size: 1em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.geo-confirm-actions {
+  display: flex;
+  gap: 0.55em;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.2em;
+}
+
+.geo-cancel-btn {
+  flex: 1;
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 0.85em;
+  padding: 0.35em 0.75em;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.geo-cancel-btn:hover {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.geo-allow-btn {
+  flex: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  border: 0.0625em solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.82);
+  border-radius: 0.85em;
+  padding: 0.35em 0.75em;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.geo-allow-btn:hover {
+  background: linear-gradient(90deg, rgba(235, 64, 33, 0.2) 0%, rgba(147, 44, 141, 0.2) 100%);
+  border: 0.12em solid rgba(235, 64, 33, 0.25);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.geo-allow-btn .material-symbols-outlined {
+  font-size: 1em;
+}
+
+@media (max-width: 720px) {
+  :host {
+    top: calc(env(safe-area-inset-top, 0) + 5.0em);
+  }
+}

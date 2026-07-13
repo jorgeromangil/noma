@@ -1,0 +1,216 @@
+/* Shared button styles */
+
+/* Estilos base compartidos para todos los botones primarios con degradado */
+
+/* Botón primario estilo engine-switch rojo */
+
+.btn-primary,
+.btn-accept,
+.nav-action,
+.boton-gradiente,
+.syncro-btn,
+.btn-popup-confirmar-eliminar,
+.btn-eliminar,
+.btn-nav,
+.btn-primary.boton-gradiente,
+.nav-action.boton-gradiente,
+.btn-primary.nav-action,
+.btn-primary.syncro-btn,
+.nav-action.syncro-btn,
+.btn-primary.btn-accept {
+    background: linear-gradient(90deg, rgba(235, 63, 33, 0.288) 0%, rgba(147, 44, 142, 0.212) 100%) !important;
+    border: 0.0625em solid rgba(235, 64, 33, 0.25) !important;
+    color: #fff;
+    box-shadow: 0 0.25em 0.75em rgba(235, 64, 33, 0.08);
+    opacity: 1;
+    padding: 0.625em 1.125em;
+    border-radius: 1em;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    transition: box-shadow 0.22s, transform 0.22s cubic-bezier(.2, .9, .2, 1), border-color 0.22s, background 0.22s, padding 0.16s, height 0.16s, border-radius 0.16s;
+    -webkit-tap-highlight-color: transparent;
+    isolation: isolate;
+}
+
+.btn-primary:hover,
+.btn-accept:hover,
+.nav-action:hover,
+.boton-gradiente:hover,
+.syncro-btn:hover,
+.btn-popup-confirmar-eliminar:hover,
+.btn-eliminar:hover {
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.25) 0%, rgba(147, 44, 141, 0.25) 100%);
+    border: 0.0625em solid rgba(235, 64, 33, 0.4);
+    color: #fff;
+    box-shadow: 0 1em 2.25em rgba(235, 64, 33, 0.28), 0 0.625em 1.75em rgba(147, 44, 141, 0.22), 0 0.5em 1.125em rgba(0, 0, 0, 0.35);
+    font-weight: 600;
+    filter: brightness(1.05);
+    transform: scale(1.015);
+}
+
+.btn-primary:active,
+.btn-accept:active,
+.nav-action:active,
+.boton-gradiente:active,
+.syncro-btn:active,
+.btn-popup-confirmar-eliminar:active,
+.btn-eliminar:active {
+    transform: scale(0.997);
+}
+
+.btn-primary:focus-visible,
+.btn-accept:focus-visible,
+.nav-action:focus-visible,
+.boton-gradiente:focus-visible,
+.syncro-btn:focus-visible,
+.btn-popup-confirmar-eliminar:focus-visible,
+.btn-eliminar:focus-visible {
+    outline: 0.1875em solid rgba(235, 64, 33, 0.18);
+    outline-offset: 0.25em;
+    background: linear-gradient(90deg, rgba(235, 64, 33, 0.25) 0%, rgba(147, 44, 141, 0.25) 100%);
+}
+
+.btn-primary:hover,
+.btn-accept:hover,
+.nav-action:hover,
+.boton-gradiente:hover,
+.syncro-btn:hover,
+.btn-popup-confirmar-eliminar:hover,
+.btn-eliminar:hover {
+    box-shadow: 0 0.4em 1em rgba(235, 64, 33, 0.28), 0 0.25em 0.5em rgba(147, 44, 141, 0.22), 0 0.2em 0.4em rgba(0, 0, 0, 0.35);
+    font-weight: 600;
+    filter: brightness(1.05);
+    transform: translateY(-0.0625em);
+}
+
+.btn-primary:active,
+.btn-accept:active,
+.nav-action:active,
+.boton-gradiente:active,
+.syncro-btn:active,
+.btn-popup-confirmar-eliminar:active,
+.btn-eliminar:active {
+    transform: scale(0.997);
+}
+
+.btn-primary:focus-visible,
+.btn-accept:focus-visible,
+.nav-action:focus-visible,
+.boton-gradiente:focus-visible,
+.syncro-btn:focus-visible,
+.btn-popup-confirmar-eliminar:focus-visible,
+.btn-eliminar:focus-visible {
+    outline: 0.1875em solid rgba(147, 44, 141, 0.18);
+    outline-offset: 0.25em;
+    background-position: 100% 50%;
+    animation: gradient-pan var(--grad-hover-duration) linear infinite;
+}
+
+/* Estado disabled para botones */
+.btn-primary:disabled,
+.btn-accept:disabled,
+.nav-action:disabled,
+.boton-gradiente:disabled,
+.syncro-btn:disabled,
+.btn-popup-confirmar-eliminar:disabled,
+.btn-eliminar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Botón secundario - outline style */
+.btn-secondary,
+.btn-reject,
+.btn-popup-cancelar,
+.btn-cancelar {
+    background: rgba(26, 26, 26, 0.4);
+    border: 0.0625em solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.625em 1.125em;
+    border-radius: 0.9375em;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    transition: all 0.22s cubic-bezier(.2, .9, .2, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary:hover,
+.btn-reject:hover,
+.btn-popup-cancelar:hover,
+.btn-cancelar:hover {
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.015);
+}
+
+.btn-secondary:active,
+.btn-reject:active,
+.btn-popup-cancelar:active,
+.btn-cancelar:active {
+    transform: scale(0.997);
+}
+
+.btn-secondary:focus-visible,
+.btn-reject:focus-visible,
+.btn-popup-cancelar:focus-visible,
+.btn-cancelar:focus-visible {
+    outline: 0.1875em solid rgba(255, 255, 255, 0.18);
+    outline-offset: 0.25em;
+}
+
+.btn-secondary:disabled,
+.btn-reject:disabled,
+.btn-popup-cancelar:disabled,
+.btn-cancelar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Animación de gradiente */
+@keyframes gradient-pan {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Estilos específicos para botones en contexto de popup */
+.popup-acciones-flex .btn-popup-confirmar-eliminar,
+.popup-acciones-flex .btn-popup-cancelar,
+.popup-acciones-flex .btn-cancelar,
+.popup-acciones-flex .btn-eliminar {
+    flex: 1;
+    padding: 0.75em;
+    border-radius: 0.75em;
+}
+
+.popup-acciones-flex .popup-close {
+    width: 100%;
+    padding: 0.75em;
+    border-radius: 0.75em;
+}
+

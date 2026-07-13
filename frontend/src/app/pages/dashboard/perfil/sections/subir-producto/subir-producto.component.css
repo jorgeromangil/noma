@@ -1,0 +1,491 @@
+h4 {
+  margin-top: 0em;
+  margin-bottom: 0em;
+}
+
+.subir-producto-shell {
+  position: relative;
+}
+
+.admin-product-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  background: rgba(8, 10, 18, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.admin-product-popup {
+  width: min(56rem, 100%);
+  max-height: min(92vh, 60rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: auto;
+  border-radius: 1em;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.35);
+  padding: 1.75em 2.5em;
+  background: rgba(26, 26, 26, 0.6);
+  border: 0.0625em solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(0.5em);
+  -webkit-backdrop-filter: blur(0.5em);
+  position: relative;
+  scrollbar-gutter: stable;
+}
+
+.admin-product-popup::-webkit-scrollbar {
+  width: 0.3125em;
+  background: transparent;
+}
+
+.admin-product-popup::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-product-popup::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 0.625em;
+  min-height: 1.875em;
+  transition: background 0.2s ease;
+}
+
+.admin-product-popup:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.subir-producto-popup-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.subir-producto-close {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.subir-producto-close:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+.subir-producto-close .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.subir-producto-exit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 27000;
+  background: rgba(0, 0, 0, 0.76);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.subir-producto-exit-popup {
+  background: rgba(26, 26, 26, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 0.0625em solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  width: min(31rem, 100%);
+  padding: 1.5rem;
+  box-shadow: 0 0.75rem 2.2rem rgba(0, 0, 0, 0.4);
+}
+
+.subir-producto-exit-actions {
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.1rem;
+}
+
+.subir-producto-exit-actions .btn-secondary,
+.subir-producto-exit-actions .btn-primary {
+  min-width: 12.5rem;
+}
+
+.admin-owner-help {
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.85rem;
+}
+
+:host ::ng-deep .admin-owner-select .ng-select-container .ng-placeholder,
+:host ::ng-deep .admin-owner-select .ng-select-container .ng-value,
+:host ::ng-deep .admin-owner-select .ng-select-container .ng-value-label {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.limite-productos-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75em;
+  padding: 2.5em 1.5em;
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.0625em solid rgba(255, 255, 255, 0.08);
+  border-radius: 1em;
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.limite-productos-msg .limite-icon {
+  font-size: 3.5rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.limite-productos-msg h3 {
+  margin: 0;
+  font-size: 1.25em;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.limite-productos-msg p {
+  margin: 0;
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.55);
+  max-width: 32em;
+  line-height: 1.6;
+}
+
+.acciones-centradas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  margin-bottom: 8px;
+}
+
+.acciones-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.acciones-row .syncro-btn,
+.acciones-row .btn-secondary {
+  min-width: 13rem;
+}
+
+@media (max-width: 680px) {
+  .acciones-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .acciones-row .syncro-btn,
+  .acciones-row .btn-secondary {
+    width: 100%;
+    min-width: 0;
+  }
+}
+.borrar-borrador-btn {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 5px;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+}
+.borrar-borrador-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.borrar-borrador-btn .material-icons {
+  font-size: 18px;
+}
+
+.ubicacion-actions {
+  grid-column: 1 / -1;
+}
+
+.geo-fill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.94);
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.geo-fill-btn .material-icons {
+  font-size: 1.05rem;
+}
+
+.geo-fill-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.38);
+  transform: translateY(-1px);
+}
+
+.geo-fill-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+/* Los estilos CSS se heredan del perfil.css principal del componente padre */
+
+
+:host {
+  display: contents;
+}
+
+.borradores-link-wrapper {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  z-index: 10;
+}
+
+.borradores-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+
+.menu-puntos-item {
+    background: none;
+    border: none;
+    color: #eee;
+    font-size: 15px;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    padding: 8px 12px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Scroll interno para subir producto */
+.form-scroll-container {
+    scrollbar-gutter: stable;
+}
+
+.form-scroll-container::-webkit-scrollbar {
+    width: 0.3125em;
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-scroll-container::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0.625em;
+    min-height: 1.875em;
+    transition: background 0.2s ease;
+}
+
+.subir-producto:hover .form-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Drag and drop styles */
+.preview-item {
+    cursor: move;
+    transition: opacity 0.2s, transform 0.2s;
+    position: relative;
+}
+
+.preview-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
+}
+
+.preview-item:hover {
+    transform: scale(1.02);
+}
+
+.preview-item.dragging:hover {
+    transform: scale(0.95);
+}
+
+/* Mensaje informativo */
+.foto-principal-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 30px;
+    color: #444;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.foto-principal-hint .material-icons {
+    font-size: 16px;
+    color: #444;
+}
+
+/* Estrella de imagen principal */
+.star-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.star-badge .material-icons {
+    font-size: 16px;
+    background: whitesmoke;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* ─── Modelo 3D (estilo similar al uploader de imágenes) ─────────── */
+.model3d-upload {
+    background: #1a1a1a;
+    border: 2px dashed #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.model3d-upload .upload-btn {
+    text-align: center;
+    cursor: pointer;
+    color: #888;
+}
+
+.model3d-upload:hover .upload-btn {
+    color: white;
+}
+
+.model3d-upload .material-icons {
+    font-size: 38px;
+}
+
+.model3d-box .error-text {
+    color: #ff9f9f;
+    margin: 6px 0 0 0;
+}
+
+.model3d-box .progress-text {
+    color: #c9d4ff;
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    text-align: center;
+}
+
+.model3d-note {
+    margin: 0;
+    color: #9a9a9a;
+    font-size: 12px;
+    text-align: center;
+}
+
+.model3d-preview-card {
+    position: relative;
+    width: 100%;
+    max-width: calc(100% - 16px); /* reduce un poco para que no se salga del contenedor */
+    box-sizing: border-box;
+    padding: 12px 10px 12px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.2);
+    border: 1px dashed #333;
+    text-align: center;
+    margin: 12px auto 10px;
+    overflow: hidden;
+}
+
+.model3d-thumb {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: 320px;
+    margin: 0 auto 6px;
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.model3d-thumb canvas {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    display: block;
+}
+
+.model3d-thumb .material-icons {
+    font-size: 42px;
+    color: #cfd2ff;
+}
+
+.model3d-preview-card .remove-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.65);
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.model3d-preview-card .remove-badge:hover {
+    background: rgba(0,0,0,0.85);
+}
+
+.submit-notice {
+    color: #cfd2ff;
+    font-size: 13px;
+    margin: 4px 0 0 0;
+    text-align: center;
+}

@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import './styles/buttons.css';
+
+/* GLOBAL CUSTOM TOOLTIP STYLES */
+.custom-tooltip {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999999;
+    background: #222;
+    color: #fff;
+    padding: 0.4em 0.8em;
+    border-radius: 0.4em;
+    font-size: 0.75em;
+    white-space: pre-line;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: opacity 0.25s, transform 0.25s;
+}
+.custom-tooltip.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+:root {
+    /* Gradiente global para botones */
+    --grad-1: #EB4021;
+    --grad-2: #932C8D;
+    --grad-3: #37429A;
+    --grad-duration: 2.4s;
+    /* base para transiciones */
+    --grad-hover-duration: 4s;
+    /* duración más lenta mientras se está en hover */
+    /* ancho mínimo y máximo de contenido */
+    --min-content-width: 67.4375em;
+    --max-content-width: 100%;
+    --spacing-sm: 1rem;
+    --spacing-md: 2rem;
+    --spacing-lg: 3rem;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: radial-gradient(68em 48em at 18% 12%, rgba(235, 64, 33, 0.18) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%), radial-gradient(60em 40em at 80% 18%, rgba(147, 44, 141, 0.16) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%), radial-gradient(60em 40em at 50% 80%, rgba(55, 66, 154, 0.16) 0%, rgba(18, 18, 18, 0.12) 70%, transparent 100%), #121212;
+    color: #fff;
+    display: block;
+    padding: var(--spacing-sm);
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+
+/* Contenedor principal de toda la app */
+
+.responsive-shell {
+    width: var(--max-content-width);
+    min-width: var(--min-content-width);
+    /* mínimo 67.4375em */
+    max-width: none;
+    /* ocupamos todo el ancho disponible */
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+/* Para páginas de autenticación, no aplicar min-width */
+.form-auth + .responsive-shell,
+app-root:has(.form-auth) .responsive-shell {
+    min-width: auto;
+    width: 100%;
+}
+
+
+/* Sección genérica (como usas en home) */
+
+.section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: var(--spacing-sm);
+    border-radius: 0.75em;
+}
+
+
+/* Grid genérico */
+
+.grid-cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+}
+
+
+/* A partir de 67.4375em organizamos mejor el contenido */
+
+@media (min-width: 67.4375em) {
+    body {
+        padding: var(--spacing-md);
+    }
+    .responsive-shell {
+        gap: var(--spacing-md);
+    }
+    .grid-cols {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* En pantallas muy grandes ampliamos aún más el layout */
+
+@media (min-width: 87.5em) {
+    body {
+        padding: var(--spacing-lg);
+    }
+    .grid-cols {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: var(--spacing-lg);
+        align-items: center;
+    }
+}
+
+

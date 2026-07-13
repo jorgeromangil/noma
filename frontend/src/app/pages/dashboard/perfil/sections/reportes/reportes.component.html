@@ -1,0 +1,223 @@
+<section class="seccion-reportes">
+  <div class="buscador-wrapper">
+    <div class="buscador-inner">
+      <span class="material-icons search-icon">search</span>
+      <input
+        type="text"
+        class="buscador-input"
+        placeholder="Buscar por nombre, artesano..."
+        [(ngModel)]="busqueda"
+        (input)="onBusquedaChange()"
+      />
+    </div>
+  </div>
+
+  <div class="filtros-wrapper">
+    <div class="filtros-group" *ngIf="!esModoAceptados()">
+      <label>Estado:</label>
+      <ng-select
+        [items]="estadosDisponibles"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="filtroEstado"
+        (ngModelChange)="onFiltroEstadoChange()"
+        [clearable]="false"
+        [searchable]="false"
+        class="ngselect-glass reporte-select"
+      >
+      </ng-select>
+    </div>
+
+    <div class="filtros-group">
+      <label>Motivo:</label>
+      <ng-select
+        [items]="razonesDisponibles"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="filtroRazon"
+        (ngModelChange)="onFiltroRazonChange()"
+        [clearable]="false"
+        [searchable]="false"
+        class="ngselect-glass reporte-select"
+      >
+      </ng-select>
+    </div>
+
+    <div class="filtros-group">
+      <label>Ordenar:</label>
+      <ng-select
+        [items]="ordenDisponibles"
+        bindLabel="label"
+        bindValue="value"
+        [(ngModel)]="ordenarPor"
+        (ngModelChange)="onOrdenChange()"
+        [clearable]="false"
+        [searchable]="false"
+        class="ngselect-glass reporte-select"
+      >
+      </ng-select>
+    </div>
+
+    <button class="btn-toggle-orden" (click)="toggleOrdenasc()" [customTooltip]="getTooltipOrden()" type="button">
+      <span class="material-icons">{{ ordenAsc ? 'arrow_upward' : 'arrow_downward' }}</span>
+    </button>
+  </div>
+
+  <div class="form-scroll-container">
+    <!-- Estado de carga -->
+    <div *ngIf="loading" class="vacio-msg">Cargando productos reportados...</div>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="error && !loading" class="error-container">
+      <p class="error-msg">{{ error }}</p>
+      <button class="btn-retry" (click)="cargarProductosReportados()">Reintentar</button>
+    </div>
+
+    <!-- Sin resultados -->
+    <div *ngIf="!loading && !error && productosFiltrados.length === 0" class="vacio-msg">
+      No hay productos reportados
+    </div>
+
+    <!-- Lista de productos reportados -->
+    <div *ngIf="!loading && !error && productosFiltrados.length > 0" class="reportes-list">
+      <div
+        *ngFor="let producto of productosFiltrados"
+        class="reporte-card"
+        [class.expanded]="productoExpandido === producto._id"
+      >
+        <!-- Encabezado del producto -->
+        <div class="card-header" (click)="toggleProductoExpandido(producto._id)">
+          <div class="producto-info">
+            <div class="producto-image" [class.sin-imagen]="!obtenerImagenProducto(producto)">
+              <ng-container *ngIf="obtenerImagenProducto(producto) as imagenProducto; else placeholderImagen">
+                <img
+                  [src]="imagenProducto"
+                  alt="{{ producto.title || producto.name }}"
+                  (error)="onImagenProductoError(producto._id)"
+                />
+              </ng-container>
+              <ng-template #placeholderImagen>
+                <span class="material-icons placeholder-icon" aria-hidden="true">inventory_2</span>
+              </ng-template>
+            </div>
+            <div class="producto-details">
+              <h4 class="producto-titulo">{{ producto.title || producto.name }}</h4>
+              <p class="producto-artesano">{{ obtenerNombreProductor(producto) }}</p>
+            </div>
+          </div>
+
+          <div class="report-info">
+            <span class="report-count">
+              {{ obtenerCantidadReportes(producto) }} {{ obtenerTextoReportes(obtenerCantidadReportes(producto)) }}
+            </span>
+            <span class="reporte-estado" [class]="'estado-' + obtenerEstadoProducto(producto)">
+              {{ obtenerNombreEstado(obtenerEstadoProducto(producto)) }}
+            </span>
+          </div>
+
+          <button
+            class="btn-expand"
+            [class.expanded]="productoExpandido === producto._id"
+            (click)="$event.stopPropagation()"
+          >
+            <span class="material-icons">expand_more</span>
+          </button>
+        </div>
+
+        <!-- Detalles expandidos -->
+        <div *ngIf="productoExpandido === producto._id" class="card-details">
+          <!-- Acciones -->
+          <div class="card-actions">
+            <button
+              *ngIf="!esModoAceptados()"
+              class="syncro-btn"
+              type="button"
+              (click)="aceptarReporte(producto, $event)"
+              [disabled]="estaActualizandoEstado(producto._id) || obtenerEstadoProducto(producto) === 'actioned'"
+            >
+              <span class="material-symbols-outlined">check_circle</span> Aceptar reporte
+            </button>
+
+            <button
+              *ngIf="!esModoAceptados()"
+              class="syncro-btn"
+              type="button"
+              (click)="denegarReporte(producto, $event)"
+              [disabled]="estaActualizandoEstado(producto._id) || obtenerEstadoProducto(producto) === 'dismissed'"
+            >
+              <span class="material-symbols-outlined">cancel</span>  Denegar reporte
+            </button>
+
+            <button
+              *ngIf="esModoAceptados()"
+              class="syncro-btn"
+              type="button"
+              (click)="revertirReporte(producto, $event)"
+              [disabled]="estaActualizandoEstado(producto._id)"
+            >
+              <span class="material-icons">undo</span> Deshacer reporte
+            </button>
+
+            <a
+              [routerLink]="['/producto', producto.slug || producto._id]"
+              class="syncro-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="$event.stopPropagation()"
+            >
+              <span class="material-symbols-outlined">eye_tracking</span> Revisar producto
+            </a>
+          </div>
+
+          <!-- Reportes -->
+          <div class="reportes-container">
+            <h5>
+              {{ obtenerTextoReportes(obtenerCantidadReportes(producto)) | titlecase }}
+              ({{ obtenerCantidadReportes(producto) }})
+            </h5>
+
+            <div class="reportantes-resumen" *ngIf="obtenerUsuariosReportantes(producto).length > 0">
+              <strong>Usuarios que lo han reportado:</strong>
+              <p>{{ obtenerUsuariosReportantes(producto).join(', ') }}</p>
+            </div>
+
+            <div *ngFor="let reporte of producto.reports" class="reporte-item">
+              <div class="reporte-header-info">
+                <span class="reporte-razon">{{ obtenerNombreRazon(reporte.reason) }}</span>
+              </div>
+
+              <div class="reporte-reporter">
+                <strong>Reportado por:</strong> {{ reporte.reporter?.name }} {{ reporte.reporter?.surname }}
+                <span class="reporter-email" *ngIf="reporte.reporter?.email">({{ reporte.reporter?.email }})</span>
+              </div>
+
+              <div class="reporte-fecha">
+                  <strong>Fecha:</strong> {{ reporte.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              </div>
+
+              <div *ngIf="reporte.details" class="reporte-details">
+                <strong>Detalles:</strong>
+                <p>{{ reporte.details }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginación -->
+    <div *ngIf="!loading && !error && totalPages > 1" class="pagination-container">
+      <button class="btn-pag" (click)="cambiarPagina(currentPage - 1)" [disabled]="currentPage === 1">
+        <span class="material-icons">chevron_left</span>
+      </button>
+
+      <span class="pagination-info">
+        Página {{ currentPage }} de {{ totalPages }}
+      </span>
+
+      <button class="btn-pag" (click)="cambiarPagina(currentPage + 1)" [disabled]="currentPage === totalPages">
+        <span class="material-icons">chevron_right</span>
+      </button>
+    </div>
+  </div>
+</section>
