@@ -1,205 +1,103 @@
-# syncro_abp25
-[ABPGC25] Proyecto de Contenidos del grupo Syncro de ABP 2025/26
+# Noma: Artisanal Heritage Platform
 
-# Backend API Documentation
+!Noma Project
+!Frontend-Angular
+!Backend-Node.js
+!Database-MongoDB
 
-## Estructura del Proyecto
-```
-backend/
-├── controllers/     # Lógica de negocio
-│   ├── auth.js     # Autenticación
-│   ├── users.js    # Gestión de usuarios
-│   └── products.js # Gestión de productos
-├── database/
-│   └── configdb.js # Configuración MongoDB
-├── helpers/
-│   └── jwt.js      # Generación y gestión de JWT
-├── middleware/
-│   ├── validate-fields.js # Validación de campos
-│   ├── validate-jwt.js    # Validación de token
-│   └── validate-role.js   # Validación de roles
-├── models/
-│   ├── users.js    # Esquema de usuario
-│   └── products.js # Esquema de producto
-└── routes/
-    ├── auth.js     # Rutas de autenticación
-    ├── users.js    # Rutas de usuarios
-    └── products.js # Rutas de productos
-```
+## Project Overview
 
-## Modelos
+Noma (Núcleo de Origen y Memoria Artesanal) is an interactive, educational Single Page Application (SPA) designed to preserve and promote artisanal and agro-food heritage. By bridging the digital gap for local artisans, Noma restores visibility to traditional crafts and connects creators directly with global audiences.
 
-### Usuario (User)
-```javascript
-{
-    name: String,       // requerido
-    surname: String,    // requerido
-    email: String,      // requerido, único
-    password: String,   // requerido, hasheado
-    image: String,      // opcional
-    role: String       // requerido, valores: ['regular', 'artisan', 'admin']
-}
-```
+The platform serves as a digital showcase, providing artisans with the tools to present their work to the world while offering users an immersive experience to discover, learn about, and connect with unique cultural products.
 
-### Producto (Product)
-```javascript
-{
-    name: String,          // requerido, único
-    description: String,   // requerido
-    
-    // Historia y Patrimonio
-    historia_origen: String,         // requerido
-    importancia_cultural: String,    // requerido
-    
-    // Técnicas y Procesos
-    proceso_elaboracion: String,     // requerido
-    materias_primas: String,         // requerido
-    tiempo_elaboracion: String,      // requerido
-    
-    // Certificaciones (opcional)
-    certificaciones_protecciones: String,  // opcional
-    
-    media: [String],      // requerido, al menos un elemento
-    city: String,         // requerido
-    address_text: String, // requerido
-    owner: ObjectId      // requerido, referencia a User
-}
-```
+## Key Features
 
-## Endpoints
+*   **Immersive 3D Map**: A custom WebGL 3-axis interactive graphics engine serving as the main search tool with rotation, zoom, and dynamic regional product pins.
+*   **Multimedia Product Pages**: Detailed insights into heritage, traditional processing techniques, and an embedded Three.js & WebGL 3D model viewer.
+*   **Advanced Search & Filtering**: Users can easily find products using text search or by applying filters for categories, proximity, official certifications (e.g., D.O., I.G.P.), and personal favorites.
+*   **Smart Assistant**: An integrated Dialogflow chatbot offering personalized product recommendations and catalogue guidance.
+*   **Artisan Dashboard**: A dedicated space for local creators to register, create detailed profiles, and manage their product listings, including uploading images and 3D models.
+*   **Open Data Portal**: In the spirit of open knowledge, Noma provides a "Datos Abiertos" section where product datasets can be downloaded in `JSON` and `CSV` formats.
 
-### Autenticación
-- **POST /api/login**
-  - Body: `{ email, password }`
-  - Respuesta: JWT token para autenticación
-  - No requiere autenticación
+## Tech Stack
 
-### Usuarios
+*   **Frontend**:
+    *   **Framework**: **Angular** (SPA)
+    *   **Language**: **TypeScript**
+    *   **State Management**: **RxJS** for handling asynchronous data streams and state.
 
-- **GET /api/users**
-  - Lista usuarios (paginado)
-  - Query params: `from`, `recordsPerPage`
-  - Requiere: JWT
-  - Códigos: 200, 500
+*   **Backend**:
+    *   **Framework**: **Node.js** & **Express.js**
+    *   **API**: RESTful API for product, user, and authentication management.
 
-- **POST /api/users**
-  - Crea nuevo usuario
-  - Body: `{ name, surname, email, password, role?, image? }`
-  - Requiere: JWT (solo admin puede crear otros admin)
-  - Códigos: 201, 400 (email duplicado), 403 (no autorizado), 500
+*   **Database**:
+    *   **Type**: **MongoDB** (NoSQL) for flexible and scalable data storage.
 
-- **PUT /api/users/:id**
-  - Actualiza usuario existente
-  - Body: `{ name?, surname?, email?, role?, image? }`
-  - Requiere: JWT (solo propietario o admin)
-  - Códigos: 200, 400 (email duplicado), 403 (no autorizado), 404, 500
+*   **Graphics & 3D**:
+    *   **WebGL** (Custom 3D Map Engine)
+    *   **Three.js** (Product Model Viewer)
 
-- **DELETE /api/users/:id**
-  - Elimina usuario
-  - Requiere: JWT (solo propietario o admin)
-  - Códigos: 200, 403 (no autorizado), 404, 500
+*   **NLP / Chatbot**:
+    *   **Google Dialogflow** (NLU)
 
-### Productos
+*   **External Services**:
+    *   **Geolocation**: **Nominatim (OpenStreetMap)** for reverse geocoding functionality.
 
-- **GET /api/products**
-  - Lista todos los productos (paginado)
-  - Query params: `from`, `recordsPerPage`
-  - Requiere: JWT
-  - Códigos: 200, 403, 500
+## Project Structure
 
-- **GET /api/products/my**
-  - Lista productos del usuario autenticado
-  - Requiere: JWT (artisan o admin)
-  - Códigos: 200, 403, 500
+The repository is organized into two main parts:
 
-- **POST /api/products**
-  - Crea nuevo producto
-  - Body: `{ name, description, historia_origen, importancia_cultural, proceso_elaboracion, materias_primas, tiempo_elaboracion, certificaciones_protecciones?, media[], city, address_text }`
-  - Requiere: JWT (artisan o admin)
-  - Códigos: 201, 400 (nombre duplicado), 403, 500
+*   `frontend/`: Contains the complete Angular client-side application.
+    *   `src/app/pages/home/`: The main interactive map component and its 3D engine logic.
+    *   `src/app/pages/dashboard/`: Includes artisan-specific features like product management.
+    *   `src/app/services/`: Houses the application's core services for API communication, caching, and state management.
+*   `backend/`: Contains the Node.js and Express.js server application.
+    *   `controllers/`: Handles the business logic for API endpoints.
+    *   `models/`: Defines the MongoDB data schemas.
+    *   `routes/`: Manages the API routing structure.
 
-- **PUT /api/products/:id**
-  - Actualiza producto existente
-  - Body: `{ name?, description?, historia_origen?, importancia_cultural?, proceso_elaboracion?, materias_primas?, tiempo_elaboracion?, certificaciones_protecciones?, media[]?, city?, address_text? }`
-  - Requiere: JWT (solo propietario o admin)
-  - Códigos: 200, 400 (nombre duplicado), 403, 404, 500
+## Getting Started
 
-- **DELETE /api/products/:id**
-  - Elimina producto
-  - Requiere: JWT (solo propietario o admin)
-  - Códigos: 200, 403, 404, 500
+### Prerequisites
 
-## Roles y Permisos
+*   Node.js and npm
+*   MongoDB instance (local or cloud)
+*   Angular CLI
 
-### Regular
-- Puede ver productos
-- Puede gestionar su propio perfil
+### Installation & Setup
 
-### Artisan
-- Todo lo de Regular
-- Puede crear productos
-- Puede gestionar sus propios productos
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/jorgeromangil/noma.git
+    cd noma
+    ```
 
-### Admin
-- Todo lo anterior
-- Puede crear otros admin
-- Puede gestionar todos los usuarios
-- Puede gestionar todos los productos
+2.  **Backend Setup:**
+    ```bash
+    cd backend
+    npm install
+    # Create a .env file with your database connection string and other variables
+    # Example: MONGODB_CNN=mongodb://...
+    npm start
+    ```
 
-## Códigos de Estado HTTP
+3.  **Frontend Setup:**
+    ```bash
+    cd ../frontend
+    npm install
+    # Ensure the API base URL in src/app/shared/api-base.ts points to your backend
+    ng serve
+    ```
 
-- **200**: OK - Operación exitosa
-- **201**: Created - Recurso creado exitosamente
-- **400**: Bad Request - Error de validación (email/nombre duplicado, campos inválidos)
-- **403**: Forbidden - No autorizado (permisos insuficientes)
-- **404**: Not Found - Recurso no encontrado
-- **500**: Internal Server Error - Error del servidor
+The application will be available at `http://localhost:4200`.
 
-## Autenticación
+## Disclaimer
 
-- Usa JWT (JSON Web Token)
-- Token se envía en header `x-token`
-- Token incluye `uid` y `role` del usuario
-- Duración del token: 12 horas
+This is an academic project developed as the final year project for the Multimedia Engineering degree at the University of Alicante. It is intended for educational and demonstrative purposes.
 
-## Variables de Entorno (.env)
-```
-PORT=3000
-DBCONNECTION=mongodb://...
-JWT_SECRET=your-secret-key
-```
+## License
 
-## Middlewares
+This project is licensed under the GNU General Public License v3.0 (GPLv3). This is a "copyleft" license, which means that any derivative work you distribute must also be licensed under the GPLv3, ensuring the software and its modifications remain free and open-source for all users.
 
-### validate-fields
-- Valida campos requeridos
-- Usa express-validator
-
-### validate-jwt
-- Verifica token válido
-- Extrae uid y role
-
-### validate-role
-- Valida roles permitidos
-- Roles: regular, artisan, admin
-
-## Notas de Seguridad
-
-1. Contraseñas:
-   - Hasheadas con bcrypt
-   - No se permiten en actualizaciones vía API
-
-2. Autenticación:
-   - Todos los endpoints (excepto login) requieren JWT
-   - Token expira en 12 horas
-
-3. Autorización:
-   - Validación de roles en cada operación
-   - Propietario o admin para updates/deletes
-   - Solo admin puede crear otros admin
-
-4. Validaciones:
-   - Email único en usuarios
-   - Nombre único en productos
-   - Campos requeridos validados
-   - Media array requiere al menos un elemento
+See the `LICENSE` file for more details.
