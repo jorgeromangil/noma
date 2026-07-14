@@ -92,12 +92,24 @@ The repository is organized into two main parts:
 
 The application will be available at `http://localhost:4200`.
 
+## Authors
+
+The **Syncro Team**:
+* **Javier Castelló Ochoa** - [@jco28UA](https://github.com/jco28UA)
+* **Claudia Garias Abalos** - [@cga112](https://github.com/cga112)
+* **Nicolás Hidalgo Salinas** - [@n1co2611](https://github.com/n1co2611)
+* **Fidel Mas Sáez** - [@fidelmas](https://github.com/fidelmas)
+* **Jorge Román Gil** - [@jorgeromangil](https://github.com/jorgeromangil)
+
 ## Disclaimer
 
 This is an academic project developed as the final year project for the Multimedia Engineering degree at the University of Alicante. It is intended for educational and demonstrative purposes.
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 (GPLv3). This is a "copyleft" license, which means that any derivative work you distribute must also be licensed under the GPLv3, ensuring the software and its modifications remain free and open-source for all users.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-See the `LICENSE` file for more details.
+---
+
+> 🎓 **Academic Note**
+> While the software architecture and code are open-source under the MIT License, all visual assets, brand identity (**Noma**), historical texts, and database records remain the intellectual property of the **Syncro Team** as outlined in our [Legal Notice](https://noma.ovh/syncro).
