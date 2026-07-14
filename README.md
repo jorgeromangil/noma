@@ -10,12 +10,27 @@ The platform serves as a digital showcase, providing artisans with the tools to 
 
 ## Key Features
 
-*   **Immersive 3D Map**: A custom WebGL 3-axis interactive graphics engine serving as the main search tool with rotation, zoom, and dynamic regional product pins.<img width="1920" height="1032" alt="noma-map" src="https://github.com/user-attachments/assets/45f14748-5db0-4f0c-ac2b-dad5d04eac76" />
+*   **Immersive 3D Map**: A custom WebGL 3-axis interactive graphics engine serving as the main search tool with rotation, zoom, and dynamic regional product pins.
+  
+<img width="1920" height="1032" alt="noma-map" src="https://github.com/user-attachments/assets/45f14748-5db0-4f0c-ac2b-dad5d04eac76" />
 
 *   **Multimedia Product Pages**: Detailed insights into heritage, traditional processing techniques, and an embedded Three.js & WebGL 3D model viewer.
+  
+<img width="1920" height="1032" alt="noma-product-page" src="https://github.com/user-attachments/assets/2d3dbe5b-01f0-44db-8f0e-0bdf44eee617" />
+<img width="1920" height="1032" alt="noma-product-page-2" src="https://github.com/user-attachments/assets/4d26245d-e283-4277-869d-7b8eb5420b62" />
+
 *   **Advanced Search & Filtering**: Users can easily find products using text search or by applying filters for categories, proximity, official certifications (e.g., D.O., I.G.P.), and personal favorites.
+
+<img width="1920" height="1032" alt="noma-search-bar" src="https://github.com/user-attachments/assets/91399738-2263-408d-b2f6-25290ff214fd" />
+
 *   **Smart Assistant**: An integrated Dialogflow chatbot offering personalized product recommendations and catalogue guidance.
+
+<img width="1920" height="1032" alt="noma-chatbot" src="https://github.com/user-attachments/assets/5ed395a9-5f93-43de-9592-408823e232c6" />
+
 *   **Artisan Dashboard**: A dedicated space for local creators to register, create detailed profiles, and manage their product listings, including uploading images and 3D models.
+
+<img width="1920" height="1032" alt="noma-artisan-dashboard" src="https://github.com/user-attachments/assets/25ad0f98-e7df-45e1-b7e9-d5f6307e2e5a" />
+
 
 ## Tech Stack
 
