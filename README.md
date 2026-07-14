@@ -121,7 +121,4 @@ This is an academic project developed as the final year project for the Multimed
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
----
-
-> 🎓 **Academic Note**
-> While the software architecture and code are open-source under the MIT License, all visual assets, brand identity (**Noma**), historical texts, and database records remain the intellectual property of the **Syncro Team** as outlined in our [Legal Notice](https://noma.ovh/syncro).
+While the software architecture and code are open-source under the MIT License, all visual assets, brand identity (**Noma**), historical texts, and database records remain the intellectual property of the **Syncro Team** as outlined in our [Legal Notice](https://noma-syncro.netlify.app/legal-notice).
