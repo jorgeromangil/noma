@@ -1,11 +1,8 @@
 # Noma: Artisanal Heritage Platform
 
-!Noma Project
-!Frontend-Angular
-!Backend-Node.js
-!Database-MongoDB
-
 ## Project Overview
+
+<img width="1920" height="1032" alt="noma-landing-page" src="https://github.com/user-attachments/assets/706c935c-c917-4b8e-863c-18032262bf54" />
 
 Noma (Núcleo de Origen y Memoria Artesanal) is an interactive, educational Single Page Application (SPA) designed to preserve and promote artisanal and agro-food heritage. By bridging the digital gap for local artisans, Noma restores visibility to traditional crafts and connects creators directly with global audiences.
 
@@ -13,12 +10,12 @@ The platform serves as a digital showcase, providing artisans with the tools to 
 
 ## Key Features
 
-*   **Immersive 3D Map**: A custom WebGL 3-axis interactive graphics engine serving as the main search tool with rotation, zoom, and dynamic regional product pins.
+*   **Immersive 3D Map**: A custom WebGL 3-axis interactive graphics engine serving as the main search tool with rotation, zoom, and dynamic regional product pins.<img width="1920" height="1032" alt="noma-map" src="https://github.com/user-attachments/assets/45f14748-5db0-4f0c-ac2b-dad5d04eac76" />
+
 *   **Multimedia Product Pages**: Detailed insights into heritage, traditional processing techniques, and an embedded Three.js & WebGL 3D model viewer.
 *   **Advanced Search & Filtering**: Users can easily find products using text search or by applying filters for categories, proximity, official certifications (e.g., D.O., I.G.P.), and personal favorites.
 *   **Smart Assistant**: An integrated Dialogflow chatbot offering personalized product recommendations and catalogue guidance.
 *   **Artisan Dashboard**: A dedicated space for local creators to register, create detailed profiles, and manage their product listings, including uploading images and 3D models.
-*   **Open Data Portal**: In the spirit of open knowledge, Noma provides a "Datos Abiertos" section where product datasets can be downloaded in `JSON` and `CSV` formats.
 
 ## Tech Stack
 
