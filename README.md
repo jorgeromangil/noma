@@ -114,6 +114,8 @@ The application will be available at `http://localhost:4200`.
 
 ## Authors
 
+<img width="3120" height="1677" alt="syncro-team" src="https://github.com/user-attachments/assets/409df78e-89a7-4662-b15e-f80f7fe5d42d" />
+
 The **Syncro Team**:
 * **Javier Castelló Ochoa** - [@jco28UA](https://github.com/jco28UA)
 * **Claudia Garias Abalos** - [@cga112](https://github.com/cga112)
